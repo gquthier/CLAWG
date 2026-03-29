@@ -1,272 +1,391 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SMART-CLAWG | Shared Obsidian Second Brain for AI Agents</title>
-    <meta
-      name="description"
-      content="SMART-CLAWG is an open-source personal agent framework with a native shared Obsidian Second Brain. One context for all agents, skills, subagents, and tools."
-    />
-    <meta name="theme-color" content="#0c0a14" />
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>SMART-CLAWG | The AI agent that remembers everything.</title>
+  <meta name="description" content="Open-source personal agent framework with a native shared Obsidian Second Brain. One context, every agent."/>
+  <meta name="theme-color" content="#0b0a12"/>
+  <meta property="og:title" content="SMART-CLAWG | Shared Obsidian Second Brain"/>
+  <meta property="og:description" content="Access your full context from any Claude Code session via Obsidian Sync."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://github.com/gquthier/CLAWG"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+</head>
+<body>
 
-    <meta property="og:title" content="SMART-CLAWG | Shared Obsidian Second Brain" />
-    <meta
-      property="og:description"
-      content="Access your context from any Claude Code session via Obsidian Sync. Shared files, shared skills, shared subagents."
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://github.com/gquthier/CLAWG" />
+<!-- Neural particle canvas -->
+<canvas id="neural-bg"></canvas>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+<!-- Cursor glow follower -->
+<div class="cursor-glow" id="cursor-glow"></div>
 
-    <link rel="stylesheet" href="style.css" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-  </head>
-  <body>
-    <div class="mesh"></div>
+<!-- ─── NAV ─── -->
+<header class="nav-wrap">
+  <nav class="nav">
+    <a href="#top" class="brand">
+      <span class="brand-icon">&#x2726;</span>
+      SMART-CLAWG
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="#features">Features</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#setup">Setup</a>
+      <a href="https://github.com/gquthier/CLAWG" target="_blank" rel="noopener" class="nav-gh">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+    <button class="menu-btn" id="menu-btn" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
 
-    <header class="nav-wrap">
-      <nav class="nav">
-        <a href="#top" class="brand">SMART-CLAWG</a>
-        <button class="menu-btn" id="menu-btn" aria-label="Toggle menu">Menu</button>
-        <div class="links" id="menu-links">
-          <a href="#architecture">Architecture</a>
-          <a href="#setup">Setup</a>
-          <a href="#docs">Docs</a>
-          <a href="https://github.com/gquthier/CLAWG" target="_blank" rel="noopener">GitHub</a>
+<!-- ─── HERO ─── -->
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <div class="hero-badges">
+      <span class="badge">Open Source</span>
+      <span class="badge">MIT License</span>
+      <span class="badge badge-accent">Second Brain Native</span>
+    </div>
+
+    <h1 class="hero-title">
+      <span class="line line-1">The AI agent that</span>
+      <span class="line line-2"><em class="gradient-text">remembers</em> everything.</span>
+    </h1>
+
+    <p class="hero-sub">
+      One Obsidian vault. Every agent, same context. Skills, tools, subagents, identity &mdash; all loaded from markdown you own.
+    </p>
+
+    <div class="hero-actions">
+      <a class="btn btn-glow" href="#setup">
+        <span class="btn-pulse"></span>
+        Get Started
+      </a>
+      <a class="btn btn-ghost" href="https://github.com/gquthier/CLAWG" target="_blank" rel="noopener">
+        View on GitHub <span class="arrow">&rarr;</span>
+      </a>
+    </div>
+
+    <!-- Live terminal -->
+    <div class="terminal" id="terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dots"><span></span><span></span><span></span></div>
+        <span class="terminal-title">smart-clawg &mdash; session bootstrap</span>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-line" data-delay="0">
+          <span class="prompt">$</span>
+          <span class="cmd" data-text="clawg second-brain link --path &quot;~/My Second Brain&quot;"></span>
         </div>
-      </nav>
-    </header>
-
-    <main>
-      <section class="hero" id="top">
-        <div class="hero-copy reveal">
-          <p class="eyebrow">Open Source | MIT | Personal Agent Framework</p>
-          <h1>One Obsidian Second Brain. Every agent, same context.</h1>
-          <p>
-            SMART-CLAWG natively mounts your Obsidian vault as a shared source of truth.
-            Each new agent session loads identity, soul, environment,
-            skills, and subagents from markdown files you control.
-            No context drift. No fragmentation.
-          </p>
-
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#setup">Start in 5 Commands</a>
-            <a class="btn btn-secondary" href="#docs">Read Full Documentation</a>
-          </div>
-
-          <p class="sync-line">
-            Access your context from any session via
-            <strong>Obsidian Sync</strong>.
-          </p>
+        <div class="terminal-line" data-delay="2200">
+          <span class="output">&check; Vault linked &rarr; ~/My Second Brain (12 master files found)</span>
         </div>
-
-        <div class="hero-panel reveal delay-1">
-          <div class="panel-head">
-            <span></span><span></span><span></span>
-            <p>session bootstrap</p>
-          </div>
-          <pre><code>clawg second-brain link --path "~/Documents/My Second Brain"
-clawg second-brain init --agent-id founder
-clawg second-brain status
-clawg --agent-id founder</code></pre>
-          <div class="panel-foot">
-            <span>shared vault</span>
-            <span>shared tools</span>
-            <span>shared skills</span>
-          </div>
+        <div class="terminal-line" data-delay="3200">
+          <span class="prompt">$</span>
+          <span class="cmd" data-text="clawg --agent-id founder"></span>
         </div>
-      </section>
-
-      <section class="quick-points">
-        <article class="point reveal">
-          <h3>Single Context Runtime</h3>
-          <p>Every agent starts from the same markdown truth, not stale prompt fragments.</p>
-        </article>
-        <article class="point reveal delay-1">
-          <h3>Native Obsidian Workflow</h3>
-          <p>Edit <code>.md</code> files in Obsidian and changes propagate at next agent turn.</p>
-        </article>
-        <article class="point reveal delay-2">
-          <h3>Shared Execution Layer</h3>
-          <p>All agents see the same tools registry, APIs, skills gallery, and subagent catalog.</p>
-        </article>
-      </section>
-
-      <section class="section" id="architecture">
-        <div class="section-title reveal">
-          <p class="kicker">Reference Architecture</p>
-          <h2>Second Brain-first architecture</h2>
-          <p>
-            SMART-CLAWG keeps your vault layout explicit so every agent can find and update the
-            right files without guessing.
-          </p>
+        <div class="terminal-line" data-delay="5400">
+          <span class="output">&check; Loading identity.md, soul.md, adjoint.md</span>
         </div>
-
-        <div class="brain reveal delay-1">
-          <div class="brain-shell">
-            <h3>Second Brain</h3>
-
-            <div class="large-memory">
-              <p>Large Memory</p>
-              <div class="projects-pill">Projects</div>
-            </div>
-
-            <div class="master-grid">
-              <div class="token required">user.md</div>
-              <div class="token">api/</div>
-              <div class="token required">environment.md</div>
-              <div class="token">philosophy.md</div>
-              <div class="token">learning/</div>
-              <div class="token required">tools/</div>
-            </div>
-
-            <div class="bottom-grid">
-              <div class="node-card">skills/</div>
-              <div class="node-card">subagents/</div>
-            </div>
-          </div>
+        <div class="terminal-line" data-delay="6200">
+          <span class="output">&check; 47 skills | 12 subagents | 8 tools registered</span>
         </div>
-      </section>
-
-      <section class="section workflow">
-        <div class="section-title reveal">
-          <p class="kicker">Task Execution Flow</p>
-          <h2>How SMART-CLAWG uses your Second Brain on every task</h2>
+        <div class="terminal-line" data-delay="7000">
+          <span class="output accent">&gt; Agent ready. Context: shared vault. No drift.</span>
         </div>
-        <ol class="flow-list reveal delay-1">
-          <li>
-            <h3>1. Detect intent</h3>
-            <p>The agent classifies the request (coding, research, ops, content, etc.).</p>
-          </li>
-          <li>
-            <h3>2. Read shared context</h3>
-            <p>Loads master markdown files and agent profile (<code>identity</code>, <code>adjoint</code>, <code>soul</code>).</p>
-          </li>
-          <li>
-            <h3>3. Select capabilities</h3>
-            <p>Searches vault skills/subagents and picks reusable playbooks before execution.</p>
-          </li>
-          <li>
-            <h3>4. Execute with common tools</h3>
-            <p>Runs on the same global tools and API layer as all other agents.</p>
-          </li>
-          <li>
-            <h3>5. Write back learnings</h3>
-            <p>Persists decisions, outputs, and learnings to vault markdown for future sessions.</p>
-          </li>
-        </ol>
-      </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-      <section class="section" id="setup">
-        <div class="section-title reveal">
-          <p class="kicker">Quickstart</p>
-          <h2>Setup SMART-CLAWG + shared Obsidian vault in minutes</h2>
+<!-- ─── STATS TICKER ─── -->
+<section class="stats-strip">
+  <div class="stat">
+    <span class="stat-num" data-target="1">1</span>
+    <span class="stat-label">shared vault</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-num" data-target="0">&infin;</span>
+    <span class="stat-label">agents</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-num" data-target="0">0</span>
+    <span class="stat-label">context drift</span>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <span class="stat-num">100%</span>
+    <span class="stat-label">markdown</span>
+  </div>
+</section>
+
+<!-- ─── FEATURES ─── -->
+<section class="section" id="features">
+  <div class="section-header reveal-up">
+    <span class="kicker">Why SMART-CLAWG</span>
+    <h2>Your agents deserve a brain.</h2>
+  </div>
+
+  <div class="features-grid">
+    <article class="feature-card reveal-up">
+      <div class="feature-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h3>Single Source of Truth</h3>
+      <p>All agents read from one Obsidian vault. No duplicated prompts. No stale context files scattered across machines.</p>
+    </article>
+
+    <article class="feature-card reveal-up" style="--delay:.08s">
+      <div class="feature-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </div>
+      <h3>Live Obsidian Editing</h3>
+      <p>Edit any <code>.md</code> file in Obsidian. Changes are picked up at the next agent turn. No rebuild, no restart.</p>
+    </article>
+
+    <article class="feature-card reveal-up" style="--delay:.16s">
+      <div class="feature-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <h3>Multi-Agent, Same Brain</h3>
+      <p>Founder, ops, dev, content &mdash; every agent loads its own identity but shares skills, tools, and learnings.</p>
+    </article>
+
+    <article class="feature-card reveal-up" style="--delay:.24s">
+      <div class="feature-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </div>
+      <h3>Obsidian Sync = Global Context</h3>
+      <p>Enable Obsidian Sync and your agents on any machine share the same vault. Edit on laptop, run on server.</p>
+    </article>
+
+    <article class="feature-card reveal-up" style="--delay:.32s">
+      <div class="feature-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <h3>Shared Tools & Skills</h3>
+      <p>Skills gallery, subagent catalog, API registry, learning journal &mdash; all visible to all agents, always.</p>
+    </article>
+
+    <article class="feature-card reveal-up" style="--delay:.4s">
+      <div class="feature-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </div>
+      <h3>Open Source, Self-Hosted</h3>
+      <p>MIT licensed. Runs on your machine. No cloud dependency. No vendor lock-in. Fork it, extend it, own it.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ─── ARCHITECTURE ─── -->
+<section class="section" id="architecture">
+  <div class="section-header reveal-up">
+    <span class="kicker">Architecture</span>
+    <h2>Second Brain-first design.</h2>
+  </div>
+
+  <div class="vault-diagram reveal-up">
+    <div class="vault-shell">
+      <div class="vault-label">OBSIDIAN VAULT &mdash; SECOND BRAIN</div>
+
+      <div class="vault-layer vault-memory">
+        <span class="vault-tag">Large Memory</span>
+        <div class="vault-pill">Projects</div>
+      </div>
+
+      <div class="vault-grid">
+        <div class="vault-node required" data-pulse>user.md</div>
+        <div class="vault-node" data-pulse>api/</div>
+        <div class="vault-node required" data-pulse>environment.md</div>
+        <div class="vault-node" data-pulse>philosophy.md</div>
+        <div class="vault-node" data-pulse>learning/</div>
+        <div class="vault-node required" data-pulse>tools/</div>
+      </div>
+
+      <div class="vault-bottom">
+        <div class="vault-block" data-pulse>
+          <span>skills/</span>
+          <small>47 indexed</small>
         </div>
-
-        <div class="commands reveal delay-1">
-          <article class="cmd-card">
-            <h3>1. Install</h3>
-            <pre><code id="cmd-install">pip install clawg</code></pre>
-            <button class="copy" data-copy="cmd-install">Copy</button>
-          </article>
-
-          <article class="cmd-card">
-            <h3>2. Link your Second Brain</h3>
-            <pre><code id="cmd-link">clawg second-brain link --path "~/Documents/My Second Brain"</code></pre>
-            <button class="copy" data-copy="cmd-link">Copy</button>
-          </article>
-
-          <article class="cmd-card">
-            <h3>3. Initialize structure</h3>
-            <pre><code id="cmd-init">clawg second-brain init --agent-id founder</code></pre>
-            <button class="copy" data-copy="cmd-init">Copy</button>
-          </article>
-
-          <article class="cmd-card">
-            <h3>4. Verify resolved paths</h3>
-            <pre><code id="cmd-status">clawg second-brain status</code></pre>
-            <button class="copy" data-copy="cmd-status">Copy</button>
-          </article>
-
-          <article class="cmd-card">
-            <h3>5. Launch with profile</h3>
-            <pre><code id="cmd-run">clawg --agent-id founder</code></pre>
-            <button class="copy" data-copy="cmd-run">Copy</button>
-          </article>
+        <div class="vault-block" data-pulse>
+          <span>subagents/</span>
+          <small>12 registered</small>
         </div>
-      </section>
+      </div>
 
-      <section class="section" id="docs">
-        <div class="section-title reveal">
-          <p class="kicker">Documentation</p>
-          <h2>Complete usage guide</h2>
-          <p>
-            The full guide is shipped in-repo and designed for operators who need
-            deterministic setup and clear operational rules.
-          </p>
+      <div class="vault-agents">
+        <div class="vault-agent-tag">agents/founder/</div>
+        <div class="vault-agent-files">
+          <span>identity.md</span>
+          <span>adjoint.md</span>
+          <span>soul.md</span>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <div class="docs-grid reveal delay-1">
-          <a href="https://github.com/gquthier/CLAWG/blob/main/docs/SECOND_BRAIN_SETUP.md" target="_blank" rel="noopener">
-            <h3>Second Brain Setup Guide</h3>
-            <p>Install, path linking, vault layout, agent profiles, session bootstrap, troubleshooting.</p>
-          </a>
-          <a href="https://github.com/gquthier/CLAWG/blob/main/README.md" target="_blank" rel="noopener">
-            <h3>Repository Quickstart</h3>
-            <p>CLI commands, high-level architecture, and day-1 usage from terminal.</p>
-          </a>
-          <a href="https://github.com/gquthier/CLAWG/tree/main/docs" target="_blank" rel="noopener">
-            <h3>Technical Docs Folder</h3>
-            <p>Migration notes, integration specs, and operational references.</p>
-          </a>
+<!-- ─── FLOW ─── -->
+<section class="section">
+  <div class="section-header reveal-up">
+    <span class="kicker">Execution Flow</span>
+    <h2>What happens when you ask.</h2>
+  </div>
+
+  <div class="flow">
+    <div class="flow-step reveal-up" style="--delay:0s">
+      <div class="flow-num">01</div>
+      <div class="flow-content">
+        <h3>Detect intent</h3>
+        <p>Agent classifies the request: coding, research, ops, content.</p>
+      </div>
+    </div>
+    <div class="flow-connector"></div>
+    <div class="flow-step reveal-up" style="--delay:.1s">
+      <div class="flow-num">02</div>
+      <div class="flow-content">
+        <h3>Load shared context</h3>
+        <p>Master files + agent profile loaded from the shared vault.</p>
+      </div>
+    </div>
+    <div class="flow-connector"></div>
+    <div class="flow-step reveal-up" style="--delay:.2s">
+      <div class="flow-num">03</div>
+      <div class="flow-content">
+        <h3>Match capabilities</h3>
+        <p>Skills, subagents, and learnings queried before execution.</p>
+      </div>
+    </div>
+    <div class="flow-connector"></div>
+    <div class="flow-step reveal-up" style="--delay:.3s">
+      <div class="flow-num">04</div>
+      <div class="flow-content">
+        <h3>Execute</h3>
+        <p>Runs with the global tools layer. Same API for every agent.</p>
+      </div>
+    </div>
+    <div class="flow-connector"></div>
+    <div class="flow-step reveal-up" style="--delay:.4s">
+      <div class="flow-num">05</div>
+      <div class="flow-content">
+        <h3>Write back</h3>
+        <p>Learnings and decisions persisted to the vault for future sessions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SETUP ─── -->
+<section class="section" id="setup">
+  <div class="section-header reveal-up">
+    <span class="kicker">Quickstart</span>
+    <h2>Five commands. That's it.</h2>
+  </div>
+
+  <div class="setup-steps reveal-up">
+    <div class="setup-step">
+      <div class="setup-num">1</div>
+      <div class="setup-body">
+        <h3>Install</h3>
+        <div class="setup-cmd">
+          <code id="c1">pip install clawg</code>
+          <button class="copy-btn" data-copy="c1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
         </div>
+      </div>
+    </div>
 
-        <div class="faq reveal delay-2">
-          <details>
-            <summary>Where do I edit context files?</summary>
-            <p>Inside your Obsidian vault. SMART-CLAWG reads markdown directly from the linked Second Brain path.</p>
-          </details>
-          <details>
-            <summary>Do all agents share the same tools and skills?</summary>
-            <p>Yes. The shared vault + global tools layer ensures every agent can discover the same capabilities.</p>
-          </details>
-          <details>
-            <summary>Can I keep per-agent identity while sharing everything else?</summary>
-            <p>Yes. Each agent has dedicated <code>agents/&lt;id&gt;/identity.md</code>, <code>adjoint.md</code>, and <code>soul.md</code> while using the same master context and capability pool.</p>
-          </details>
-          <details>
-            <summary>How does Obsidian Sync help?</summary>
-            <p>Enable Obsidian Sync on your vault and every machine with SMART-CLAWG linked to it will share the same context. Edit on your laptop, run agents on your server.</p>
-          </details>
+    <div class="setup-step">
+      <div class="setup-num">2</div>
+      <div class="setup-body">
+        <h3>Link your vault</h3>
+        <div class="setup-cmd">
+          <code id="c2">clawg second-brain link --path "~/My Second Brain"</code>
+          <button class="copy-btn" data-copy="c2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
         </div>
-      </section>
+      </div>
+    </div>
 
-      <section class="section cta reveal">
-        <h2>Build agents that never lose context.</h2>
-        <p>
-          SMART-CLAWG is engineered for one truth source, many agents, and predictable behavior.
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="https://github.com/gquthier/CLAWG" target="_blank" rel="noopener">Open on GitHub</a>
-          <a class="btn btn-secondary" href="#setup">Run Setup Now</a>
+    <div class="setup-step">
+      <div class="setup-num">3</div>
+      <div class="setup-body">
+        <h3>Initialize templates</h3>
+        <div class="setup-cmd">
+          <code id="c3">clawg second-brain init --agent-id founder</code>
+          <button class="copy-btn" data-copy="c3">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
 
-    <footer class="footer">
-      <p>SMART-CLAWG | Shared Second Brain architecture for personal open-source agents.</p>
-    </footer>
+    <div class="setup-step">
+      <div class="setup-num">4</div>
+      <div class="setup-body">
+        <h3>Check status</h3>
+        <div class="setup-cmd">
+          <code id="c4">clawg second-brain status</code>
+          <button class="copy-btn" data-copy="c4">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
 
-    <script src="script.js"></script>
-  </body>
+    <div class="setup-step">
+      <div class="setup-num">5</div>
+      <div class="setup-body">
+        <h3>Launch</h3>
+        <div class="setup-cmd">
+          <code id="c5">clawg --agent-id founder</code>
+          <button class="copy-btn" data-copy="c5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012-2v1"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section class="cta-section reveal-up">
+  <div class="cta-inner">
+    <h2>Build agents that <em class="gradient-text">never</em> lose context.</h2>
+    <p>One vault. Every agent. Zero drift.</p>
+    <div class="hero-actions">
+      <a class="btn btn-glow" href="https://github.com/gquthier/CLAWG" target="_blank" rel="noopener">
+        <span class="btn-pulse"></span>
+        Open on GitHub
+      </a>
+      <a class="btn btn-ghost" href="#setup">Run Setup <span class="arrow">&rarr;</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="brand"><span class="brand-icon">&#x2726;</span> SMART-CLAWG</span>
+    <span class="footer-sep">&bull;</span>
+    <span>Shared Second Brain for personal AI agents.</span>
+    <span class="footer-sep">&bull;</span>
+    <a href="https://github.com/gquthier/CLAWG" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
 </html>
