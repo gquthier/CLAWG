@@ -34,10 +34,10 @@ clawg --version
 
 ## 4. Link your existing Second Brain
 
-Example path (your current production vault):
+Point it to your Obsidian vault:
 
 ```bash
-clawg second-brain link --path "/Users/gauthier/Documents/Second Brain OpenClaw - PROD"
+clawg second-brain link --path "/path/to/your/Second Brain"
 ```
 
 Validate resolved directories:

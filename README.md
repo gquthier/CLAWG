@@ -35,7 +35,7 @@ Supported: macOS, Linux, WSL2.
 ### 2) Link your vault
 
 ```bash
-clawg second-brain link --path "/Users/gauthier/Documents/Second Brain OpenClaw - PROD"
+clawg second-brain link --path "/path/to/your/Second Brain"
 ```
 
 ### 3) Initialize templates
