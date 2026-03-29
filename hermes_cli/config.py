@@ -1,15 +1,15 @@
 """
-Configuration management for Hermes Agent.
+Configuration management for CLAWG.
 
-Config files are stored in ~/.hermes/ for easy access:
-- ~/.hermes/config.yaml  - All settings (model, toolsets, terminal, etc.)
-- ~/.hermes/.env         - API keys and secrets
+Config files are stored in CLAWG_HOME (default: ~/.clawg) for easy access:
+- ~/.clawg/config.yaml  - All settings (model, toolsets, terminal, etc.)
+- ~/.clawg/.env         - API keys and secrets
 
 This module provides:
-- hermes config          - Show current configuration
-- hermes config edit     - Open config in editor
-- hermes config set      - Set a specific value
-- hermes config wizard   - Re-run setup wizard
+- clawg config          - Show current configuration
+- clawg config edit     - Open config in editor
+- clawg config set      - Set a specific value
+- clawg config wizard   - Re-run setup wizard
 """
 
 import os
@@ -44,6 +44,15 @@ import yaml
 
 from hermes_cli.colors import Colors, color
 from hermes_cli.default_soul import DEFAULT_SOUL_MD
+from hermes_cli.paths import (
+    get_runtime_home,
+    sync_home_env_vars,
+    get_second_brain_root,
+    get_second_brain_memory_dir,
+    get_second_brain_skills_dir,
+    get_second_brain_subagents_dir,
+    get_second_brain_tools_dir,
+)
 
 
 # =============================================================================
@@ -51,8 +60,13 @@ from hermes_cli.default_soul import DEFAULT_SOUL_MD
 # =============================================================================
 
 def get_hermes_home() -> Path:
-    """Get the Hermes home directory (~/.hermes)."""
-    return Path(os.getenv("HERMES_HOME", Path.home() / ".hermes"))
+    """Get the active CLAWG home directory (with legacy HERMES_HOME support)."""
+    return sync_home_env_vars(get_runtime_home())
+
+
+def get_clawg_home() -> Path:
+    """Preferred CLAWG alias for get_hermes_home()."""
+    return get_hermes_home()
 
 def get_config_path() -> Path:
     """Get the main config file path."""
@@ -93,7 +107,7 @@ def _ensure_default_soul_md(home: Path) -> None:
 
 
 def ensure_hermes_home():
-    """Ensure ~/.hermes directory structure exists with secure permissions."""
+    """Ensure CLAWG_HOME directory structure exists with secure permissions."""
     home = get_hermes_home()
     home.mkdir(parents=True, exist_ok=True)
     _secure_dir(home)
@@ -110,7 +124,7 @@ def ensure_hermes_home():
 
 DEFAULT_CONFIG = {
     "model": "anthropic/claude-opus-4.6",
-    "toolsets": ["hermes-cli"],
+    "toolsets": ["clawg-cli"],
     "agent": {
         "max_turns": 90,
     },
@@ -300,6 +314,21 @@ DEFAULT_CONFIG = {
         "user_char_limit": 1375,     # ~500 tokens at 2.75 chars/token
     },
 
+    # Shared Obsidian-backed Second Brain integration.
+    # When enabled, memory/skills/subagents/tools are loaded from this vault.
+    "second_brain": {
+        "enabled": True,
+        "root": "",
+        "agent_default_id": "default",
+        "memory_dir": "Large Memory",
+        "skills_dir": "skills",
+        "subagents_dir": "subagent",
+        "tools_dir": "tools",
+        "projects_dir": "Projects",
+        "learning_dir": "learning",
+        "agent_profiles_dir": "agents",
+    },
+
     # Subagent delegation — override the provider:model used by delegate_task
     # so child agents can run on a different (cheaper/faster) provider and model.
     # Uses the same runtime provider resolution as CLI/gateway startup, so all
@@ -317,7 +346,7 @@ DEFAULT_CONFIG = {
     "prefill_messages_file": "",
     
     # Honcho AI-native memory -- reads ~/.honcho/config.json as single source of truth.
-    # This section is only needed for hermes-specific overrides; everything else
+    # This section is only needed for clawg-specific overrides; everything else
     # (apiKey, workspace, peerName, sessions, enabled) comes from the global config.
     "honcho": {},
 
@@ -335,7 +364,7 @@ DEFAULT_CONFIG = {
     # WhatsApp platform settings (gateway mode)
     "whatsapp": {
         # Reply prefix prepended to every outgoing WhatsApp message.
-        # Default (None) uses the built-in "⚕ *Hermes Agent*" header.
+        # Default (None) uses the built-in "⚕ *CLAWG*" header.
         # Set to "" (empty string) to disable the header entirely.
         # Supports \n for newlines, e.g. "🤖 *My Bot*\n──────\n"
     },
@@ -372,7 +401,7 @@ DEFAULT_CONFIG = {
     },
 
     # Config schema version - bump this when adding new required fields
-    "_config_version": 10,
+    "_config_version": 11,
 }
 
 # =============================================================================
@@ -759,7 +788,7 @@ OPTIONAL_ENV_VARS = {
         "category": "messaging",
     },
     "MATRIX_USER_ID": {
-        "description": "Matrix user ID (e.g. @hermes:example.org)",
+        "description": "Matrix user ID (e.g. @clawg:example.org)",
         "prompt": "Matrix user ID (@user:server)",
         "url": None,
         "password": False,
@@ -1122,7 +1151,7 @@ def migrate_config(interactive: bool = True, quiet: bool = False) -> Dict[str, A
                         print(f"  ✓ Saved {name}")
                     print()
             else:
-                print("  Set later with: hermes config set <key> <value>")
+                print("  Set later with: clawg config set <key> <value>")
     
     # Check for missing config fields
     missing_config = get_missing_config_fields()
@@ -1189,7 +1218,7 @@ def _normalize_max_turns_config(config: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def load_config() -> Dict[str, Any]:
-    """Load configuration from ~/.hermes/config.yaml."""
+    """Load configuration from ~/.clawg/config.yaml."""
     import copy
     ensure_hermes_home()
     config_path = get_config_path()
@@ -1239,8 +1268,8 @@ _FALLBACK_COMMENT = """
 #
 # Supported providers:
 #   openrouter   (OPENROUTER_API_KEY)  — routes to any model
-#   openai-codex (OAuth — hermes login) — OpenAI Codex
-#   nous         (OAuth — hermes login) — Nous Portal
+#   openai-codex (OAuth — clawg login) — OpenAI Codex
+#   nous         (OAuth — clawg login) — Nous Portal
 #   zai          (ZAI_API_KEY)         — Z.AI / GLM
 #   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
 #   minimax      (MINIMAX_API_KEY)     — MiniMax
@@ -1282,8 +1311,8 @@ _COMMENTED_SECTIONS = """
 #
 # Supported providers:
 #   openrouter   (OPENROUTER_API_KEY)  — routes to any model
-#   openai-codex (OAuth — hermes login) — OpenAI Codex
-#   nous         (OAuth — hermes login) — Nous Portal
+#   openai-codex (OAuth — clawg login) — OpenAI Codex
+#   nous         (OAuth — clawg login) — Nous Portal
 #   zai          (ZAI_API_KEY)         — Z.AI / GLM
 #   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
 #   minimax      (MINIMAX_API_KEY)     — MiniMax
@@ -1311,7 +1340,7 @@ _COMMENTED_SECTIONS = """
 
 
 def save_config(config: Dict[str, Any]):
-    """Save configuration to ~/.hermes/config.yaml."""
+    """Save configuration to ~/.clawg/config.yaml."""
     from utils import atomic_yaml_write
 
     ensure_hermes_home()
@@ -1337,7 +1366,7 @@ def save_config(config: Dict[str, Any]):
 
 
 def load_env() -> Dict[str, str]:
-    """Load environment variables from ~/.hermes/.env."""
+    """Load environment variables from ~/.clawg/.env."""
     env_path = get_env_path()
     env_vars = {}
     
@@ -1364,7 +1393,7 @@ def _sanitize_env_lines(lines: list) -> list:
     2. Stale ``KEY=***`` placeholder entries left by incomplete setup runs.
 
     Uses a known-keys set (OPTIONAL_ENV_VARS + _EXTRA_ENV_KEYS) so we only
-    split on real Hermes env var names, avoiding false positives from values
+    split on real CLAWG env var names, avoiding false positives from values
     that happen to contain uppercase text with ``=``.
     """
     # Build the known keys set lazily from OPTIONAL_ENV_VARS + extras.
@@ -1407,7 +1436,7 @@ def _sanitize_env_lines(lines: list) -> list:
 
 
 def sanitize_env_file() -> int:
-    """Read, sanitize, and rewrite ~/.hermes/.env in place.
+    """Read, sanitize, and rewrite ~/.clawg/.env in place.
 
     Returns the number of lines that were fixed (concatenation splits +
     placeholder removals).  Returns 0 when no changes are needed.
@@ -1452,7 +1481,7 @@ def sanitize_env_file() -> int:
 
 
 def save_env_value(key: str, value: str):
-    """Save or update a value in ~/.hermes/.env."""
+    """Save or update a value in ~/.clawg/.env."""
     if not _ENV_VAR_NAME_RE.match(key):
         raise ValueError(f"Invalid environment variable name: {key!r}")
     value = value.replace("\n", "").replace("\r", "")
@@ -1542,7 +1571,7 @@ def save_env_value_secure(key: str, value: str) -> Dict[str, Any]:
 
 
 def get_env_value(key: str) -> Optional[str]:
-    """Get a value from ~/.hermes/.env or environment."""
+    """Get a value from ~/.clawg/.env or environment."""
     # Check environment first
     if key in os.environ:
         return os.environ[key]
@@ -1571,7 +1600,7 @@ def show_config():
     
     print()
     print(color("┌─────────────────────────────────────────────────────────┐", Colors.CYAN))
-    print(color("│              ⚕ Hermes Configuration                    │", Colors.CYAN))
+    print(color("│               ⚕ CLAWG Configuration                   │", Colors.CYAN))
     print(color("└─────────────────────────────────────────────────────────┘", Colors.CYAN))
     
     # Paths
@@ -1580,6 +1609,10 @@ def show_config():
     print(f"  Config:       {get_config_path()}")
     print(f"  Secrets:      {get_env_path()}")
     print(f"  Install:      {get_project_root()}")
+    sb_root = get_second_brain_root(config=config, must_exist=False)
+    sb_enabled = bool(config.get("second_brain", {}).get("enabled", True))
+    print(f"  Second Brain: {sb_root if sb_root else '(not set)'}")
+    print(f"  SB Enabled:   {'yes' if sb_enabled else 'no'}")
     
     # API Keys
     print()
@@ -1608,6 +1641,14 @@ def show_config():
     print(f"  Model:        {config.get('model', 'not set')}")
     print(f"  Max turns:    {config.get('agent', {}).get('max_turns', DEFAULT_CONFIG['agent']['max_turns'])}")
     print(f"  Toolsets:     {', '.join(config.get('toolsets', ['all']))}")
+
+    # Second Brain directories
+    print()
+    print(color("◆ Second Brain Directories", Colors.CYAN, Colors.BOLD))
+    print(f"  Memory:       {get_second_brain_memory_dir(config) or '(fallback to CLAWG_HOME/memories)'}")
+    print(f"  Skills:       {get_second_brain_skills_dir(config) or '(fallback to CLAWG_HOME/skills)'}")
+    print(f"  Subagents:    {get_second_brain_subagents_dir(config) or '(not configured)'}")
+    print(f"  Tools:        {get_second_brain_tools_dir(config) or '(not configured)'}")
     
     # Display
     print()
@@ -1699,9 +1740,9 @@ def show_config():
     
     print()
     print(color("─" * 60, Colors.DIM))
-    print(color("  hermes config edit     # Edit config file", Colors.DIM))
-    print(color("  hermes config set <key> <value>", Colors.DIM))
-    print(color("  hermes setup           # Run setup wizard", Colors.DIM))
+    print(color("  clawg config edit     # Edit config file", Colors.DIM))
+    print(color("  clawg config set <key> <value>", Colors.DIM))
+    print(color("  clawg setup           # Run setup wizard", Colors.DIM))
     print()
 
 
@@ -1829,12 +1870,12 @@ def config_command(args):
         key = getattr(args, 'key', None)
         value = getattr(args, 'value', None)
         if not key or not value:
-            print("Usage: hermes config set <key> <value>")
+            print("Usage: clawg config set <key> <value>")
             print()
             print("Examples:")
-            print("  hermes config set model anthropic/claude-sonnet-4")
-            print("  hermes config set terminal.backend docker")
-            print("  hermes config set OPENROUTER_API_KEY sk-or-...")
+            print("  clawg config set model anthropic/claude-sonnet-4")
+            print("  clawg config set terminal.backend docker")
+            print("  clawg config set OPENROUTER_API_KEY sk-or-...")
             sys.exit(1)
         set_config_value(key, value)
     
@@ -1934,7 +1975,7 @@ def config_command(args):
         if missing_config:
             print()
             print(color(f"  {len(missing_config)} new config option(s) available", Colors.YELLOW))
-            print("    Run 'hermes config migrate' to add them")
+            print("    Run 'clawg config migrate' to add them")
         
         print()
     
@@ -1942,11 +1983,11 @@ def config_command(args):
         print(f"Unknown config command: {subcmd}")
         print()
         print("Available commands:")
-        print("  hermes config           Show current configuration")
-        print("  hermes config edit      Open config in editor")
-        print("  hermes config set <key> <value>   Set a config value")
-        print("  hermes config check     Check for missing/outdated config")
-        print("  hermes config migrate   Update config with new options")
-        print("  hermes config path      Show config file path")
-        print("  hermes config env-path  Show .env file path")
+        print("  clawg config           Show current configuration")
+        print("  clawg config edit      Open config in editor")
+        print("  clawg config set <key> <value>   Set a config value")
+        print("  clawg config check     Check for missing/outdated config")
+        print("  clawg config migrate   Update config with new options")
+        print("  clawg config path      Show config file path")
+        print("  clawg config env-path  Show .env file path")
         sys.exit(1)

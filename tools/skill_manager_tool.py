@@ -41,6 +41,8 @@ import tempfile
 from pathlib import Path
 from typing import Dict, Any, Optional
 
+from hermes_cli.paths import get_shared_skills_dir
+
 logger = logging.getLogger(__name__)
 
 # Import security scanner — agent-created skills get the same scrutiny as
@@ -69,9 +71,8 @@ def _security_scan_skill(skill_dir: Path) -> Optional[str]:
 import yaml
 
 
-# All skills live in ~/.hermes/skills/ (single source of truth)
-HERMES_HOME = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes"))
-SKILLS_DIR = HERMES_HOME / "skills"
+# All skills live in a shared directory (Second Brain when enabled).
+SKILLS_DIR = get_shared_skills_dir()
 
 MAX_NAME_LENGTH = 64
 MAX_DESCRIPTION_LENGTH = 1024

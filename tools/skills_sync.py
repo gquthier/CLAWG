@@ -28,11 +28,12 @@ import shutil
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+from hermes_cli.paths import get_shared_skills_dir
+
 logger = logging.getLogger(__name__)
 
 
-HERMES_HOME = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes"))
-SKILLS_DIR = HERMES_HOME / "skills"
+SKILLS_DIR = get_shared_skills_dir()
 MANIFEST_FILE = SKILLS_DIR / ".bundled_manifest"
 
 

@@ -308,7 +308,65 @@ TOOLSETS = {
         "description": "Gateway toolset - union of all messaging platform tools",
         "tools": [],
         "includes": ["hermes-telegram", "hermes-discord", "hermes-whatsapp", "hermes-slack", "hermes-signal", "hermes-homeassistant", "hermes-email", "hermes-sms"]
-    }
+    },
+
+    # CLAWG aliases (preferred names) — point to existing Hermes toolsets for
+    # full backward compatibility while the internal package names migrate.
+    "clawg-acp": {
+        "description": "CLAWG ACP toolset alias",
+        "tools": [],
+        "includes": ["hermes-acp"],
+    },
+    "clawg-cli": {
+        "description": "CLAWG CLI toolset alias",
+        "tools": [],
+        "includes": ["hermes-cli"],
+    },
+    "clawg-gateway": {
+        "description": "CLAWG gateway toolset alias",
+        "tools": [],
+        "includes": ["hermes-gateway"],
+    },
+    "clawg-telegram": {
+        "description": "CLAWG Telegram toolset alias",
+        "tools": [],
+        "includes": ["hermes-telegram"],
+    },
+    "clawg-discord": {
+        "description": "CLAWG Discord toolset alias",
+        "tools": [],
+        "includes": ["hermes-discord"],
+    },
+    "clawg-whatsapp": {
+        "description": "CLAWG WhatsApp toolset alias",
+        "tools": [],
+        "includes": ["hermes-whatsapp"],
+    },
+    "clawg-slack": {
+        "description": "CLAWG Slack toolset alias",
+        "tools": [],
+        "includes": ["hermes-slack"],
+    },
+    "clawg-signal": {
+        "description": "CLAWG Signal toolset alias",
+        "tools": [],
+        "includes": ["hermes-signal"],
+    },
+    "clawg-homeassistant": {
+        "description": "CLAWG Home Assistant toolset alias",
+        "tools": [],
+        "includes": ["hermes-homeassistant"],
+    },
+    "clawg-email": {
+        "description": "CLAWG email toolset alias",
+        "tools": [],
+        "includes": ["hermes-email"],
+    },
+    "clawg-sms": {
+        "description": "CLAWG SMS toolset alias",
+        "tools": [],
+        "includes": ["hermes-sms"],
+    },
 }
 
 

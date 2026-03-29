@@ -1,14 +1,14 @@
 """
-Hermes CLI - Unified command-line interface for Hermes Agent.
+CLAWG CLI - Unified command-line interface for CLAWG.
 
 Provides subcommands for:
-- hermes chat          - Interactive chat (same as ./hermes)
-- hermes gateway       - Run gateway in foreground
-- hermes gateway start - Start gateway service
-- hermes gateway stop  - Stop gateway service  
-- hermes setup         - Interactive setup wizard
-- hermes status        - Show status of all components
-- hermes cron          - Manage cron jobs
+- clawg chat          - Interactive chat (same as ./clawg)
+- clawg gateway       - Run gateway in foreground
+- clawg gateway start - Start gateway service
+- clawg gateway stop  - Stop gateway service
+- clawg setup         - Interactive setup wizard
+- clawg status        - Show status of all components
+- clawg cron          - Manage cron jobs
 """
 
 __version__ = "0.4.0"

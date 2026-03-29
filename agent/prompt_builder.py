@@ -10,6 +10,9 @@ import re
 from pathlib import Path
 from typing import Optional
 
+from hermes_cli.paths import get_shared_skills_dir, get_second_brain_agent_dir, get_runtime_home
+from agent.second_brain import resolve_active_agent_id
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -70,7 +73,7 @@ def _find_git_root(start: Path) -> Optional[Path]:
     return None
 
 
-_HERMES_MD_NAMES = (".hermes.md", "HERMES.md")
+_HERMES_MD_NAMES = (".clawg.md", "CLAWG.md", ".hermes.md", "HERMES.md")
 
 
 def _find_hermes_md(cwd: Path) -> Optional[Path]:
@@ -116,7 +119,7 @@ def _strip_yaml_frontmatter(content: str) -> str:
 # =========================================================================
 
 DEFAULT_AGENT_IDENTITY = (
-    "You are Hermes Agent, an intelligent AI assistant created by Nous Research. "
+    "You are CLAWG, an intelligent AI assistant created by CLAWG.DEV. "
     "You are helpful, knowledgeable, and direct. You assist users with a wide "
     "range of tasks including answering questions, writing and editing code, "
     "analyzing information, creative work, and executing actions via your tools. "
@@ -320,8 +323,7 @@ def build_skills_system_prompt(
     match skills by meaning, not just name.
     Filters out skills incompatible with the current OS platform.
     """
-    hermes_home = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes"))
-    skills_dir = hermes_home / "skills"
+    skills_dir = get_shared_skills_dir()
 
     if not skills_dir.exists():
         return ""
@@ -429,20 +431,46 @@ def _truncate_content(content: str, filename: str, max_chars: int = CONTEXT_FILE
     return head + marker + tail
 
 
-def load_soul_md() -> Optional[str]:
-    """Load SOUL.md from HERMES_HOME and return its content, or None.
+def load_soul_md(agent_id: str | None = None) -> Optional[str]:
+    """Load SOUL.md from Second Brain agent profile, then CLAWG_HOME fallback.
 
     Used as the agent identity (slot #1 in the system prompt).  When this
     returns content, ``build_context_files_prompt`` should be called with
     ``skip_soul=True`` so SOUL.md isn't injected twice.
     """
+    config = {}
+    try:
+        from hermes_cli.config import load_config
+
+        config = load_config()
+    except Exception:
+        config = {}
+
+    # Primary source: Second Brain agent profile soul.md
+    try:
+        resolved_agent_id = resolve_active_agent_id(agent_id=agent_id, config=config)
+        sb_agent_dir = get_second_brain_agent_dir(resolved_agent_id, config=config)
+        if sb_agent_dir:
+            for candidate_name in ("soul.md", "SOUL.md"):
+                soul_candidate = sb_agent_dir / candidate_name
+                if not soul_candidate.exists():
+                    continue
+                content = soul_candidate.read_text(encoding="utf-8").strip()
+                if content:
+                    content = _scan_context_content(content, f"agents/{resolved_agent_id}/{candidate_name}")
+                    content = _truncate_content(content, candidate_name)
+                    return content
+    except Exception as e:
+        logger.debug("Could not load Second Brain soul profile: %s", e)
+
+    # Fallback source: CLAWG_HOME/SOUL.md (legacy-compatible)
     try:
         from hermes_cli.config import ensure_hermes_home
         ensure_hermes_home()
     except Exception as e:
         logger.debug("Could not ensure HERMES_HOME before loading SOUL.md: %s", e)
 
-    soul_path = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes")) / "SOUL.md"
+    soul_path = get_runtime_home() / "SOUL.md"
     if not soul_path.exists():
         return None
     try:
@@ -532,7 +560,8 @@ def build_context_files_prompt(cwd: Optional[str] = None, skip_soul: bool = Fals
         cursorrules_content = _truncate_content(cursorrules_content, ".cursorrules")
         sections.append(cursorrules_content)
 
-    # .hermes.md / HERMES.md — per-project agent config (walk to git root)
+    # .clawg.md / CLAWG.md (legacy .hermes.md / HERMES.md supported)
+    # per-project agent config (walk to git root)
     hermes_md_content = ""
     hermes_md_path = _find_hermes_md(cwd_path)
     if hermes_md_path:
@@ -551,7 +580,7 @@ def build_context_files_prompt(cwd: Optional[str] = None, skip_soul: bool = Fals
             logger.debug("Could not read %s: %s", hermes_md_path, e)
 
     if hermes_md_content:
-        hermes_md_content = _truncate_content(hermes_md_content, ".hermes.md")
+        hermes_md_content = _truncate_content(hermes_md_content, ".clawg.md")
         sections.append(hermes_md_content)
 
     # SOUL.md from HERMES_HOME only — skip when already loaded as identity

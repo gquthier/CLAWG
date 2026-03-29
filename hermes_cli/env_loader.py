@@ -1,4 +1,4 @@
-"""Helpers for loading Hermes .env files consistently across entrypoints."""
+"""Helpers for loading CLAWG .env files consistently across entrypoints."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Iterable
 
 from dotenv import load_dotenv
+from hermes_cli.paths import get_runtime_home
 
 
 def _load_dotenv_with_fallback(path: Path, *, override: bool) -> None:
@@ -21,7 +22,7 @@ def load_hermes_dotenv(
     hermes_home: str | os.PathLike | None = None,
     project_env: str | os.PathLike | None = None,
 ) -> list[Path]:
-    """Load Hermes environment files with user config taking precedence.
+    """Load CLAWG environment files with user config taking precedence.
 
     Behavior:
     - `~/.hermes/.env` overrides stale shell-exported values when present.
@@ -31,7 +32,7 @@ def load_hermes_dotenv(
     """
     loaded: list[Path] = []
 
-    home_path = Path(hermes_home or os.getenv("HERMES_HOME", Path.home() / ".hermes"))
+    home_path = Path(hermes_home) if hermes_home else get_runtime_home()
     user_env = home_path / ".env"
     project_env_path = Path(project_env) if project_env else None
 

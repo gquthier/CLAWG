@@ -77,16 +77,16 @@ from typing import Dict, Any, List, Optional, Set, Tuple
 
 import yaml
 from hermes_cli.config import load_env, _ENV_VAR_NAME_RE
+from hermes_cli.paths import get_shared_skills_dir
 from tools.registry import registry
 
 logger = logging.getLogger(__name__)
 
 
-# All skills live in ~/.hermes/skills/ (seeded from bundled skills/ on install).
-# This is the single source of truth -- agent edits, hub installs, and bundled
-# skills all coexist here without polluting the git repo.
-HERMES_HOME = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes"))
-SKILLS_DIR = HERMES_HOME / "skills"
+# All skills live in a shared skills directory.
+# When Second Brain is enabled, this resolves to <second_brain>/skills.
+# Otherwise it falls back to CLAWG_HOME/skills.
+SKILLS_DIR = get_shared_skills_dir()
 
 # Anthropic-recommended limits for progressive disclosure efficiency
 MAX_NAME_LENGTH = 64

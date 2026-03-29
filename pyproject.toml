@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hermes-agent"
+name = "clawg"
 version = "0.4.0"
-description = "The self-improving AI agent — creates skills from experience, improves them during use, and runs anywhere"
+description = "CLAWG: open-source personal agent with native shared Second Brain context"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Nous Research" }]
@@ -69,27 +69,27 @@ rl = [
 ]
 yc-bench = ["yc-bench @ git+https://github.com/collinear-ai/yc-bench.git"]
 all = [
-  "hermes-agent[modal]",
-  "hermes-agent[daytona]",
-  "hermes-agent[messaging]",
-  "hermes-agent[cron]",
-  "hermes-agent[cli]",
-  "hermes-agent[dev]",
-  "hermes-agent[tts-premium]",
-  "hermes-agent[slack]",
-  "hermes-agent[pty]",
-  "hermes-agent[honcho]",
-  "hermes-agent[mcp]",
-  "hermes-agent[homeassistant]",
-  "hermes-agent[sms]",
-  "hermes-agent[acp]",
-  "hermes-agent[voice]",
+  "clawg[modal]",
+  "clawg[daytona]",
+  "clawg[messaging]",
+  "clawg[cron]",
+  "clawg[cli]",
+  "clawg[dev]",
+  "clawg[tts-premium]",
+  "clawg[slack]",
+  "clawg[pty]",
+  "clawg[honcho]",
+  "clawg[mcp]",
+  "clawg[homeassistant]",
+  "clawg[sms]",
+  "clawg[acp]",
+  "clawg[voice]",
 ]
 
 [project.scripts]
-hermes = "hermes_cli.main:main"
-hermes-agent = "run_agent:main"
-hermes-acp = "acp_adapter.entry:main"
+clawg = "hermes_cli.main:main"
+clawg-agent = "run_agent:main"
+clawg-acp = "acp_adapter.entry:main"
 
 [tool.setuptools]
 py-modules = ["run_agent", "model_tools", "toolsets", "batch_runner", "trajectory_compressor", "toolset_distributions", "cli", "hermes_constants", "hermes_state", "hermes_time", "mini_swe_runner", "minisweagent_path", "rl_cli", "utils"]

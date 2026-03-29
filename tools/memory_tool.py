@@ -33,10 +33,13 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 
+from hermes_cli.paths import get_shared_memory_dir
+
 logger = logging.getLogger(__name__)
 
-# Where memory files live
-MEMORY_DIR = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes")) / "memories"
+def _memory_dir() -> Path:
+    """Resolve the active memory directory (Second Brain or CLAWG_HOME fallback)."""
+    return get_shared_memory_dir()
 
 ENTRY_DELIMITER = "\n§\n"
 
@@ -61,7 +64,7 @@ _MEMORY_THREAT_PATTERNS = [
     # Persistence via shell rc
     (r'authorized_keys', "ssh_backdoor"),
     (r'\$HOME/\.ssh|\~/\.ssh', "ssh_access"),
-    (r'\$HOME/\.hermes/\.env|\~/\.hermes/\.env', "hermes_env"),
+    (r'\$HOME/\.(?:hermes|clawg)/\.env|\~/\.(?:hermes|clawg)/\.env', "agent_env"),
 ]
 
 # Subset of invisible chars for injection detection
@@ -107,10 +110,11 @@ class MemoryStore:
 
     def load_from_disk(self):
         """Load entries from MEMORY.md and USER.md, capture system prompt snapshot."""
-        MEMORY_DIR.mkdir(parents=True, exist_ok=True)
+        memory_dir = _memory_dir()
+        memory_dir.mkdir(parents=True, exist_ok=True)
 
-        self.memory_entries = self._read_file(MEMORY_DIR / "MEMORY.md")
-        self.user_entries = self._read_file(MEMORY_DIR / "USER.md")
+        self.memory_entries = self._read_file(memory_dir / "MEMORY.md")
+        self.user_entries = self._read_file(memory_dir / "USER.md")
 
         # Deduplicate entries (preserves order, keeps first occurrence)
         self.memory_entries = list(dict.fromkeys(self.memory_entries))
@@ -142,9 +146,10 @@ class MemoryStore:
 
     @staticmethod
     def _path_for(target: str) -> Path:
+        memory_dir = _memory_dir()
         if target == "user":
-            return MEMORY_DIR / "USER.md"
-        return MEMORY_DIR / "MEMORY.md"
+            return memory_dir / "USER.md"
+        return memory_dir / "MEMORY.md"
 
     def _reload_target(self, target: str):
         """Re-read entries from disk into in-memory state.
@@ -157,7 +162,7 @@ class MemoryStore:
 
     def save_to_disk(self, target: str):
         """Persist entries to the appropriate file. Called after every mutation."""
-        MEMORY_DIR.mkdir(parents=True, exist_ok=True)
+        _memory_dir().mkdir(parents=True, exist_ok=True)
         self._write_file(self._path_for(target), self._entries_for(target))
 
     def _entries_for(self, target: str) -> List[str]:
@@ -541,7 +546,6 @@ registry.register(
     check_fn=check_memory_requirements,
     emoji="🧠",
 )
-
 
 
 

@@ -1,46 +1,46 @@
 #!/usr/bin/env python3
 """
-Hermes CLI - Main entry point.
+CLAWG CLI - Main entry point.
 
 Usage:
-    hermes                     # Interactive chat (default)
-    hermes chat                # Interactive chat
-    hermes gateway             # Run gateway in foreground
-    hermes gateway start       # Start gateway as service
-    hermes gateway stop        # Stop gateway service
-    hermes gateway status      # Show gateway status
-    hermes gateway install     # Install gateway service
-    hermes gateway uninstall   # Uninstall gateway service
-    hermes setup               # Interactive setup wizard
-    hermes logout              # Clear stored authentication
-    hermes status              # Show status of all components
-    hermes cron                # Manage cron jobs
-    hermes cron list           # List cron jobs
-    hermes cron status         # Check if cron scheduler is running
-    hermes doctor              # Check configuration and dependencies
-    hermes honcho setup                    # Configure Honcho AI memory integration
-    hermes honcho status                   # Show Honcho config and connection status
-    hermes honcho sessions                 # List directory → session name mappings
-    hermes honcho map <name>               # Map current directory to a session name
-    hermes honcho peer                     # Show peer names and dialectic settings
-    hermes honcho peer --user NAME         # Set user peer name
-    hermes honcho peer --ai NAME           # Set AI peer name
-    hermes honcho peer --reasoning LEVEL   # Set dialectic reasoning level
-    hermes honcho mode                     # Show current memory mode
-    hermes honcho mode [hybrid|honcho|local]  # Set memory mode
-    hermes honcho tokens                   # Show token budget settings
-    hermes honcho tokens --context N       # Set session.context() token cap
-    hermes honcho tokens --dialectic N     # Set dialectic result char cap
-    hermes honcho identity                 # Show AI peer identity representation
-    hermes honcho identity <file>          # Seed AI peer identity from a file (SOUL.md etc.)
-    hermes honcho migrate                  # Step-by-step migration guide: OpenClaw native → Hermes + Honcho
-    hermes version             Show version
-    hermes update              Update to latest version
-    hermes uninstall           Uninstall Hermes Agent
-    hermes acp                 Run as an ACP server for editor integration
-    hermes sessions browse     Interactive session picker with search
+    clawg                     # Interactive chat (default)
+    clawg chat                # Interactive chat
+    clawg gateway             # Run gateway in foreground
+    clawg gateway start       # Start gateway as service
+    clawg gateway stop        # Stop gateway service
+    clawg gateway status      # Show gateway status
+    clawg gateway install     # Install gateway service
+    clawg gateway uninstall   # Uninstall gateway service
+    clawg setup               # Interactive setup wizard
+    clawg logout              # Clear stored authentication
+    clawg status              # Show status of all components
+    clawg cron                # Manage cron jobs
+    clawg cron list           # List cron jobs
+    clawg cron status         # Check if cron scheduler is running
+    clawg doctor              # Check configuration and dependencies
+    clawg honcho setup                    # Configure Honcho AI memory integration
+    clawg honcho status                   # Show Honcho config and connection status
+    clawg honcho sessions                 # List directory → session name mappings
+    clawg honcho map <name>               # Map current directory to a session name
+    clawg honcho peer                     # Show peer names and dialectic settings
+    clawg honcho peer --user NAME         # Set user peer name
+    clawg honcho peer --ai NAME           # Set AI peer name
+    clawg honcho peer --reasoning LEVEL   # Set dialectic reasoning level
+    clawg honcho mode                     # Show current memory mode
+    clawg honcho mode [hybrid|honcho|local]  # Set memory mode
+    clawg honcho tokens                   # Show token budget settings
+    clawg honcho tokens --context N       # Set session.context() token cap
+    clawg honcho tokens --dialectic N     # Set dialectic result char cap
+    clawg honcho identity                 # Show AI peer identity representation
+    clawg honcho identity <file>          # Seed AI peer identity from a file (SOUL.md etc.)
+    clawg honcho migrate                  # Step-by-step migration guide: OpenClaw native → CLAWG + Honcho
+    clawg version             Show version
+    clawg update              Update to latest version
+    clawg uninstall           Uninstall CLAWG
+    clawg acp                 Run as an ACP server for editor integration
+    clawg sessions browse     Interactive session picker with search
 
-    hermes claw migrate --dry-run  # Preview migration without changes
+    clawg claw migrate --dry-run  # Preview migration without changes
 """
 
 import argparse
@@ -54,14 +54,14 @@ from typing import Optional
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 sys.path.insert(0, str(PROJECT_ROOT))
 
-# Load .env from ~/.hermes/.env first, then project root as dev fallback.
+# Load .env from CLAWG_HOME first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
-from hermes_cli.config import get_hermes_home
+from hermes_cli.config import get_clawg_home, get_hermes_home
 from hermes_cli.env_loader import load_hermes_dotenv
 load_hermes_dotenv(project_env=PROJECT_ROOT / '.env')
 
-# Point mini-swe-agent at ~/.hermes/ so it shares our config
-os.environ.setdefault("MSWEA_GLOBAL_CONFIG_DIR", str(get_hermes_home()))
+# Point mini-swe-agent at CLAWG_HOME so it shares our config
+os.environ.setdefault("MSWEA_GLOBAL_CONFIG_DIR", str(get_clawg_home()))
 os.environ.setdefault("MSWEA_SILENT_STARTUP", "1")
 
 import logging
@@ -94,7 +94,7 @@ def _relative_time(ts) -> str:
 
 def _has_any_provider_configured() -> bool:
     """Check if at least one inference provider is usable."""
-    from hermes_cli.config import get_env_path, get_hermes_home
+    from hermes_cli.config import get_env_path, get_clawg_home
     from hermes_cli.auth import get_auth_status
 
     # Check env vars (may be set by .env or shell).
@@ -137,7 +137,7 @@ def _has_any_provider_configured() -> bool:
         pass
 
     # Check for Nous Portal OAuth credentials
-    auth_file = get_hermes_home() / "auth.json"
+    auth_file = get_clawg_home() / "auth.json"
     if auth_file.exists():
         try:
             import json
@@ -451,7 +451,7 @@ def cmd_chat(args):
                 args.resume = resolved
             else:
                 print(f"No session found matching '{continue_val}'.")
-                print("Use 'hermes sessions list' to see available sessions.")
+                print("Use 'clawg sessions list' to see available sessions.")
                 sys.exit(1)
         else:
             # -c with no argument — continue the most recent session
@@ -474,9 +474,9 @@ def cmd_chat(args):
     # First-run guard: check if any provider is configured before launching
     if not _has_any_provider_configured():
         print()
-        print("It looks like Hermes isn't configured yet -- no API keys or providers found.")
+        print("It looks like CLAWG isn't configured yet -- no API keys or providers found.")
         print()
-        print("  Run:  hermes setup")
+        print("  Run:  clawg setup")
         print()
 
         from hermes_cli.setup import is_interactive_stdin, print_noninteractive_setup_guidance
@@ -495,7 +495,7 @@ def cmd_chat(args):
             cmd_setup(args)
             return
         print()
-        print("You can run 'hermes setup' at any time to configure.")
+        print("You can run 'clawg setup' at any time to configure.")
         sys.exit(1)
 
     # Start update check in background (runs while other init happens)
@@ -525,6 +525,7 @@ def cmd_chat(args):
         "provider": getattr(args, "provider", None),
         "toolsets": args.toolsets,
         "skills": getattr(args, "skills", None),
+        "agent_id": getattr(args, "agent_id", None),
         "verbose": args.verbose,
         "quiet": getattr(args, "quiet", False),
         "query": args.query,
@@ -564,7 +565,7 @@ def cmd_whatsapp(args):
     current_mode = get_env_value("WHATSAPP_MODE") or ""
     if not current_mode:
         print()
-        print("How will you use WhatsApp with Hermes?")
+        print("How will you use WhatsApp with CLAWG?")
         print()
         print("  1. Separate bot number (recommended)")
         print("     People message the bot's number directly — cleanest experience.")
@@ -686,7 +687,7 @@ def cmd_whatsapp(args):
             print("  ✓ Session cleared")
         else:
             print("\n✓ WhatsApp is configured and paired!")
-            print("  Start the gateway with: hermes gateway")
+            print("  Start the gateway with: clawg gateway")
             return
 
     # ── Step 6: QR code pairing ──────────────────────────────────────────
@@ -717,23 +718,23 @@ def cmd_whatsapp(args):
         print()
         if wa_mode == "bot":
             print("  Next steps:")
-            print("    1. Start the gateway:  hermes gateway")
+            print("    1. Start the gateway:  clawg gateway")
             print("    2. Send a message to the bot's WhatsApp number")
             print("    3. The agent will reply automatically")
             print()
-            print("  Tip: Agent responses are prefixed with '⚕ Hermes Agent'")
+            print("  Tip: Agent responses are prefixed with '⚕ CLAWG'")
         else:
             print("  Next steps:")
-            print("    1. Start the gateway:  hermes gateway")
+            print("    1. Start the gateway:  clawg gateway")
             print("    2. Open WhatsApp → Message Yourself")
             print("    3. Type a message — the agent will reply")
             print()
-            print("  Tip: Agent responses are prefixed with '⚕ Hermes Agent'")
+            print("  Tip: Agent responses are prefixed with '⚕ CLAWG'")
             print("  so you can tell them apart from your own messages.")
         print()
-        print("  Or install as a service: hermes gateway install")
+        print("  Or install as a service: clawg gateway install")
     else:
-        print("⚠ Pairing may not have completed. Run 'hermes whatsapp' to try again.")
+        print("⚠ Pairing may not have completed. Run 'clawg whatsapp' to try again.")
 
 
 def cmd_setup(args):
@@ -1183,7 +1184,7 @@ def _model_flow_custom(config):
     else:
         print(
             f"Warning: could not verify this endpoint via {probe.get('probed_url')}. "
-            f"Hermes will still save it."
+            f"CLAWG will still save it."
         )
         if probe.get("suggested_base_url"):
             print(f"  If this server expects /v1, try base URL: {probe['suggested_base_url']}")
@@ -1211,7 +1212,7 @@ def _model_flow_custom(config):
     else:
         if base_url or api_key:
             deactivate_provider()
-        print("Endpoint saved. Use `/model` in chat or `hermes model` to set a model.")
+        print("Endpoint saved. Use `/model` in chat or `clawg model` to set a model.")
 
     # Auto-save to custom_providers so it appears in the menu next time
     _save_custom_provider(effective_url, effective_key, model_name or "", context_length=context_length)
@@ -1803,9 +1804,9 @@ def _model_flow_copilot_acp(config, current_model=""):
     resolved_command = status.get("resolved_command") or status.get("command") or "copilot"
     effective_base = status.get("base_url") or pconfig.inference_base_url
 
-    print("  GitHub Copilot ACP delegates Hermes turns to `copilot --acp`.")
-    print("  Hermes currently starts its own ACP subprocess for each request.")
-    print("  Hermes uses your selected model as a hint for the Copilot ACP session.")
+    print("  GitHub Copilot ACP delegates CLAWG turns to `copilot --acp`.")
+    print("  CLAWG currently starts its own ACP subprocess for each request.")
+    print("  CLAWG uses your selected model as a hint for the Copilot ACP session.")
     print(f"  Command: {resolved_command}")
     print(f"  Backend marker: {effective_base}")
     print()
@@ -2104,7 +2105,7 @@ def _run_anthropic_oauth_flow(save_env_value):
         ):
             use_anthropic_claude_code_credentials(save_fn=save_env_value)
             print("  ✓ Claude Code credentials linked.")
-            print("    Hermes will use Claude's credential store directly instead of copying a setup-token into ~/.hermes/.env.")
+            print("    CLAWG will use Claude's credential store directly instead of copying a setup-token into ~/.clawg/.env.")
             return True
         return False
 
@@ -2148,7 +2149,7 @@ def _run_anthropic_oauth_flow(save_env_value):
         print("    1. Install Claude Code:  npm install -g @anthropic-ai/claude-code")
         print("    2. Run:                  claude setup-token")
         print("    3. Follow the browser prompts to authorize")
-        print("    4. Re-run:               hermes model")
+        print("    4. Re-run:               clawg model")
         print()
         print("  Or paste an existing setup-token now (sk-ant-oat-...):")
         print()
@@ -2282,7 +2283,7 @@ def _model_flow_anthropic(config, current_model=""):
         # Update config with provider — clear base_url since
         # resolve_runtime_provider() always hardcodes Anthropic's URL.
         # Leaving a stale base_url in config can contaminate other
-        # providers if the user switches without running 'hermes model'.
+        # providers if the user switches without running 'clawg model'.
         cfg = load_config()
         model = cfg.get("model")
         if not isinstance(model, dict):
@@ -2299,7 +2300,7 @@ def _model_flow_anthropic(config, current_model=""):
 
 
 def cmd_login(args):
-    """Authenticate Hermes CLI with a provider."""
+    """Authenticate CLAWG CLI with a provider."""
     from hermes_cli.auth import login_command
     login_command(args)
 
@@ -2336,7 +2337,7 @@ def cmd_config(args):
 
 def cmd_version(args):
     """Show version."""
-    print(f"Hermes Agent v{__version__} ({__release_date__})")
+    print(f"CLAWG v{__version__} ({__release_date__})")
     print(f"Project: {PROJECT_ROOT}")
     
     # Show Python version
@@ -2355,7 +2356,7 @@ def cmd_version(args):
         behind = check_for_updates()
         if behind and behind > 0:
             commits_word = "commit" if behind == 1 else "commits"
-            print(f"Update available: {behind} {commits_word} behind — run 'hermes update'")
+            print(f"Update available: {behind} {commits_word} behind — run 'clawg update'")
         elif behind == 0:
             print("Up to date")
     except Exception:
@@ -2363,13 +2364,13 @@ def cmd_version(args):
 
 
 def cmd_uninstall(args):
-    """Uninstall Hermes Agent."""
+    """Uninstall CLAWG."""
     from hermes_cli.uninstall import run_uninstall
     run_uninstall(args)
 
 
 def _update_via_zip(args):
-    """Update Hermes Agent by downloading a ZIP archive.
+    """Update CLAWG by downloading a ZIP archive.
     
     Used on Windows when git file I/O is broken (antivirus, NTFS filter 
     drivers causing 'Invalid argument' errors on file creation).
@@ -2380,20 +2381,20 @@ def _update_via_zip(args):
     from urllib.request import urlretrieve
     
     branch = "main"
-    zip_url = f"https://github.com/NousResearch/hermes-agent/archive/refs/heads/{branch}.zip"
+    zip_url = f"https://github.com/NousResearch/clawg-agent/archive/refs/heads/{branch}.zip"
     
     print("→ Downloading latest version...")
     try:
-        tmp_dir = tempfile.mkdtemp(prefix="hermes-update-")
-        zip_path = os.path.join(tmp_dir, f"hermes-agent-{branch}.zip")
+        tmp_dir = tempfile.mkdtemp(prefix="clawg-update-")
+        zip_path = os.path.join(tmp_dir, f"clawg-agent-{branch}.zip")
         urlretrieve(zip_url, zip_path)
         
         print("→ Extracting...")
         with zipfile.ZipFile(zip_path, 'r') as zf:
             zf.extractall(tmp_dir)
         
-        # GitHub ZIPs extract to hermes-agent-<branch>/
-        extracted = os.path.join(tmp_dir, f"hermes-agent-{branch}")
+        # GitHub ZIPs extract to clawg-agent-<branch>/
+        extracted = os.path.join(tmp_dir, f"clawg-agent-{branch}")
         if not os.path.isdir(extracted):
             # Try to find it
             for d in os.listdir(tmp_dir):
@@ -2489,7 +2490,7 @@ def _stash_local_changes_if_needed(git_cmd: list[str], cwd: Path) -> Optional[st
 
     from datetime import datetime, timezone
 
-    stash_name = datetime.now(timezone.utc).strftime("hermes-update-autostash-%Y%m%d-%H%M%S")
+    stash_name = datetime.now(timezone.utc).strftime("clawg-update-autostash-%Y%m%d-%H%M%S")
     print("→ Local changes detected — stashing before update...")
     subprocess.run(
         git_cmd + ["stash", "push", "--include-untracked", "-m", stash_name],
@@ -2543,7 +2544,7 @@ def _restore_stashed_changes(
         print()
         print("⚠ Local changes were stashed before updating.")
         print("  Restoring them may reapply local customizations onto the updated codebase.")
-        print("  Review the result afterward if Hermes behaves unexpectedly.")
+        print("  Review the result afterward if CLAWG behaves unexpectedly.")
         print("Restore local changes now? [Y/n]")
         response = input().strip().lower()
         if response not in ("", "y", "yes"):
@@ -2571,7 +2572,7 @@ def _restore_stashed_changes(
 
     stash_selector = _resolve_stash_selector(git_cmd, cwd, stash_ref)
     if stash_selector is None:
-        print("⚠ Local changes were restored, but Hermes couldn't find the stash entry to drop.")
+        print("⚠ Local changes were restored, but CLAWG couldn't find the stash entry to drop.")
         print("  The stash was left in place. You can remove it manually after checking the result.")
         _print_stash_cleanup_guidance(stash_ref)
     else:
@@ -2582,7 +2583,7 @@ def _restore_stashed_changes(
             text=True,
         )
         if drop.returncode != 0:
-            print("⚠ Local changes were restored, but Hermes couldn't drop the saved stash entry.")
+            print("⚠ Local changes were restored, but CLAWG couldn't drop the saved stash entry.")
             if drop.stdout.strip():
                 print(drop.stdout.strip())
             if drop.stderr.strip():
@@ -2591,15 +2592,15 @@ def _restore_stashed_changes(
             _print_stash_cleanup_guidance(stash_ref, stash_selector)
 
     print("⚠ Local changes were restored on top of the updated codebase.")
-    print("  Review `git diff` / `git status` if Hermes behaves unexpectedly.")
+    print("  Review `git diff` / `git status` if CLAWG behaves unexpectedly.")
     return True
 
 def _invalidate_update_cache():
-    """Delete the update-check cache so ``hermes --version`` doesn't
+    """Delete the update-check cache so ``clawg --version`` doesn't
     report a stale "commits behind" count after a successful update."""
     try:
         cache_file = Path(os.getenv(
-            "HERMES_HOME", Path.home() / ".hermes"
+            "HERMES_HOME", Path.home() / ".clawg"
         )) / ".update_check"
         if cache_file.exists():
             cache_file.unlink()
@@ -2607,10 +2608,10 @@ def _invalidate_update_cache():
         pass
 
 def cmd_update(args):
-    """Update Hermes Agent to the latest version."""
+    """Update CLAWG to the latest version."""
     import shutil
     
-    print("⚕ Updating Hermes Agent...")
+    print("⚕ Updating CLAWG...")
     print()
     
     # Try git-based update first, fall back to ZIP download on Windows
@@ -2623,7 +2624,7 @@ def cmd_update(args):
             use_zip_update = True
         else:
             print("✗ Not a git repository. Please reinstall:")
-            print("  curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash")
+            print("  curl -fsSL https://raw.githubusercontent.com/NousResearch/clawg-agent/main/scripts/install.sh | bash")
             sys.exit(1)
     
     # On Windows, git can fail with "unable to write loose object file: Invalid argument"
@@ -2789,7 +2790,7 @@ def cmd_update(args):
                     print("✓ Configuration updated!")
             else:
                 print()
-                print("Skipped. Run 'hermes config migrate' later to configure.")
+                print("Skipped. Run 'clawg config migrate' later to configure.")
         else:
             print("  ✓ Configuration is up to date")
         
@@ -2829,7 +2830,7 @@ def cmd_update(args):
                     plist_path = get_launchd_plist_path()
                     if plist_path.exists():
                         check = subprocess.run(
-                            ["launchctl", "list", "ai.hermes.gateway"],
+                            ["launchctl", "list", "ai.clawg.gateway"],
                             capture_output=True, text=True, timeout=5,
                         )
                         has_launchd_service = check.returncode == 0
@@ -2874,9 +2875,9 @@ def cmd_update(args):
                                 print(f"  Run:  sudo loginctl enable-linger {_username}")
                                 print()
                                 print("  Then restart the gateway:")
-                                print("    hermes gateway restart")
+                                print("    clawg gateway restart")
                             else:
-                                print("  Try manually: hermes gateway restart")
+                                print("  Try manually: clawg gateway restart")
                 elif has_launchd_service:
                     # Refresh the plist first (picks up --replace and other
                     # changes from the update we just pulled).
@@ -2886,18 +2887,18 @@ def cmd_update(args):
                     # PID file cleanup.
                     print("→ Restarting gateway service...")
                     stop = subprocess.run(
-                        ["launchctl", "stop", "ai.hermes.gateway"],
+                        ["launchctl", "stop", "ai.clawg.gateway"],
                         capture_output=True, text=True, timeout=10,
                     )
                     start = subprocess.run(
-                        ["launchctl", "start", "ai.hermes.gateway"],
+                        ["launchctl", "start", "ai.clawg.gateway"],
                         capture_output=True, text=True, timeout=10,
                     )
                     if start.returncode == 0:
                         print("✓ Gateway restarted via launchd.")
                     else:
                         print(f"⚠ Gateway restart failed: {start.stderr.strip()}")
-                        print("  Try manually: hermes gateway restart")
+                        print("  Try manually: clawg gateway restart")
                 elif existing_pid:
                     try:
                         os.kill(existing_pid, _signal.SIGTERM)
@@ -2908,13 +2909,13 @@ def cmd_update(args):
                         print(f"⚠ Permission denied killing gateway PID {existing_pid}")
                     remove_pid_file()
                     print("  ℹ️  Gateway was running manually (not as a service).")
-                    print("  Restart it with: hermes gateway run")
+                    print("  Restart it with: clawg gateway run")
         except Exception as e:
             logger.debug("Gateway restart during update failed: %s", e)
         
         print()
         print("Tip: You can now select a provider and model:")
-        print("  hermes model              # Select provider and model")
+        print("  clawg model              # Select provider and model")
         
     except subprocess.CalledProcessError as e:
         if sys.platform == "win32":
@@ -2930,7 +2931,7 @@ def cmd_update(args):
 def _coalesce_session_name_args(argv: list) -> list:
     """Join unquoted multi-word session names after -c/--continue and -r/--resume.
 
-    When a user types ``hermes -c Pokemon Agent Dev`` without quoting the
+    When a user types ``clawg -c Pokemon Agent Dev`` without quoting the
     session name, argparse sees three separate tokens.  This function merges
     them into a single argument so argparse receives
     ``['-c', 'Pokemon Agent Dev']`` instead.
@@ -2941,7 +2942,7 @@ def _coalesce_session_name_args(argv: list) -> list:
     _SUBCOMMANDS = {
         "chat", "model", "gateway", "setup", "whatsapp", "login", "logout",
         "status", "cron", "doctor", "config", "pairing", "skills", "tools",
-        "sessions", "insights", "version", "update", "uninstall",
+        "sessions", "insights", "second-brain", "version", "update", "uninstall",
     }
     _SESSION_FLAGS = {"-c", "--continue", "-r", "--resume"}
 
@@ -2966,35 +2967,35 @@ def _coalesce_session_name_args(argv: list) -> list:
 
 
 def main():
-    """Main entry point for hermes CLI."""
+    """Main entry point for CLAWG CLI."""
     parser = argparse.ArgumentParser(
-        prog="hermes",
-        description="Hermes Agent - AI assistant with tool-calling capabilities",
+        prog="clawg",
+        description="CLAWG - AI assistant with tool-calling capabilities",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    hermes                        Start interactive chat
-    hermes chat -q "Hello"        Single query mode
-    hermes -c                     Resume the most recent session
-    hermes -c "my project"        Resume a session by name (latest in lineage)
-    hermes --resume <session_id>  Resume a specific session by ID
-    hermes setup                  Run setup wizard
-    hermes logout                 Clear stored authentication
-    hermes model                  Select default model
-    hermes config                 View configuration
-    hermes config edit            Edit config in $EDITOR
-    hermes config set model gpt-4 Set a config value
-    hermes gateway                Run messaging gateway
-    hermes -s hermes-agent-dev,github-auth
-    hermes -w                     Start in isolated git worktree
-    hermes gateway install        Install gateway background service
-    hermes sessions list          List past sessions
-    hermes sessions browse        Interactive session picker
-    hermes sessions rename ID T   Rename/title a session
-    hermes update                 Update to latest version
+    clawg                        Start interactive chat
+    clawg chat -q "Hello"        Single query mode
+    clawg -c                     Resume the most recent session
+    clawg -c "my project"        Resume a session by name (latest in lineage)
+    clawg --resume <session_id>  Resume a specific session by ID
+    clawg setup                  Run setup wizard
+    clawg logout                 Clear stored authentication
+    clawg model                  Select default model
+    clawg config                 View configuration
+    clawg config edit            Edit config in $EDITOR
+    clawg config set model gpt-4 Set a config value
+    clawg gateway                Run messaging gateway
+    clawg -s my-skill,github-auth
+    clawg -w                     Start in isolated git worktree
+    clawg gateway install        Install gateway background service
+    clawg sessions list          List past sessions
+    clawg sessions browse        Interactive session picker
+    clawg sessions rename ID T   Rename/title a session
+    clawg update                 Update to latest version
 
 For more help on a command:
-    hermes <command> --help
+    clawg <command> --help
 """
     )
     
@@ -3031,6 +3032,11 @@ For more help on a command:
         help="Preload one or more skills for the session (repeat flag or comma-separate)"
     )
     parser.add_argument(
+        "--agent-id",
+        default=None,
+        help="Second Brain agent profile id (loads agents/<id>/identity, adjoint, soul)"
+    )
+    parser.add_argument(
         "--yolo",
         action="store_true",
         default=False,
@@ -3051,7 +3057,7 @@ For more help on a command:
     chat_parser = subparsers.add_parser(
         "chat",
         help="Interactive chat with the agent",
-        description="Start an interactive chat session with Hermes Agent"
+        description="Start an interactive chat session with CLAWG"
     )
     chat_parser.add_argument(
         "-q", "--query",
@@ -3070,6 +3076,11 @@ For more help on a command:
         action="append",
         default=None,
         help="Preload one or more skills for the session (repeat flag or comma-separate)"
+    )
+    chat_parser.add_argument(
+        "--agent-id",
+        default=None,
+        help="Second Brain agent profile id (loads agents/<id>/identity, adjoint, soul)"
     )
     chat_parser.add_argument(
         "--provider",
@@ -3191,8 +3202,8 @@ For more help on a command:
     setup_parser = subparsers.add_parser(
         "setup",
         help="Interactive setup wizard",
-        description="Configure Hermes Agent with an interactive wizard. "
-                    "Run a specific section: hermes setup model|terminal|gateway|tools|agent"
+        description="Configure CLAWG with an interactive wizard. "
+                    "Run a specific section: clawg setup model|terminal|gateway|tools|agent"
     )
     setup_parser.add_argument(
         "section",
@@ -3229,7 +3240,7 @@ For more help on a command:
     login_parser = subparsers.add_parser(
         "login",
         help="Authenticate with an inference provider",
-        description="Run OAuth device authorization flow for Hermes CLI"
+        description="Run OAuth device authorization flow for CLAWG CLI"
     )
     login_parser.add_argument(
         "--provider",
@@ -3248,7 +3259,7 @@ For more help on a command:
     login_parser.add_argument(
         "--client-id",
         default=None,
-        help="OAuth client id to use (default: hermes-cli)"
+        help="OAuth client id to use (default: clawg-cli)"
     )
     login_parser.add_argument(
         "--scope",
@@ -3299,7 +3310,7 @@ For more help on a command:
     status_parser = subparsers.add_parser(
         "status",
         help="Show status of all components",
-        description="Display status of Hermes Agent components"
+        description="Display status of CLAWG components"
     )
     status_parser.add_argument(
         "--all",
@@ -3376,7 +3387,7 @@ For more help on a command:
     doctor_parser = subparsers.add_parser(
         "doctor",
         help="Check configuration and dependencies",
-        description="Diagnose issues with Hermes Agent setup"
+        description="Diagnose issues with CLAWG setup"
     )
     doctor_parser.add_argument(
         "--fix",
@@ -3391,7 +3402,7 @@ For more help on a command:
     config_parser = subparsers.add_parser(
         "config",
         help="View and edit configuration",
-        description="Manage Hermes Agent configuration"
+        description="Manage CLAWG configuration"
     )
     config_subparsers = config_parser.add_subparsers(dest="config_command")
     
@@ -3540,7 +3551,7 @@ For more help on a command:
             "Each conversation is stored as a peer interaction in a workspace. "
             "Honcho builds a representation of the user over time — conclusions, "
             "patterns, context — and surfaces the relevant slice at the start of "
-            "each turn so Hermes knows who you are without you having to repeat yourself.\n\n"
+            "each turn so CLAWG knows who you are without you having to repeat yourself.\n\n"
             "Modes: hybrid (Honcho + local MEMORY.md), honcho (Honcho only), "
             "local (MEMORY.md only). Write frequency is configurable so memory "
             "writes never block the response."
@@ -3608,7 +3619,7 @@ For more help on a command:
 
     honcho_subparsers.add_parser(
         "migrate",
-        help="Step-by-step migration guide from openclaw-honcho to Hermes Honcho",
+        help="Step-by-step migration guide from openclaw-honcho to CLAWG Honcho",
     )
 
     def cmd_honcho(args):
@@ -3627,7 +3638,7 @@ For more help on a command:
             "Enable, disable, or list tools for CLI, Telegram, Discord, etc.\n\n"
             "Built-in toolsets use plain names (e.g. web, memory).\n"
             "MCP tools use server:tool notation (e.g. github:create_issue).\n\n"
-            "Run 'hermes tools' with no subcommand for the interactive configuration UI."
+            "Run 'clawg tools' with no subcommand for the interactive configuration UI."
         ),
     )
     tools_parser.add_argument(
@@ -3637,7 +3648,7 @@ For more help on a command:
     )
     tools_sub = tools_parser.add_subparsers(dest="tools_action")
 
-    # hermes tools list [--platform cli]
+    # clawg tools list [--platform cli]
     tools_list_p = tools_sub.add_parser(
         "list",
         help="Show all tools and their enabled/disabled status",
@@ -3647,7 +3658,7 @@ For more help on a command:
         help="Platform to show (default: cli)",
     )
 
-    # hermes tools disable <name...> [--platform cli]
+    # clawg tools disable <name...> [--platform cli]
     tools_disable_p = tools_sub.add_parser(
         "disable",
         help="Disable toolsets or MCP tools",
@@ -3661,7 +3672,7 @@ For more help on a command:
         help="Platform to apply to (default: cli)",
     )
 
-    # hermes tools enable <name...> [--platform cli]
+    # clawg tools enable <name...> [--platform cli]
     tools_enable_p = tools_sub.add_parser(
         "enable",
         help="Enable toolsets or MCP tools",
@@ -3834,12 +3845,12 @@ For more help on a command:
                 print("Cancelled.")
                 return
 
-            # Launch hermes --resume <id> by replacing the current process
+            # Launch clawg --resume <id> by replacing the current process
             print(f"Resuming session: {selected_id}")
             import shutil
-            hermes_bin = shutil.which("hermes")
+            hermes_bin = shutil.which("clawg")
             if hermes_bin:
-                os.execvp(hermes_bin, ["hermes", "--resume", selected_id])
+                os.execvp(hermes_bin, ["clawg", "--resume", selected_id])
             else:
                 # Fallback: re-invoke via python -m
                 os.execvp(
@@ -3901,14 +3912,14 @@ For more help on a command:
     claw_parser = subparsers.add_parser(
         "claw",
         help="OpenClaw migration tools",
-        description="Migrate settings, memories, skills, and API keys from OpenClaw to Hermes"
+        description="Migrate settings, memories, skills, and API keys from OpenClaw to CLAWG"
     )
     claw_subparsers = claw_parser.add_subparsers(dest="claw_action")
 
     # claw migrate
     claw_migrate = claw_subparsers.add_parser(
         "migrate",
-        help="Migrate from OpenClaw to Hermes",
+        help="Migrate from OpenClaw to CLAWG",
         description="Import settings, memories, skills, and API keys from an OpenClaw installation"
     )
     claw_migrate.add_argument(
@@ -3959,6 +3970,45 @@ For more help on a command:
     claw_parser.set_defaults(func=cmd_claw)
 
     # =========================================================================
+    # second-brain command
+    # =========================================================================
+    second_brain_parser = subparsers.add_parser(
+        "second-brain",
+        help="Manage native Second Brain integration",
+        description="Configure and bootstrap the shared Obsidian-compatible Second Brain vault used by all CLAWG agents."
+    )
+    second_brain_subparsers = second_brain_parser.add_subparsers(dest="sb_action")
+
+    second_brain_subparsers.add_parser(
+        "status",
+        help="Show current Second Brain configuration and resolved directories"
+    )
+
+    sb_link = second_brain_subparsers.add_parser(
+        "link",
+        help="Link CLAWG to an existing Second Brain vault"
+    )
+    sb_link.add_argument("--path", required=True, help="Absolute path to the Second Brain root")
+    sb_link.add_argument("--bootstrap", action="store_true", help="Create missing CLAWG skeleton files/directories")
+    sb_link.add_argument("--agent-id", default="default", help="Agent profile ID to initialize when bootstrapping")
+    sb_link.add_argument("--force", action="store_true", help="Overwrite template files when bootstrapping")
+
+    sb_init = second_brain_subparsers.add_parser(
+        "init",
+        help="Initialize CLAWG skeleton files in the Second Brain"
+    )
+    sb_init.add_argument("--path", help="Second Brain root path (defaults to configured root)")
+    sb_init.add_argument("--agent-id", default="default", help="Agent profile ID to initialize")
+    sb_init.add_argument("--force", action="store_true", help="Overwrite existing template files")
+
+    def cmd_second_brain(args):
+        from hermes_cli.second_brain import second_brain_command
+
+        return second_brain_command(args)
+
+    second_brain_parser.set_defaults(func=cmd_second_brain, sb_action="status")
+
+    # =========================================================================
     # version command
     # =========================================================================
     version_parser = subparsers.add_parser(
@@ -3972,7 +4022,7 @@ For more help on a command:
     # =========================================================================
     update_parser = subparsers.add_parser(
         "update",
-        help="Update Hermes Agent to the latest version",
+        help="Update CLAWG to the latest version",
         description="Pull the latest changes from git and reinstall dependencies"
     )
     update_parser.set_defaults(func=cmd_update)
@@ -3982,8 +4032,8 @@ For more help on a command:
     # =========================================================================
     uninstall_parser = subparsers.add_parser(
         "uninstall",
-        help="Uninstall Hermes Agent",
-        description="Remove Hermes Agent from your system. Can keep configs/data for reinstall."
+        help="Uninstall CLAWG",
+        description="Remove CLAWG from your system. Can keep configs/data for reinstall."
     )
     uninstall_parser.add_argument(
         "--full",
@@ -4002,12 +4052,12 @@ For more help on a command:
     # =========================================================================
     acp_parser = subparsers.add_parser(
         "acp",
-        help="Run Hermes Agent as an ACP (Agent Client Protocol) server",
-        description="Start Hermes Agent in ACP mode for editor integration (VS Code, Zed, JetBrains)",
+        help="Run CLAWG as an ACP (Agent Client Protocol) server",
+        description="Start CLAWG in ACP mode for editor integration (VS Code, Zed, JetBrains)",
     )
 
     def cmd_acp(args):
-        """Launch Hermes Agent as an ACP server."""
+        """Launch CLAWG as an ACP server."""
         try:
             from acp_adapter.entry import main as acp_main
             acp_main()
@@ -4023,7 +4073,7 @@ For more help on a command:
     # =========================================================================
     # Pre-process argv so unquoted multi-word session names after -c / -r
     # are merged into a single token before argparse sees them.
-    # e.g. ``hermes -c Pokemon Agent Dev`` → ``hermes -c 'Pokemon Agent Dev'``
+    # e.g. ``clawg -c Pokemon Agent Dev`` → ``clawg -c 'Pokemon Agent Dev'``
     _processed_argv = _coalesce_session_name_args(sys.argv[1:])
     args = parser.parse_args(_processed_argv)
     

@@ -221,8 +221,9 @@ def _build_child_agent(
         ephemeral_system_prompt=child_prompt,
         log_prefix=f"[subagent-{task_index}]",
         platform=parent_agent.platform,
-        skip_context_files=True,
-        skip_memory=True,
+        agent_id=getattr(parent_agent, "agent_id", None),
+        skip_context_files=False,
+        skip_memory=False,
         clarify_callback=None,
         session_db=getattr(parent_agent, '_session_db', None),
         providers_allowed=parent_agent.providers_allowed,
@@ -637,7 +638,7 @@ def _resolve_delegation_credentials(cfg: dict, parent_agent) -> dict:
     if not api_key:
         raise ValueError(
             f"Delegation provider '{configured_provider}' resolved but has no API key. "
-            f"Set the appropriate environment variable or run 'hermes login'."
+            f"Set the appropriate environment variable or run 'clawg login'."
         )
 
     return {

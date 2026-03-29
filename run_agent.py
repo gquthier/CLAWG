@@ -45,11 +45,12 @@ import fire
 from datetime import datetime
 from pathlib import Path
 
-# Load .env from ~/.hermes/.env first, then project root as dev fallback.
+# Load .env from CLAWG_HOME first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
 from hermes_cli.env_loader import load_hermes_dotenv
+from hermes_cli.paths import get_runtime_home, sync_home_env_vars
 
-_hermes_home = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes"))
+_hermes_home = sync_home_env_vars(get_runtime_home())
 _project_env = Path(__file__).parent / '.env'
 _loaded_env_paths = load_hermes_dotenv(hermes_home=_hermes_home, project_env=_project_env)
 if _loaded_env_paths:
@@ -58,7 +59,7 @@ if _loaded_env_paths:
 else:
     logger.info("No .env file found. Using system environment variables.")
 
-# Point mini-swe-agent at ~/.hermes/ so it shares our config
+# Point mini-swe-agent at CLAWG_HOME so it shares our config
 os.environ.setdefault("MSWEA_GLOBAL_CONFIG_DIR", str(_hermes_home))
 os.environ.setdefault("MSWEA_SILENT_STARTUP", "1")
 
@@ -77,6 +78,7 @@ from agent.prompt_builder import (
     DEFAULT_AGENT_IDENTITY, PLATFORM_HINTS,
     MEMORY_GUIDANCE, SESSION_SEARCH_GUIDANCE, SKILLS_GUIDANCE,
 )
+from agent.second_brain import build_second_brain_prompt, resolve_active_agent_id
 from agent.model_metadata import (
     fetch_model_metadata, get_model_context_length,
     estimate_tokens_rough, estimate_messages_tokens_rough,
@@ -110,7 +112,7 @@ HONCHO_TOOL_NAMES = {
 class _SafeWriter:
     """Transparent stdio wrapper that catches OSError from broken pipes.
 
-    When hermes-agent runs as a systemd service, Docker container, or headless
+    When clawg-agent runs as a systemd service, Docker container, or headless
     daemon, the stdout/stderr pipe can become unavailable (idle timeout, buffer
     exhaustion, socket reset). Any print() call then raises
     ``OSError: [Errno 5] Input/output error``, which can crash agent setup or
@@ -416,6 +418,7 @@ class AIAgent:
         checkpoints_enabled: bool = False,
         checkpoint_max_snapshots: int = 50,
         pass_session_id: bool = False,
+        agent_id: str = None,
     ):
         """
         Initialize the AI Agent.
@@ -455,6 +458,7 @@ class AIAgent:
             skip_context_files (bool): If True, skip auto-injection of SOUL.md, AGENTS.md, and .cursorrules
                 into the system prompt. Use this for batch processing and data generation to avoid
                 polluting trajectories with user-specific persona or project instructions.
+            agent_id (str): Agent profile ID for Second Brain context (agents/<id>/...).
             honcho_session_key (str): Session key for Honcho integration (e.g., "telegram:123456" or CLI session_id).
                 When provided and Honcho is enabled in config, enables persistent cross-session user modeling.
             honcho_manager: Optional shared HonchoSessionManager owned by the caller.
@@ -473,6 +477,7 @@ class AIAgent:
         self.quiet_mode = quiet_mode
         self.ephemeral_system_prompt = ephemeral_system_prompt
         self.platform = platform  # "cli", "telegram", "discord", "whatsapp", etc.
+        self.agent_id = agent_id
         self.skip_context_files = skip_context_files
         self.pass_session_id = pass_session_id
         self.log_prefix_chars = log_prefix_chars
@@ -504,7 +509,7 @@ class AIAgent:
 
         # Direct OpenAI sessions use the Responses API path.  GPT-5.x tool
         # calls with reasoning are rejected on /v1/chat/completions, and
-        # Hermes is a tool-using client by default.
+        # CLAWG is a tool-using client by default.
         if self.api_mode == "chat_completions" and self._is_direct_openai_url():
             self.api_mode = "codex_responses"
 
@@ -579,7 +584,7 @@ class AIAgent:
         self._context_50_warned = False
         self._context_70_warned = False
 
-        # Persistent error log -- always writes WARNING+ to ~/.hermes/logs/errors.log
+        # Persistent error log -- always writes WARNING+ to ~/.clawg/logs/errors.log
         # so tool failures, API errors, etc. are inspectable after the fact.
         # In gateway mode, each incoming message creates a new AIAgent instance,
         # while the root logger is process-global. Re-adding the same errors.log
@@ -706,8 +711,8 @@ class AIAgent:
                 effective_base = base_url
                 if "openrouter" in effective_base.lower():
                     client_kwargs["default_headers"] = {
-                        "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-                        "X-OpenRouter-Title": "Hermes Agent",
+                        "HTTP-Referer": "https://clawg-agent.nousresearch.com",
+                        "X-OpenRouter-Title": "CLAWG",
                         "X-OpenRouter-Categories": "productivity,cli-agent",
                     }
                 elif "api.githubcopilot.com" in effective_base.lower():
@@ -737,8 +742,8 @@ class AIAgent:
                         "api_key": os.getenv("OPENROUTER_API_KEY", ""),
                         "base_url": OPENROUTER_BASE_URL,
                         "default_headers": {
-                            "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-                            "X-OpenRouter-Title": "Hermes Agent",
+                            "HTTP-Referer": "https://clawg-agent.nousresearch.com",
+                            "X-OpenRouter-Title": "CLAWG",
                             "X-OpenRouter-Categories": "productivity,cli-agent",
                         },
                     }
@@ -826,9 +831,9 @@ class AIAgent:
             short_uuid = uuid.uuid4().hex[:6]
             self.session_id = f"{timestamp_str}_{short_uuid}"
         
-        # Session logs go into ~/.hermes/sessions/ alongside gateway sessions
-        hermes_home = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes"))
-        self.logs_dir = hermes_home / "sessions"
+        # Session logs go into CLAWG_HOME/sessions/ alongside gateway sessions
+        clawg_home = sync_home_env_vars(get_runtime_home())
+        self.logs_dir = clawg_home / "sessions"
         self.logs_dir.mkdir(parents=True, exist_ok=True)
         self.session_log_file = self.logs_dir / f"session_{self.session_id}.json"
         
@@ -874,6 +879,7 @@ class AIAgent:
             _agent_cfg = _load_agent_config()
         except Exception:
             _agent_cfg = {}
+        self.agent_id = resolve_active_agent_id(agent_id=self.agent_id, config=_agent_cfg)
 
         # Persistent memory (MEMORY.md + USER.md) -- loaded from disk
         self._memory_store = None
@@ -947,7 +953,7 @@ class AIAgent:
             except Exception as e:
                 logger.warning("Honcho init failed — memory disabled: %s", e)
                 print(f"  Honcho init failed: {e}")
-                print("  Run 'hermes honcho setup' to reconfigure.")
+                print("  Run 'clawg honcho setup' to reconfigure.")
                 self._honcho = None
 
         # Tools are initially discovered before Honcho activation. If Honcho
@@ -1970,7 +1976,7 @@ class AIAgent:
                     session_title=session_title,
                     session_id=self.session_id,
                 )
-                or "hermes-default"
+                or "clawg-default"
             )
 
         honcho_sess = self._honcho.get_or_create(self._honcho_session_key)
@@ -2161,7 +2167,7 @@ class AIAgent:
         # Try SOUL.md as primary identity (unless context files are skipped)
         _soul_loaded = False
         if not self.skip_context_files:
-            _soul_content = load_soul_md()
+            _soul_content = load_soul_md(agent_id=self.agent_id)
             if _soul_content:
                 prompt_parts = [_soul_content]
                 _soul_loaded = True
@@ -2170,12 +2176,12 @@ class AIAgent:
             # Fallback to hardcoded identity
             _ai_peer_name = (
                 self._honcho_config.ai_peer
-                if self._honcho_config and self._honcho_config.ai_peer != "hermes"
+                if self._honcho_config and self._honcho_config.ai_peer not in {"hermes", "clawg"}
                 else None
             )
             if _ai_peer_name:
                 _identity = DEFAULT_AGENT_IDENTITY.replace(
-                    "You are Hermes Agent",
+                    "You are CLAWG",
                     f"You are {_ai_peer_name}",
                     1,
                 )
@@ -2194,7 +2200,12 @@ class AIAgent:
         if tool_guidance:
             prompt_parts.append(" ".join(tool_guidance))
 
-        # Honcho CLI awareness: tell Hermes about its own management commands
+        # Shared Second Brain context (vault-backed source of truth).
+        second_brain_block = build_second_brain_prompt(agent_id=self.agent_id)
+        if second_brain_block:
+            prompt_parts.append(second_brain_block)
+
+        # Honcho CLI awareness: tell CLAWG about its own management commands
         # so it can refer the user to them rather than reinventing answers.
         if self._honcho and self._honcho_session_key:
             hcfg = self._honcho_config
@@ -2236,15 +2247,15 @@ class AIAgent:
                 )
             honcho_block += (
                 "Management commands (refer users here instead of explaining manually):\n"
-                "  hermes honcho status                    — show full config + connection\n"
-                "  hermes honcho mode [hybrid|honcho]       — show or set memory mode\n"
-                "  hermes honcho tokens [--context N] [--dialectic N] — show or set token budgets\n"
-                "  hermes honcho peer [--user NAME] [--ai NAME] [--reasoning LEVEL]\n"
-                "  hermes honcho sessions                  — list directory→session mappings\n"
-                "  hermes honcho map <name>                — map cwd to a session name\n"
-                "  hermes honcho identity [<file>] [--show] — seed or show AI peer identity\n"
-                "  hermes honcho migrate                   — migration guide from openclaw-honcho\n"
-                "  hermes honcho setup                     — full interactive wizard"
+                "  clawg honcho status                    — show full config + connection\n"
+                "  clawg honcho mode [hybrid|honcho]       — show or set memory mode\n"
+                "  clawg honcho tokens [--context N] [--dialectic N] — show or set token budgets\n"
+                "  clawg honcho peer [--user NAME] [--ai NAME] [--reasoning LEVEL]\n"
+                "  clawg honcho sessions                  — list directory→session mappings\n"
+                "  clawg honcho map <name>                — map cwd to a session name\n"
+                "  clawg honcho identity [<file>] [--show] — seed or show AI peer identity\n"
+                "  clawg honcho migrate                   — migration guide from openclaw-honcho\n"
+                "  clawg honcho setup                     — full interactive wizard"
             )
             prompt_parts.append(honcho_block)
 
@@ -4057,7 +4068,7 @@ class AIAgent:
 
         # Nous Portal product attribution
         if _is_nous:
-            extra_body["tags"] = ["product=hermes-agent"]
+            extra_body["tags"] = ["product=clawg-agent"]
 
         if extra_body:
             api_kwargs["extra_body"] = extra_body
@@ -5135,7 +5146,7 @@ class AIAgent:
                         "effort": "medium"
                     }
             if _is_nous:
-                summary_extra_body["tags"] = ["product=hermes-agent"]
+                summary_extra_body["tags"] = ["product=clawg-agent"]
 
             if self.api_mode == "codex_responses":
                 codex_kwargs = self._build_api_kwargs(api_messages)
@@ -6019,12 +6030,12 @@ class AIAgent:
                         print(f"{self.log_prefix}   Auth method: {auth_method}")
                         print(f"{self.log_prefix}   Token prefix: {key[:12]}..." if key and len(key) > 12 else f"{self.log_prefix}   Token: (empty or short)")
                         print(f"{self.log_prefix}   Troubleshooting:")
-                        print(f"{self.log_prefix}     • Check ANTHROPIC_TOKEN in ~/.hermes/.env for Hermes-managed OAuth/setup tokens")
-                        print(f"{self.log_prefix}     • Check ANTHROPIC_API_KEY in ~/.hermes/.env for API keys or legacy token values")
+                        print(f"{self.log_prefix}     • Check ANTHROPIC_TOKEN in ~/.clawg/.env for CLAWG-managed OAuth/setup tokens")
+                        print(f"{self.log_prefix}     • Check ANTHROPIC_API_KEY in ~/.clawg/.env for API keys or legacy token values")
                         print(f"{self.log_prefix}     • For API keys: verify at https://console.anthropic.com/settings/keys")
                         print(f"{self.log_prefix}     • For Claude Code: run 'claude /login' to refresh, then retry")
-                        print(f"{self.log_prefix}     • Clear stale keys: hermes config set ANTHROPIC_TOKEN \"\"")
-                        print(f"{self.log_prefix}     • Legacy cleanup: hermes config set ANTHROPIC_API_KEY \"\"")
+                        print(f"{self.log_prefix}     • Clear stale keys: clawg config set ANTHROPIC_TOKEN \"\"")
+                        print(f"{self.log_prefix}     • Legacy cleanup: clawg config set ANTHROPIC_API_KEY \"\"")
 
                     retry_count += 1
                     elapsed_time = time.time() - api_start_time

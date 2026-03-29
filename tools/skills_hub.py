@@ -30,6 +30,7 @@ from urllib.parse import urlparse, urlunparse
 
 import httpx
 import yaml
+from hermes_cli.paths import get_shared_skills_dir
 
 from tools.skills_guard import (
     ScanResult, scan_skill, should_allow_install, content_hash, TRUSTED_REPOS,
@@ -42,8 +43,7 @@ logger = logging.getLogger(__name__)
 # Paths
 # ---------------------------------------------------------------------------
 
-HERMES_HOME = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes"))
-SKILLS_DIR = HERMES_HOME / "skills"
+SKILLS_DIR = get_shared_skills_dir()
 HUB_DIR = SKILLS_DIR / ".hub"
 LOCK_FILE = HUB_DIR / "lock.json"
 QUARANTINE_DIR = HUB_DIR / "quarantine"
