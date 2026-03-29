@@ -161,11 +161,16 @@ def get_second_brain_root(
 
 
 def _resolve_under_root(root: Path, value: Any, default_name: str) -> Path:
-    configured = _coerce_optional_path(value)
-    if configured is None:
+    if value is None:
         configured = Path(default_name)
+    elif isinstance(value, Path):
+        configured = value.expanduser()
+    else:
+        text = str(value).strip()
+        configured = Path(text).expanduser() if text else Path(default_name)
+
     if configured.is_absolute():
-        return configured
+        return _normalized(configured)
     return _normalized(root / configured)
 
 
