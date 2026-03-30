@@ -30,8 +30,14 @@ CLAWG_ROOT = Path(__file__).resolve().parent.parent
 CLAWG_HOME = Path(os.getenv("CLAWG_HOME", Path.home() / ".clawg"))
 DASHBOARD_DIR = CLAWG_ROOT / "dashboard"
 SUBAGENTS_DIR = CLAWG_ROOT / "subagents"
-SKILLS_DIR = CLAWG_ROOT / "skills"
 CRON_JOBS_FILE = CLAWG_HOME / "cron" / "jobs.json"
+
+# Skills: use vault path when available, fallback to repo bundled skills
+try:
+    from clawg_cli.paths import get_shared_skills_dir
+    SKILLS_DIR = get_shared_skills_dir()
+except Exception:
+    SKILLS_DIR = CLAWG_ROOT / "skills"
 
 
 def _get_vault_root() -> Path | None:

@@ -66,6 +66,8 @@ _CLAWG_CORE_TOOLS = [
     "ha_list_entities", "ha_get_state", "ha_list_services", "ha_call_service",
     # Encrypted vault keystore (API keys, tokens, secrets)
     "vault_keystore_save", "vault_keystore_get", "vault_keystore_list", "vault_keystore_delete",
+    # Vault notes (learning + project notes in Second Brain)
+    "vault_save_learning", "vault_save_project_note", "vault_list_learnings", "vault_list_projects",
 ]
 
 

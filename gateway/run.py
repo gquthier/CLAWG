@@ -3294,6 +3294,15 @@ class GatewayRunner:
             turn_route = self._resolve_turn_agent_config(prompt, model, runtime_kwargs)
 
             def run_sync():
+                # Resolve agent_id from config for Second Brain profile loading
+                _gw_agent_id = None
+                try:
+                    from clawg_cli.config import load_config as _gw_load_cfg
+                    _gw_cfg = _gw_load_cfg()
+                    _gw_agent_id = _gw_cfg.get("second_brain", {}).get("agent_default_id")
+                except Exception:
+                    pass
+
                 agent = AIAgent(
                     model=turn_route["model"],
                     **turn_route["runtime"],
@@ -3312,6 +3321,7 @@ class GatewayRunner:
                     platform=platform_key,
                     session_db=self._session_db,
                     fallback_model=self._fallback_model,
+                    agent_id=_gw_agent_id,
                 )
 
                 return agent.run_conversation(

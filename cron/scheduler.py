@@ -380,6 +380,11 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
             },
         )
 
+        # Resolve agent_id: from job config, then global config default
+        _cron_agent_id = job.get("agent_id")
+        if not _cron_agent_id:
+            _cron_agent_id = _cfg.get("second_brain", {}).get("agent_default_id")
+
         agent = AIAgent(
             model=turn_route["model"],
             api_key=turn_route["runtime"].get("api_key"),
@@ -400,6 +405,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
             platform="cron",
             session_id=f"cron_{job_id}_{_clawg_now().strftime('%Y%m%d_%H%M%S')}",
             session_db=_session_db,
+            agent_id=_cron_agent_id,
         )
         
         result = agent.run_conversation(prompt)
