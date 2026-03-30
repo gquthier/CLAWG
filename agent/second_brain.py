@@ -130,6 +130,110 @@ def _list_entries(path: Optional[Path], *, max_items: int = _MAX_INDEX_ITEMS) ->
     return ", ".join(items)
 
 
+_SECRET_PATTERNS = re.compile(
+    r"(KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL|AUTH)", re.IGNORECASE
+)
+
+_SERVICE_LABELS = {
+    "OPENAI_API_KEY": "OpenAI",
+    "ANTHROPIC_API_KEY": "Anthropic",
+    "OPENROUTER_API_KEY": "OpenRouter",
+    "GOOGLE_API_KEY": "Google",
+    "ELEVENLABS_API_KEY": "ElevenLabs",
+    "FIRECRAWL_API_KEY": "Firecrawl",
+    "TAVILY_API_KEY": "Tavily",
+    "BROWSERBASE_API_KEY": "Browserbase",
+    "TELEGRAM_BOT_TOKEN": "Telegram Bot",
+    "DISCORD_BOT_TOKEN": "Discord Bot",
+    "SLACK_BOT_TOKEN": "Slack Bot",
+    "GITHUB_TOKEN": "GitHub",
+    "HASS_TOKEN": "Home Assistant",
+    "TWILIO_ACCOUNT_SID": "Twilio",
+    "WANDB_API_KEY": "Weights & Biases",
+    "REPLICATE_API_TOKEN": "Replicate",
+    "NOUS_API_KEY": "Nous Research",
+    "DEEPSEEK_API_KEY": "DeepSeek",
+    "MISTRAL_API_KEY": "Mistral",
+    "SUPABASE_KEY": "Supabase",
+    "STRIPE_SECRET_KEY": "Stripe",
+    "RESEND_API_KEY": "Resend",
+}
+
+
+def _build_env_summary() -> str:
+    """Build a summary of configured env vars and vault keystore keys.
+
+    Lists NAMES ONLY (never values) so the agent knows which services are
+    available. Groups by category for readability.
+    """
+    lines: list[str] = []
+
+    # System env vars to exclude (not user-configured secrets)
+    _system_vars = frozenset({
+        "SSH_AUTH_SOCK", "SSH_AGENT_PID", "GPG_AGENT_INFO",
+        "SECURITYSESSIONID", "TOKENFILE", "CREDENTIAL_HELPER",
+    })
+
+    # 1. Scan env vars for configured secrets
+    env_configured: list[str] = []
+    for key in sorted(os.environ):
+        if key in _system_vars:
+            continue
+        if not _SECRET_PATTERNS.search(key):
+            continue
+        val = os.environ.get(key, "").strip()
+        if not val or len(val) < 4:
+            continue
+        # Skip vars that look auto-set (paths, pids, etc.)
+        if val.startswith("/") or val.isdigit():
+            continue
+        label = _SERVICE_LABELS.get(key, "")
+        entry = f"`{key}`"
+        if label:
+            entry += f" ({label})"
+        env_configured.append(entry)
+
+    # 2. Scan vault keystore catalog (names only)
+    vault_keys: list[str] = []
+    try:
+        from tools.vault_keystore import list_keys
+        for k in list_keys():
+            name = k.get("name", "")
+            svc = k.get("service", "")
+            entry = f"`{name}`"
+            if svc:
+                entry += f" ({svc})"
+            if entry not in env_configured:
+                vault_keys.append(entry)
+    except Exception:
+        pass
+
+    if not env_configured and not vault_keys:
+        return ""
+
+    lines.append("## Available Services & Credentials")
+    lines.append("")
+    lines.append("Configured API keys and tokens (names only, values are secret):")
+    lines.append("")
+
+    if env_configured:
+        lines.append("**From environment (.env):**")
+        for entry in env_configured:
+            lines.append(f"- {entry}")
+
+    if vault_keys:
+        if env_configured:
+            lines.append("")
+        lines.append("**From vault keystore (encrypted):**")
+        for entry in vault_keys:
+            lines.append(f"- {entry}")
+
+    lines.append("")
+    lines.append("Use `vault_keystore_get` to retrieve any key. Never display values in chat.")
+
+    return "\n".join(lines)
+
+
 def resolve_active_agent_id(agent_id: str | None = None, config: dict | None = None) -> str:
     cfg = config or _load_config_safe()
     if agent_id and str(agent_id).strip():
@@ -212,6 +316,11 @@ def build_second_brain_prompt(agent_id: str | None = None, cwd: str | None = Non
         f"- Large Memory/: {_list_entries(memory_dir)}"
     )
     sections.append(index_block)
+
+    # ── Available Services (env vars configured — names only, never values) ──
+    env_block = _build_env_summary()
+    if env_block:
+        sections.append(env_block)
 
     policy_block = (
         "## Execution Policy\n"
