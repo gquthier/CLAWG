@@ -15,7 +15,7 @@ Security features (based on OWASP + NIST SP 800-63-4 guidance):
   - File permissions: chmod 0600 on all data files
   - Codes are never logged to stdout
 
-Storage: ~/.hermes/pairing/
+Storage: ~/.clawg/pairing/
 """
 
 import json
@@ -25,7 +25,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
-from hermes_cli.config import get_hermes_home
+from clawg_cli.config import get_clawg_home
 
 
 # Unambiguous alphabet -- excludes 0/O, 1/I to prevent confusion
@@ -41,7 +41,7 @@ LOCKOUT_SECONDS = 3600              # Lockout duration after too many failures
 MAX_PENDING_PER_PLATFORM = 3        # Max pending codes per platform
 MAX_FAILED_ATTEMPTS = 5             # Failed approvals before lockout
 
-PAIRING_DIR = get_hermes_home() / "pairing"
+PAIRING_DIR = get_clawg_home() / "pairing"
 
 
 def _secure_write(path: Path, data: str) -> None:

@@ -1,6 +1,6 @@
 """Website access policy helpers for URL-capable tools.
 
-This module loads a user-managed website blocklist from ~/.hermes/config.yaml
+This module loads a user-managed website blocklist from ~/.clawg/config.yaml
 and optional shared list files. It is intentionally lightweight so web/browser
 tools can enforce URL policy without pulling in the heavier CLI config stack.
 
@@ -36,12 +36,12 @@ _cached_policy_path: Optional[str] = None
 _cached_policy_time: float = 0.0
 
 
-def _get_hermes_home() -> Path:
-    return Path(os.getenv("HERMES_HOME", Path.home() / ".hermes"))
+def _get_clawg_home() -> Path:
+    return Path(os.getenv("CLAWG_HOME", Path.home() / ".clawg"))
 
 
 def _get_default_config_path() -> Path:
-    return _get_hermes_home() / "config.yaml"
+    return _get_clawg_home() / "config.yaml"
 
 
 class WebsitePolicyError(Exception):
@@ -182,7 +182,7 @@ def load_website_blocklist(config_path: Optional[Path] = None) -> Dict[str, Any]
             continue
         path = Path(shared_file).expanduser()
         if not path.is_absolute():
-            path = (_get_hermes_home() / path).resolve()
+            path = (_get_clawg_home() / path).resolve()
         for normalized in _iter_blocklist_file_rules(path):
             key = (str(path), normalized)
             if key in seen:

@@ -1,6 +1,6 @@
 """CLI commands for Honcho integration management.
 
-Handles: hermes honcho setup | status | sessions | map | peer
+Handles: clawg honcho setup | status | sessions | map | peer
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 GLOBAL_CONFIG_PATH = Path.home() / ".honcho" / "config.json"
-HOST = "hermes"
+HOST = "clawg"
 
 
 def _read_config() -> dict:
@@ -88,16 +88,16 @@ def cmd_setup(args) -> None:
     cfg = _read_config()
 
     print("\nHoncho memory setup\n" + "─" * 40)
-    print("  Honcho gives Hermes persistent cross-session memory.")
+    print("  Honcho gives clawg persistent cross-session memory.")
     print("  Config is shared with other hosts at ~/.honcho/config.json\n")
 
     if not _ensure_sdk_installed():
         return
 
-    # All writes go to hosts.hermes — root keys are managed by the user
+    # All writes go to hosts.clawg — root keys are managed by the user
     # or the honcho CLI only.
     hosts = cfg.setdefault("hosts", {})
-    hermes_host = hosts.setdefault(HOST, {})
+    clawg_host = hosts.setdefault(HOST, {})
 
     # API key — shared credential, lives at root so all hosts can read it
     current_key = cfg.get("apiKey", "")
@@ -110,35 +110,35 @@ def cmd_setup(args) -> None:
     effective_key = cfg.get("apiKey", "")
     if not effective_key:
         print("\n  No API key configured. Get your API key at https://app.honcho.dev")
-        print("  Run 'hermes honcho setup' again once you have a key.\n")
+        print("  Run 'clawg honcho setup' again once you have a key.\n")
         return
 
     # Peer name
-    current_peer = hermes_host.get("peerName") or cfg.get("peerName", "")
+    current_peer = clawg_host.get("peerName") or cfg.get("peerName", "")
     new_peer = _prompt("Your name (user peer)", default=current_peer or os.getenv("USER", "user"))
     if new_peer:
-        hermes_host["peerName"] = new_peer
+        clawg_host["peerName"] = new_peer
 
-    current_workspace = hermes_host.get("workspace") or cfg.get("workspace", "hermes")
+    current_workspace = clawg_host.get("workspace") or cfg.get("workspace", "clawg")
     new_workspace = _prompt("Workspace ID", default=current_workspace)
     if new_workspace:
-        hermes_host["workspace"] = new_workspace
+        clawg_host["workspace"] = new_workspace
 
-    hermes_host.setdefault("aiPeer", HOST)
+    clawg_host.setdefault("aiPeer", HOST)
 
     # Memory mode
-    current_mode = hermes_host.get("memoryMode") or cfg.get("memoryMode", "hybrid")
+    current_mode = clawg_host.get("memoryMode") or cfg.get("memoryMode", "hybrid")
     print(f"\n  Memory mode options:")
     print("    hybrid  — write to both Honcho and local MEMORY.md (default)")
     print("    honcho  — Honcho only, skip MEMORY.md writes")
     new_mode = _prompt("Memory mode", default=current_mode)
     if new_mode in ("hybrid", "honcho"):
-        hermes_host["memoryMode"] = new_mode
+        clawg_host["memoryMode"] = new_mode
     else:
-        hermes_host["memoryMode"] = "hybrid"
+        clawg_host["memoryMode"] = "hybrid"
 
     # Write frequency
-    current_wf = str(hermes_host.get("writeFrequency") or cfg.get("writeFrequency", "async"))
+    current_wf = str(clawg_host.get("writeFrequency") or cfg.get("writeFrequency", "async"))
     print(f"\n  Write frequency options:")
     print("    async   — background thread, no token cost (recommended)")
     print("    turn    — sync write after every turn")
@@ -146,12 +146,12 @@ def cmd_setup(args) -> None:
     print("    N       — write every N turns (e.g. 5)")
     new_wf = _prompt("Write frequency", default=current_wf)
     try:
-        hermes_host["writeFrequency"] = int(new_wf)
+        clawg_host["writeFrequency"] = int(new_wf)
     except (ValueError, TypeError):
-        hermes_host["writeFrequency"] = new_wf if new_wf in ("async", "turn", "session") else "async"
+        clawg_host["writeFrequency"] = new_wf if new_wf in ("async", "turn", "session") else "async"
 
     # Recall mode
-    _raw_recall = hermes_host.get("recallMode") or cfg.get("recallMode", "hybrid")
+    _raw_recall = clawg_host.get("recallMode") or cfg.get("recallMode", "hybrid")
     current_recall = "hybrid" if _raw_recall not in ("hybrid", "context", "tools") else _raw_recall
     print(f"\n  Recall mode options:")
     print("    hybrid  — auto-injected context + Honcho tools available (default)")
@@ -159,21 +159,21 @@ def cmd_setup(args) -> None:
     print("    tools   — Honcho tools only, no auto-injected context")
     new_recall = _prompt("Recall mode", default=current_recall)
     if new_recall in ("hybrid", "context", "tools"):
-        hermes_host["recallMode"] = new_recall
+        clawg_host["recallMode"] = new_recall
 
     # Session strategy
-    current_strat = hermes_host.get("sessionStrategy") or cfg.get("sessionStrategy", "per-session")
+    current_strat = clawg_host.get("sessionStrategy") or cfg.get("sessionStrategy", "per-session")
     print(f"\n  Session strategy options:")
-    print("    per-session   — new Honcho session each run, named by Hermes session ID (default)")
+    print("    per-session   — new Honcho session each run, named by clawg session ID (default)")
     print("    per-directory — one session per working directory")
     print("    per-repo      — one session per git repository (uses repo root name)")
     print("    global        — single session across all directories")
     new_strat = _prompt("Session strategy", default=current_strat)
     if new_strat in ("per-session", "per-repo", "per-directory", "global"):
-        hermes_host["sessionStrategy"] = new_strat
+        clawg_host["sessionStrategy"] = new_strat
 
-    hermes_host.setdefault("enabled", True)
-    hermes_host.setdefault("saveMessages", True)
+    clawg_host.setdefault("enabled", True)
+    clawg_host.setdefault("saveMessages", True)
 
     _write_config(cfg)
     print(f"\n  Config written to {GLOBAL_CONFIG_PATH}")
@@ -206,11 +206,11 @@ def cmd_setup(args) -> None:
     print(f"    honcho_profile      — your peer card, key facts (no LLM)")
     print(f"    honcho_conclude     — persist a user fact to Honcho memory (no LLM)")
     print(f"\n  Other commands:")
-    print(f"    hermes honcho status     — show full config")
-    print(f"    hermes honcho mode       — show or change memory mode")
-    print(f"    hermes honcho tokens     — show or set token budgets")
-    print(f"    hermes honcho identity   — seed or show AI peer identity")
-    print(f"    hermes honcho map <name> — map this directory to a session name\n")
+    print(f"    clawg honcho status     — show full config")
+    print(f"    clawg honcho mode       — show or change memory mode")
+    print(f"    clawg honcho tokens     — show or set token budgets")
+    print(f"    clawg honcho identity   — seed or show AI peer identity")
+    print(f"    clawg honcho map <name> — map this directory to a session name\n")
 
 
 def cmd_status(args) -> None:
@@ -218,14 +218,14 @@ def cmd_status(args) -> None:
     try:
         import honcho  # noqa: F401
     except ImportError:
-        print("  honcho-ai is not installed. Run: hermes honcho setup\n")
+        print("  honcho-ai is not installed. Run: clawg honcho setup\n")
         return
 
     cfg = _read_config()
 
     if not cfg:
         print("  No Honcho config found at ~/.honcho/config.json")
-        print("  Run 'hermes honcho setup' to configure.\n")
+        print("  Run 'clawg honcho setup' to configure.\n")
         return
 
     try:
@@ -274,7 +274,7 @@ def cmd_sessions(args) -> None:
 
     if not sessions:
         print("  No session mappings configured.\n")
-        print("  Add one with: hermes honcho map <session-name>")
+        print("  Add one with: clawg honcho map <session-name>")
         print("  Or edit ~/.honcho/config.json directly.\n")
         return
 
@@ -325,16 +325,16 @@ def cmd_peer(args) -> None:
     if user_name is None and ai_name is None and reasoning is None:
         # Show current values
         hosts = cfg.get("hosts", {})
-        hermes = hosts.get(HOST, {})
-        user = hermes.get('peerName') or cfg.get('peerName') or '(not set)'
-        ai = hermes.get('aiPeer') or cfg.get('aiPeer') or HOST
-        lvl = hermes.get("dialecticReasoningLevel") or cfg.get("dialecticReasoningLevel") or "low"
-        max_chars = hermes.get("dialecticMaxChars") or cfg.get("dialecticMaxChars") or 600
+        clawg = hosts.get(HOST, {})
+        user = clawg.get('peerName') or cfg.get('peerName') or '(not set)'
+        ai = clawg.get('aiPeer') or cfg.get('aiPeer') or HOST
+        lvl = clawg.get("dialecticReasoningLevel") or cfg.get("dialecticReasoningLevel") or "low"
+        max_chars = clawg.get("dialecticMaxChars") or cfg.get("dialecticMaxChars") or 600
         print(f"\nHoncho peers\n" + "─" * 40)
         print(f"  User peer:   {user}")
         print(f"    Your identity in Honcho. Messages you send build this peer's card.")
         print(f"  AI peer:     {ai}")
-        print(f"    Hermes' identity in Honcho. Seed with 'hermes honcho identity <file>'.")
+        print(f"    clawg' identity in Honcho. Seed with 'clawg honcho identity <file>'.")
         print(f"    Dialectic calls ask this peer questions to warm session context.")
         print()
         print(f"  Dialectic reasoning:  {lvl}  ({', '.join(REASONING_LEVELS)})")
@@ -383,7 +383,7 @@ def cmd_mode(args) -> None:
         for m, desc in MODES.items():
             marker = " ←" if m == current else ""
             print(f"  {m:<8}  {desc}{marker}")
-        print(f"\n  Set with: hermes honcho mode [hybrid|honcho]\n")
+        print(f"\n  Set with: clawg honcho mode [hybrid|honcho]\n")
         return
 
     if mode_arg not in MODES:
@@ -399,15 +399,15 @@ def cmd_tokens(args) -> None:
     """Show or set token budget settings."""
     cfg = _read_config()
     hosts = cfg.get("hosts", {})
-    hermes = hosts.get(HOST, {})
+    clawg = hosts.get(HOST, {})
 
     context = getattr(args, "context", None)
     dialectic = getattr(args, "dialectic", None)
 
     if context is None and dialectic is None:
-        ctx_tokens = hermes.get("contextTokens") or cfg.get("contextTokens") or "(Honcho default)"
-        d_chars = hermes.get("dialecticMaxChars") or cfg.get("dialecticMaxChars") or 600
-        d_level = hermes.get("dialecticReasoningLevel") or cfg.get("dialecticReasoningLevel") or "low"
+        ctx_tokens = clawg.get("contextTokens") or cfg.get("contextTokens") or "(Honcho default)"
+        d_chars = clawg.get("dialecticMaxChars") or cfg.get("dialecticMaxChars") or 600
+        d_level = clawg.get("dialecticReasoningLevel") or cfg.get("dialecticReasoningLevel") or "low"
         print(f"\nHoncho budgets\n" + "─" * 40)
         print()
         print(f"  Context     {ctx_tokens} tokens")
@@ -415,11 +415,11 @@ def cmd_tokens(args) -> None:
         print(f"    the user and session, injected directly into the system prompt.")
         print()
         print(f"  Dialectic   {d_chars} chars, reasoning: {d_level}")
-        print(f"    AI-to-AI inference. Hermes asks Honcho's AI peer a question")
+        print(f"    AI-to-AI inference. clawg asks Honcho's AI peer a question")
         print(f"    (e.g. \"what were we working on?\") and Honcho runs its own model")
         print(f"    to synthesize an answer. Used for first-turn session continuity.")
         print(f"    Level controls how much reasoning Honcho spends on the answer.")
-        print(f"\n  Set with: hermes honcho tokens [--context N] [--dialectic N]\n")
+        print(f"\n  Set with: clawg honcho tokens [--context N] [--dialectic N]\n")
         return
 
     changed = False
@@ -441,7 +441,7 @@ def cmd_identity(args) -> None:
     """Seed AI peer identity or show both peer representations."""
     cfg = _read_config()
     if not _resolve_api_key(cfg):
-        print("  No API key configured. Run 'hermes honcho setup' first.\n")
+        print("  No API key configured. Run 'clawg honcho setup' first.\n")
         return
 
     file_path = getattr(args, "file", None)
@@ -478,7 +478,7 @@ def cmd_identity(args) -> None:
             print(ai_rep["card"])
         else:
             print("  No representation built yet.")
-            print("  Run 'hermes honcho identity <file>' to seed one.")
+            print("  Run 'clawg honcho identity <file>' to seed one.")
         print()
         return
 
@@ -487,8 +487,8 @@ def cmd_identity(args) -> None:
         print(f"  User peer: {hcfg.peer_name or 'not set'}")
         print(f"  AI peer:   {hcfg.ai_peer}")
         print()
-        print("    hermes honcho identity --show        — show both peer representations")
-        print("    hermes honcho identity <file>        — seed AI peer from SOUL.md or any .md/.txt\n")
+        print("    clawg honcho identity --show        — show both peer representations")
+        print("    clawg honcho identity <file>        — seed AI peer from SOUL.md or any .md/.txt\n")
         return
 
     from pathlib import Path
@@ -512,7 +512,7 @@ def cmd_identity(args) -> None:
 
 
 def cmd_migrate(args) -> None:
-    """Step-by-step migration guide: OpenClaw native memory → Hermes + Honcho."""
+    """Step-by-step migration guide: OpenClaw native memory → clawg + Honcho."""
     from pathlib import Path
 
     # ── Detect OpenClaw native memory files ──────────────────────────────────
@@ -540,7 +540,7 @@ def cmd_migrate(args) -> None:
     cfg = _read_config()
     has_key = bool(_resolve_api_key(cfg))
 
-    print("\nHoncho migration: OpenClaw native memory → Hermes\n" + "─" * 50)
+    print("\nHoncho migration: OpenClaw native memory → clawg\n" + "─" * 50)
     print()
     print("  OpenClaw's native memory stores context in local markdown files")
     print("  (USER.md, MEMORY.md, SOUL.md, ...) and injects them via QMD search.")
@@ -557,21 +557,21 @@ def cmd_migrate(args) -> None:
         print(f"  Honcho API key already configured: {masked}")
         print("  Skip to Step 2.")
     else:
-        print("  Honcho is a cloud memory service that gives Hermes persistent memory")
+        print("  Honcho is a cloud memory service that gives clawg persistent memory")
         print("  across sessions. You need an API key to use it.")
         print()
         print("  1. Get your API key at https://app.honcho.dev")
-        print("  2. Run:  hermes honcho setup")
+        print("  2. Run:  clawg honcho setup")
         print("     Paste the key when prompted.")
         print()
-        answer = _prompt("  Run 'hermes honcho setup' now?", default="y")
+        answer = _prompt("  Run 'clawg honcho setup' now?", default="y")
         if answer.lower() in ("y", "yes"):
             cmd_setup(args)
             cfg = _read_config()
             has_key = bool(cfg.get("apiKey", ""))
         else:
             print()
-            print("  Run 'hermes honcho setup' when ready, then re-run this walkthrough.")
+            print("  Run 'clawg honcho setup' when ready, then re-run this walkthrough.")
 
     # ── Step 2: Detected files ────────────────────────────────────────────────
     print()
@@ -589,7 +589,7 @@ def cmd_migrate(args) -> None:
     else:
         print("  No OpenClaw native memory files found in cwd or ~/.openclaw/.")
         print("  If your files are elsewhere, copy them here before continuing,")
-        print("  or seed them manually:  hermes honcho identity <path/to/file>")
+        print("  or seed them manually:  clawg honcho identity <path/to/file>")
 
     # ── Step 3: Migrate user memory ───────────────────────────────────────────
     print()
@@ -602,13 +602,13 @@ def cmd_migrate(args) -> None:
     if user_files:
         print(f"  Found: {', '.join(f.name for f in user_files)}")
         print()
-        print("  These are picked up automatically the first time you run 'hermes'")
+        print("  These are picked up automatically the first time you run 'clawg'")
         print("  with Honcho configured and no prior session history.")
-        print("  (Hermes calls migrate_memory_files() on first session init.)")
+        print("  (clawg calls migrate_memory_files() on first session init.)")
         print()
         print("  If you want to migrate them now without starting a session:")
         for f in user_files:
-            print(f"    hermes honcho migrate  — this step handles it interactively")
+            print(f"    clawg honcho migrate  — this step handles it interactively")
         if has_key:
             answer = _prompt("  Upload user memory files to Honcho now?", default="y")
             if answer.lower() in ("y", "yes"):
@@ -639,7 +639,7 @@ def cmd_migrate(args) -> None:
                 except Exception as e:
                     print(f"  Failed: {e}")
         else:
-            print("  Run 'hermes honcho setup' first, then re-run this step.")
+            print("  Run 'clawg honcho setup' first, then re-run this step.")
     else:
         print("  No user memory files detected. Nothing to migrate here.")
 
@@ -651,7 +651,7 @@ def cmd_migrate(args) -> None:
     print("  agent's character, capabilities, and behavioral rules. In OpenClaw")
     print("  these are injected via file search at prompt-build time.")
     print()
-    print("  In Hermes, they are seeded once into Honcho's AI peer through the")
+    print("  In clawg, they are seeded once into Honcho's AI peer through the")
     print("  observation pipeline. Honcho builds a representation from them and")
     print("  from every subsequent assistant message (observe_me=True). Over time")
     print("  the representation reflects actual behavior, not just declaration.")
@@ -685,12 +685,12 @@ def cmd_migrate(args) -> None:
                 except Exception as e:
                     print(f"  Failed: {e}")
         else:
-            print("  Run 'hermes honcho setup' first, then seed manually:")
+            print("  Run 'clawg honcho setup' first, then seed manually:")
             for f in agent_files:
-                print(f"    hermes honcho identity {f}")
+                print(f"    clawg honcho identity {f}")
     else:
         print("  No agent identity files detected.")
-        print("  To seed manually:  hermes honcho identity <path/to/SOUL.md>")
+        print("  To seed manually:  clawg honcho identity <path/to/SOUL.md>")
 
     # ── Step 5: What changes ──────────────────────────────────────────────────
     print()
@@ -698,17 +698,17 @@ def cmd_migrate(args) -> None:
     print()
     print("  Storage")
     print("    OpenClaw: markdown files on disk, searched via QMD at prompt-build time.")
-    print("    Hermes:   cloud-backed Honcho peers. Files can stay on disk as source")
+    print("    clawg:   cloud-backed Honcho peers. Files can stay on disk as source")
     print("              of truth; Honcho holds the live representation.")
     print()
     print("  Context injection")
     print("    OpenClaw: file excerpts injected synchronously before each LLM call.")
-    print("    Hermes:   Honcho context fetched async at turn end, injected next turn.")
+    print("    clawg:   Honcho context fetched async at turn end, injected next turn.")
     print("              First turn has no Honcho context; subsequent turns are loaded.")
     print()
     print("  Memory growth")
     print("    OpenClaw: you edit files manually to update memory.")
-    print("    Hermes:   Honcho observes every message and updates representations")
+    print("    clawg:   Honcho observes every message and updates representations")
     print("              automatically. Files become the seed, not the live store.")
     print()
     print("  Honcho tools (available to the agent during conversation)")
@@ -719,23 +719,23 @@ def cmd_migrate(args) -> None:
     print()
     print("  Session naming")
     print("    OpenClaw: no persistent session concept — files are global.")
-    print("    Hermes:   per-session by default — each run gets its own session")
-    print("              Map a custom name:  hermes honcho map <session-name>")
+    print("    clawg:   per-session by default — each run gets its own session")
+    print("              Map a custom name:  clawg honcho map <session-name>")
 
     # ── Step 6: Next steps ────────────────────────────────────────────────────
     print()
     print("Step 6  Next steps")
     print()
     if not has_key:
-        print("  1. hermes honcho setup              — configure API key (required)")
-        print("  2. hermes honcho migrate            — re-run this walkthrough")
+        print("  1. clawg honcho setup              — configure API key (required)")
+        print("  2. clawg honcho migrate            — re-run this walkthrough")
     else:
-        print("  1. hermes honcho status             — verify Honcho connection")
-        print("  2. hermes                           — start a session")
+        print("  1. clawg honcho status             — verify Honcho connection")
+        print("  2. clawg                           — start a session")
         print("     (user memory files auto-uploaded on first turn if not done above)")
-        print("  3. hermes honcho identity --show    — verify AI peer representation")
-        print("  4. hermes honcho tokens             — tune context and dialectic budgets")
-        print("  5. hermes honcho mode               — view or change memory mode")
+        print("  3. clawg honcho identity --show    — verify AI peer representation")
+        print("  4. clawg honcho tokens             — tune context and dialectic budgets")
+        print("  5. clawg honcho mode               — view or change memory mode")
     print()
 
 

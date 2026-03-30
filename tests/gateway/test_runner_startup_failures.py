@@ -47,7 +47,7 @@ class _DisabledAdapter(BasePlatformAdapter):
 
 @pytest.mark.asyncio
 async def test_runner_returns_failure_for_retryable_startup_errors(monkeypatch, tmp_path):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("CLAWG_HOME", str(tmp_path))
     config = GatewayConfig(
         platforms={
             Platform.TELEGRAM: PlatformConfig(enabled=True, token="***")
@@ -71,7 +71,7 @@ async def test_runner_returns_failure_for_retryable_startup_errors(monkeypatch, 
 
 @pytest.mark.asyncio
 async def test_runner_allows_cron_only_mode_when_no_platforms_are_enabled(monkeypatch, tmp_path):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("CLAWG_HOME", str(tmp_path))
     config = GatewayConfig(
         platforms={
             Platform.TELEGRAM: PlatformConfig(enabled=False, token="***")

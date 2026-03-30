@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [sglang-router>=0.2.3, ray, torch>=2.0.0, transformers>=4.40.0]
 metadata:
-  hermes:
+  clawg:
     tags: [Reinforcement Learning, Megatron-LM, SGLang, GRPO, Post-Training, GLM]
 
 ---

@@ -5,7 +5,7 @@ version: 1.0.0
 author: unmodeled-tyler
 license: MIT
 metadata:
-  hermes:
+  clawg:
     tags: [osint, security, username, social-media, reconnaissance]
     category: security
 prerequisites:

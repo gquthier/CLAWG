@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [chromadb, sentence-transformers]
 metadata:
-  hermes:
+  clawg:
     tags: [RAG, Chroma, Vector Database, Embeddings, Semantic Search, Open Source, Self-Hosted, Document Retrieval, Metadata Filtering]
 
 ---

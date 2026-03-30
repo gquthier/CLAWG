@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_cli.auth import detect_external_credentials
+from clawg_cli.auth import detect_external_credentials
 
 
 class TestDetectCodexCLI:

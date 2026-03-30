@@ -1,4 +1,4 @@
-"""ACP permission bridging — maps ACP approval requests to hermes approval callbacks."""
+"""ACP permission bridging — maps ACP approval requests to clawg approval callbacks."""
 
 from __future__ import annotations
 
@@ -17,8 +17,8 @@ from acp.schema import (
 
 logger = logging.getLogger(__name__)
 
-# Maps ACP PermissionOptionKind -> hermes approval result strings
-_KIND_TO_HERMES = {
+# Maps ACP PermissionOptionKind -> clawg approval result strings
+_KIND_TO_CLAWG = {
     "allow_once": "once",
     "allow_always": "always",
     "reject_once": "deny",
@@ -33,7 +33,7 @@ def make_approval_callback(
     timeout: float = 60.0,
 ) -> Callable[[str, str], str]:
     """
-    Return a hermes-compatible ``approval_callback(command, description) -> str``
+    Return a clawg-compatible ``approval_callback(command, description) -> str``
     that bridges to the ACP client's ``request_permission`` call.
 
     Args:
@@ -72,7 +72,7 @@ def make_approval_callback(
             # Look up the kind from our options list
             for opt in options:
                 if opt.option_id == option_id:
-                    return _KIND_TO_HERMES.get(opt.kind, "deny")
+                    return _KIND_TO_CLAWG.get(opt.kind, "deny")
             return "once"  # fallback for unknown option_id
         else:
             return "deny"

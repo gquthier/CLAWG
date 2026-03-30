@@ -1,41 +1,41 @@
 ---
 sidebar_position: 3
 title: "Discord"
-description: "Set up Hermes Agent as a Discord bot"
+description: "Set up CLAWG as a Discord bot"
 ---
 
 # Discord Setup
 
-Hermes Agent integrates with Discord as a bot, letting you chat with your AI assistant through direct messages or server channels. The bot receives your messages, processes them through the Hermes Agent pipeline (including tool use, memory, and reasoning), and responds in real time. It supports text, voice messages, file attachments, and slash commands.
+CLAWG integrates with Discord as a bot, letting you chat with your AI assistant through direct messages or server channels. The bot receives your messages, processes them through the CLAWG pipeline (including tool use, memory, and reasoning), and responds in real time. It supports text, voice messages, file attachments, and slash commands.
 
-Before setup, here's the part most people want to know: how Hermes behaves once it's in your server.
+Before setup, here's the part most people want to know: how clawg behaves once it's in your server.
 
-## How Hermes Behaves
+## How clawg Behaves
 
 | Context | Behavior |
 |---------|----------|
-| **DMs** | Hermes responds to every message. No `@mention` needed. Each DM has its own session. |
-| **Server channels** | By default, Hermes only responds when you `@mention` it. If you post in a channel without mentioning it, Hermes ignores the message. |
+| **DMs** | clawg responds to every message. No `@mention` needed. Each DM has its own session. |
+| **Server channels** | By default, clawg only responds when you `@mention` it. If you post in a channel without mentioning it, clawg ignores the message. |
 | **Free-response channels** | You can make specific channels mention-free with `DISCORD_FREE_RESPONSE_CHANNELS`, or disable mentions globally with `DISCORD_REQUIRE_MENTION=false`. |
-| **Threads** | Hermes replies in the same thread. Mention rules still apply unless that thread or its parent channel is configured as free-response. Threads stay isolated from the parent channel for session history. |
-| **Shared channels with multiple users** | By default, Hermes isolates session history per user inside the channel for safety and clarity. Two people talking in the same channel do not share one transcript unless you explicitly disable that. |
+| **Threads** | clawg replies in the same thread. Mention rules still apply unless that thread or its parent channel is configured as free-response. Threads stay isolated from the parent channel for session history. |
+| **Shared channels with multiple users** | By default, clawg isolates session history per user inside the channel for safety and clarity. Two people talking in the same channel do not share one transcript unless you explicitly disable that. |
 
 :::tip
-If you want a normal bot-help channel where people can talk to Hermes without tagging it every time, add that channel to `DISCORD_FREE_RESPONSE_CHANNELS`.
+If you want a normal bot-help channel where people can talk to clawg without tagging it every time, add that channel to `DISCORD_FREE_RESPONSE_CHANNELS`.
 :::
 
 ### Discord Gateway Model
 
-Hermes on Discord is not a webhook that replies statelessly. It runs through the full messaging gateway, which means each incoming message goes through:
+clawg on Discord is not a webhook that replies statelessly. It runs through the full messaging gateway, which means each incoming message goes through:
 
 1. authorization (`DISCORD_ALLOWED_USERS`)
 2. mention / free-response checks
 3. session lookup
 4. session transcript loading
-5. normal Hermes agent execution, including tools, memory, and slash commands
+5. normal CLAWG execution, including tools, memory, and slash commands
 6. response delivery back to Discord
 
-That matters because behavior in a busy server depends on both Discord routing and Hermes session policy.
+That matters because behavior in a busy server depends on both Discord routing and clawg session policy.
 
 ### Session Model in Discord
 
@@ -45,7 +45,7 @@ By default:
 - each server thread gets its own session namespace
 - each user in a shared channel gets their own session inside that channel
 
-So if Alice and Bob both talk to Hermes in `#research`, Hermes treats those as separate conversations by default even though they are using the same visible Discord channel.
+So if Alice and Bob both talk to clawg in `#research`, clawg treats those as separate conversations by default even though they are using the same visible Discord channel.
 
 This is controlled by `config.yaml`:
 
@@ -67,7 +67,7 @@ Shared sessions can be useful for a collaborative room, but they also mean:
 
 ### Interrupts and Concurrency
 
-Hermes tracks running agents by session key.
+clawg tracks running agents by session key.
 
 With the default `group_sessions_per_user: true`:
 
@@ -85,7 +85,7 @@ This guide walks you through the full setup process — from creating your bot o
 
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications) and sign in with your Discord account.
 2. Click **New Application** in the top-right corner.
-3. Enter a name for your application (e.g., "Hermes Agent") and accept the Developer Terms of Service.
+3. Enter a name for your application (e.g., "CLAWG") and accept the Developer Terms of Service.
 4. Click **Create**.
 
 You'll land on the **General Information** page. Note the **Application ID** — you'll need it later to build the invite URL.
@@ -128,7 +128,7 @@ Click **Save Changes** at the bottom of the page.
 
 ## Step 4: Get the Bot Token
 
-The bot token is the credential Hermes Agent uses to log in as your bot. Still on the **Bot** page:
+The bot token is the credential CLAWG uses to log in as your bot. Still on the **Bot** page:
 
 1. Under the **Token** section, click **Reset Token**.
 2. If you have two-factor authentication enabled on your Discord account, enter your 2FA code.
@@ -196,11 +196,11 @@ These are the minimum permissions your bot needs:
 You need the **Manage Server** permission on the Discord server to invite a bot. If you don't see your server in the dropdown, ask a server admin to use the invite link instead.
 :::
 
-After authorizing, the bot will appear in your server's member list (it will show as offline until you start the Hermes gateway).
+After authorizing, the bot will appear in your server's member list (it will show as offline until you start the clawg gateway).
 
 ## Step 7: Find Your Discord User ID
 
-Hermes Agent uses your Discord User ID to control who can interact with the bot. To find it:
+CLAWG uses your Discord User ID to control who can interact with the bot. To find it:
 
 1. Open Discord (desktop or web app).
 2. Go to **Settings** → **Advanced** → toggle **Developer Mode** to **ON**.
@@ -213,21 +213,21 @@ Your User ID is a long number like `284102345871466496`.
 Developer Mode also lets you copy **Channel IDs** and **Server IDs** the same way — right-click the channel or server name and select Copy ID. You'll need a Channel ID if you want to set a home channel manually.
 :::
 
-## Step 8: Configure Hermes Agent
+## Step 8: Configure CLAWG
 
 ### Option A: Interactive Setup (Recommended)
 
 Run the guided setup command:
 
 ```bash
-hermes gateway setup
+clawg gateway setup
 ```
 
 Select **Discord** when prompted, then paste your bot token and user ID when asked.
 
 ### Option B: Manual Configuration
 
-Add the following to your `~/.hermes/.env` file:
+Add the following to your `~/.clawg/.env` file:
 
 ```bash
 # Required
@@ -238,7 +238,7 @@ DISCORD_ALLOWED_USERS=284102345871466496
 # DISCORD_ALLOWED_USERS=284102345871466496,198765432109876543
 ```
 
-Optional behavior settings in `~/.hermes/config.yaml`:
+Optional behavior settings in `~/.clawg/config.yaml`:
 
 ```yaml
 discord:
@@ -247,7 +247,7 @@ discord:
 group_sessions_per_user: true
 ```
 
-- `discord.require_mention: true` keeps Hermes quiet in normal server traffic unless mentioned
+- `discord.require_mention: true` keeps clawg quiet in normal server traffic unless mentioned
 - `group_sessions_per_user: true` keeps each participant's context isolated inside shared channels and threads
 
 ### Start the Gateway
@@ -255,13 +255,13 @@ group_sessions_per_user: true
 Once configured, start the Discord gateway:
 
 ```bash
-hermes gateway
+clawg gateway
 ```
 
 The bot should come online in Discord within a few seconds. Send it a message — either a DM or in a channel it can see — to test.
 
 :::tip
-You can run `hermes gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
+You can run `clawg gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
 :::
 
 ## Home Channel
@@ -274,7 +274,7 @@ Type `/sethome` in any Discord channel where the bot is present. That channel be
 
 ### Manual Configuration
 
-Add these to your `~/.hermes/.env`:
+Add these to your `~/.clawg/.env`:
 
 ```bash
 DISCORD_HOME_CHANNEL=123456789012345678
@@ -285,15 +285,15 @@ Replace the ID with the actual channel ID (right-click → Copy Channel ID with 
 
 ## Voice Messages
 
-Hermes Agent supports Discord voice messages:
+CLAWG supports Discord voice messages:
 
 - **Incoming voice messages** are automatically transcribed using the configured STT provider: local `faster-whisper` (no key), Groq Whisper (`GROQ_API_KEY`), or OpenAI Whisper (`VOICE_TOOLS_OPENAI_KEY`).
 - **Text-to-speech**: Use `/voice tts` to have the bot send spoken audio responses alongside text replies.
-- **Discord voice channels**: Hermes can also join a voice channel, listen to users speaking, and talk back in the channel.
+- **Discord voice channels**: clawg can also join a voice channel, listen to users speaking, and talk back in the channel.
 
 For the full setup and operational guide, see:
 - [Voice Mode](/docs/user-guide/features/voice-mode)
-- [Use Voice Mode with Hermes](/docs/guides/use-voice-mode-with-hermes)
+- [Use Voice Mode with clawg](/docs/guides/use-voice-mode-with-clawg)
 
 ## Troubleshooting
 
@@ -323,21 +323,21 @@ For the full setup and operational guide, see:
 
 ### Bot is offline
 
-**Cause**: The Hermes gateway isn't running, or the token is incorrect.
+**Cause**: The clawg gateway isn't running, or the token is incorrect.
 
-**Fix**: Check that `hermes gateway` is running. Verify `DISCORD_BOT_TOKEN` in your `.env` file. If you recently reset the token, update it.
+**Fix**: Check that `clawg gateway` is running. Verify `DISCORD_BOT_TOKEN` in your `.env` file. If you recently reset the token, update it.
 
 ### "User not allowed" / Bot ignores you
 
 **Cause**: Your User ID isn't in `DISCORD_ALLOWED_USERS`.
 
-**Fix**: Add your User ID to `DISCORD_ALLOWED_USERS` in `~/.hermes/.env` and restart the gateway.
+**Fix**: Add your User ID to `DISCORD_ALLOWED_USERS` in `~/.clawg/.env` and restart the gateway.
 
 ### People in the same channel are sharing context unexpectedly
 
 **Cause**: `group_sessions_per_user` is disabled, or the platform cannot provide a user ID for the messages in that context.
 
-**Fix**: Set this in `~/.hermes/config.yaml` and restart the gateway:
+**Fix**: Set this in `~/.clawg/config.yaml` and restart the gateway:
 
 ```yaml
 group_sessions_per_user: true
@@ -351,4 +351,4 @@ If you intentionally want a shared room conversation, leave it off — just expe
 Always set `DISCORD_ALLOWED_USERS` to restrict who can interact with the bot. Without it, the gateway denies all users by default as a safety measure. Only add User IDs of people you trust — authorized users have full access to the agent's capabilities, including tool use and system access.
 :::
 
-For more information on securing your Hermes Agent deployment, see the [Security Guide](../security.md).
+For more information on securing your CLAWG deployment, see the [Security Guide](../security.md).

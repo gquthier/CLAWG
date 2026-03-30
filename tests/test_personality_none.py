@@ -9,8 +9,8 @@ import yaml
 class TestCLIPersonalityNone:
 
     def _make_cli(self, personalities=None):
-        from cli import HermesCLI
-        cli = HermesCLI.__new__(HermesCLI)
+        from cli import ClawgCLI
+        cli = ClawgCLI.__new__(ClawgCLI)
         cli.personalities = personalities or {
             "helpful": "You are helpful.",
             "concise": "You are concise.",
@@ -98,7 +98,7 @@ class TestGatewayPersonalityNone:
         config_file = tmp_path / "config.yaml"
         config_file.write_text(yaml.dump(config_data))
 
-        with patch("gateway.run._hermes_home", tmp_path):
+        with patch("gateway.run._clawg_home", tmp_path):
             event = self._make_event("none")
             result = await runner._handle_personality_command(event)
 
@@ -112,7 +112,7 @@ class TestGatewayPersonalityNone:
         config_file = tmp_path / "config.yaml"
         config_file.write_text(yaml.dump(config_data))
 
-        with patch("gateway.run._hermes_home", tmp_path):
+        with patch("gateway.run._clawg_home", tmp_path):
             event = self._make_event("default")
             result = await runner._handle_personality_command(event)
 
@@ -125,7 +125,7 @@ class TestGatewayPersonalityNone:
         config_file = tmp_path / "config.yaml"
         config_file.write_text(yaml.dump(config_data))
 
-        with patch("gateway.run._hermes_home", tmp_path):
+        with patch("gateway.run._clawg_home", tmp_path):
             event = self._make_event("")
             result = await runner._handle_personality_command(event)
 
@@ -138,7 +138,7 @@ class TestGatewayPersonalityNone:
         config_file = tmp_path / "config.yaml"
         config_file.write_text(yaml.dump(config_data))
 
-        with patch("gateway.run._hermes_home", tmp_path):
+        with patch("gateway.run._clawg_home", tmp_path):
             event = self._make_event("nonexistent")
             result = await runner._handle_personality_command(event)
 
@@ -149,8 +149,8 @@ class TestPersonalityDictFormat:
     """Test dict-format custom personalities with description, tone, style."""
 
     def _make_cli(self, personalities):
-        from cli import HermesCLI
-        cli = HermesCLI.__new__(HermesCLI)
+        from cli import ClawgCLI
+        cli = ClawgCLI.__new__(ClawgCLI)
         cli.personalities = personalities
         cli.system_prompt = ""
         cli.agent = None
@@ -199,14 +199,14 @@ class TestPersonalityDictFormat:
         assert cli.system_prompt == "You are helpful."
 
     def test_resolve_prompt_dict_no_tone_no_style(self):
-        from cli import HermesCLI
-        result = HermesCLI._resolve_personality_prompt({
+        from cli import ClawgCLI
+        result = ClawgCLI._resolve_personality_prompt({
             "description": "A helper",
             "system_prompt": "You are helpful.",
         })
         assert result == "You are helpful."
 
     def test_resolve_prompt_string(self):
-        from cli import HermesCLI
-        result = HermesCLI._resolve_personality_prompt("You are helpful.")
+        from cli import ClawgCLI
+        result = ClawgCLI._resolve_personality_prompt("You are helpful.")
         assert result == "You are helpful."

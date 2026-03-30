@@ -54,7 +54,7 @@ class BrowserUseProvider(CloudBrowserProvider):
             )
 
         session_data = response.json()
-        session_name = f"hermes_{task_id}_{uuid.uuid4().hex[:8]}"
+        session_name = f"clawg_{task_id}_{uuid.uuid4().hex[:8]}"
 
         logger.info("Created Browser Use session %s", session_name)
 

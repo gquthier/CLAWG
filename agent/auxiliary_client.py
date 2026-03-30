@@ -6,7 +6,7 @@ the best available backend without duplicating fallback logic.
 
 Resolution order for text tasks (auto mode):
   1. OpenRouter  (OPENROUTER_API_KEY)
-  2. Nous Portal (~/.hermes/auth.json active provider)
+  2. Nous Portal (~/.clawg/auth.json active provider)
   3. Custom endpoint (OPENAI_BASE_URL + OPENAI_API_KEY)
   4. Codex OAuth (Responses API via chatgpt.com with gpt-5.3-codex,
      wrapped to look like a chat.completions client)
@@ -46,8 +46,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from openai import OpenAI
 
-from hermes_cli.config import get_hermes_home
-from hermes_constants import OPENROUTER_BASE_URL
+from clawg_cli.config import get_clawg_home
+from clawg_constants import OPENROUTER_BASE_URL
 
 logger = logging.getLogger(__name__)
 
@@ -66,15 +66,15 @@ _API_KEY_PROVIDER_AUX_MODELS: Dict[str, str] = {
 
 # OpenRouter app attribution headers
 _OR_HEADERS = {
-    "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-    "X-OpenRouter-Title": "Hermes Agent",
+    "HTTP-Referer": "https://clawg.nousresearch.com",
+    "X-OpenRouter-Title": "CLAWG",
     "X-OpenRouter-Categories": "productivity,cli-agent",
 }
 
 # Nous Portal extra_body for product attribution.
 # Callers should pass this as extra_body in chat.completions.create()
 # when the auxiliary client is backed by Nous Portal.
-NOUS_EXTRA_BODY = {"tags": ["product=hermes-agent"]}
+NOUS_EXTRA_BODY = {"tags": ["product=clawg"]}
 
 # Set at resolve time — True if the auxiliary client points to Nous Portal
 auxiliary_is_nous: bool = False
@@ -84,7 +84,7 @@ _OPENROUTER_MODEL = "google/gemini-3-flash-preview"
 _NOUS_MODEL = "gemini-3-flash"
 _NOUS_DEFAULT_BASE_URL = "https://inference-api.nousresearch.com/v1"
 _ANTHROPIC_DEFAULT_BASE_URL = "https://api.anthropic.com"
-_AUTH_JSON_PATH = get_hermes_home() / "auth.json"
+_AUTH_JSON_PATH = get_clawg_home() / "auth.json"
 
 # Codex fallback: uses the Responses API (the only endpoint the Codex
 # OAuth token can access) with a fast model for auxiliary tasks.
@@ -431,7 +431,7 @@ class AsyncAnthropicAuxiliaryClient:
 
 
 def _read_nous_auth() -> Optional[dict]:
-    """Read and validate ~/.hermes/auth.json for an active Nous provider.
+    """Read and validate ~/.clawg/auth.json for an active Nous provider.
 
     Returns the provider state dict if Nous is active with tokens,
     otherwise None.
@@ -463,9 +463,9 @@ def _nous_base_url() -> str:
 
 
 def _read_codex_access_token() -> Optional[str]:
-    """Read a valid Codex OAuth access token from Hermes auth store (~/.hermes/auth.json)."""
+    """Read a valid Codex OAuth access token from clawg auth store (~/.clawg/auth.json)."""
     try:
-        from hermes_cli.auth import _read_codex_tokens
+        from clawg_cli.auth import _read_codex_tokens
         data = _read_codex_tokens()
         tokens = data.get("tokens", {})
         access_token = tokens.get("access_token")
@@ -484,7 +484,7 @@ def _resolve_api_key_provider() -> Tuple[Optional[OpenAI], Optional[str]]:
     credentials, or (None, None) if none are configured.
     """
     try:
-        from hermes_cli.auth import PROVIDER_REGISTRY, resolve_api_key_provider_credentials
+        from clawg_cli.auth import PROVIDER_REGISTRY, resolve_api_key_provider_credentials
     except ImportError:
         logger.debug("Could not import PROVIDER_REGISTRY for API-key fallback")
         return None, None
@@ -507,7 +507,7 @@ def _resolve_api_key_provider() -> Tuple[Optional[OpenAI], Optional[str]]:
         if "api.kimi.com" in base_url.lower():
             extra["default_headers"] = {"User-Agent": "KimiCLI/1.0"}
         elif "api.githubcopilot.com" in base_url.lower():
-            from hermes_cli.models import copilot_default_headers
+            from clawg_cli.models import copilot_default_headers
 
             extra["default_headers"] = copilot_default_headers()
         return OpenAI(api_key=api_key, base_url=base_url, **extra), model
@@ -568,15 +568,15 @@ def _try_nous() -> Tuple[Optional[OpenAI], Optional[str]]:
 def _read_main_model() -> str:
     """Read the user's configured main model from config/env.
 
-    Falls back through HERMES_MODEL → LLM_MODEL → config.yaml model.default
+    Falls back through CLAWG_MODEL → LLM_MODEL → config.yaml model.default
     so the auxiliary client can use the same model as the main agent when no
     dedicated auxiliary model is available.
     """
-    from_env = os.getenv("OPENAI_MODEL") or os.getenv("HERMES_MODEL") or os.getenv("LLM_MODEL")
+    from_env = os.getenv("OPENAI_MODEL") or os.getenv("CLAWG_MODEL") or os.getenv("LLM_MODEL")
     if from_env:
         return from_env.strip()
     try:
-        from hermes_cli.config import load_config
+        from clawg_cli.config import load_config
         cfg = load_config()
         model_cfg = cfg.get("model", {})
         if isinstance(model_cfg, str) and model_cfg.strip():
@@ -598,7 +598,7 @@ def _resolve_custom_runtime() -> Tuple[Optional[str], Optional[str]]:
     environment.
     """
     try:
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from clawg_cli.runtime_provider import resolve_runtime_provider
 
         runtime = resolve_runtime_provider(requested="custom")
     except Exception as exc:
@@ -657,7 +657,7 @@ def _try_anthropic() -> Tuple[Optional[Any], Optional[str]]:
     # Allow base URL override from config.yaml model.base_url
     base_url = _ANTHROPIC_DEFAULT_BASE_URL
     try:
-        from hermes_cli.config import load_config
+        from clawg_cli.config import load_config
         cfg = load_config()
         model_cfg = cfg.get("model")
         if isinstance(model_cfg, dict):
@@ -684,13 +684,13 @@ def _resolve_forced_provider(forced: str) -> Tuple[Optional[OpenAI], Optional[st
     if forced == "nous":
         client, model = _try_nous()
         if client is None:
-            logger.warning("auxiliary.provider=nous but Nous Portal not configured (run: hermes login)")
+            logger.warning("auxiliary.provider=nous but Nous Portal not configured (run: clawg login)")
         return client, model
 
     if forced == "codex":
         client, model = _try_codex()
         if client is None:
-            logger.warning("auxiliary.provider=codex but no Codex OAuth token found (run: hermes model)")
+            logger.warning("auxiliary.provider=codex but no Codex OAuth token found (run: clawg model)")
         return client, model
 
     if forced == "main":
@@ -748,7 +748,7 @@ def _to_async_client(sync_client, model: str):
     if "openrouter" in base_lower:
         async_kwargs["default_headers"] = dict(_OR_HEADERS)
     elif "api.githubcopilot.com" in base_lower:
-        from hermes_cli.models import copilot_default_headers
+        from clawg_cli.models import copilot_default_headers
 
         async_kwargs["default_headers"] = copilot_default_headers()
     elif "api.kimi.com" in base_lower:
@@ -831,7 +831,7 @@ def resolve_provider_client(
         client, default = _try_nous()
         if client is None:
             logger.warning("resolve_provider_client: nous requested "
-                           "but Nous Portal not configured (run: hermes login)")
+                           "but Nous Portal not configured (run: clawg login)")
             return None, None
         final_model = model or default
         return (_to_async_client(client, final_model) if async_mode
@@ -845,7 +845,7 @@ def resolve_provider_client(
             codex_token = _read_codex_access_token()
             if not codex_token:
                 logger.warning("resolve_provider_client: openai-codex requested "
-                               "but no Codex OAuth token found (run: hermes model)")
+                               "but no Codex OAuth token found (run: clawg model)")
                 return None, None
             final_model = model or _CODEX_AUX_MODEL
             raw_client = OpenAI(api_key=codex_token, base_url=_CODEX_AUX_BASE_URL)
@@ -854,7 +854,7 @@ def resolve_provider_client(
         client, default = _try_codex()
         if client is None:
             logger.warning("resolve_provider_client: openai-codex requested "
-                           "but no Codex OAuth token found (run: hermes model)")
+                           "but no Codex OAuth token found (run: clawg model)")
             return None, None
         final_model = model or default
         return (_to_async_client(client, final_model) if async_mode
@@ -892,9 +892,9 @@ def resolve_provider_client(
 
     # ── API-key providers from PROVIDER_REGISTRY ─────────────────────
     try:
-        from hermes_cli.auth import PROVIDER_REGISTRY, resolve_api_key_provider_credentials
+        from clawg_cli.auth import PROVIDER_REGISTRY, resolve_api_key_provider_credentials
     except ImportError:
-        logger.debug("hermes_cli.auth not available for provider %s", provider)
+        logger.debug("clawg_cli.auth not available for provider %s", provider)
         return None, None
 
     pconfig = PROVIDER_REGISTRY.get(provider)
@@ -932,7 +932,7 @@ def resolve_provider_client(
         if "api.kimi.com" in base_url.lower():
             headers["User-Agent"] = "KimiCLI/1.0"
         elif "api.githubcopilot.com" in base_url.lower():
-            from hermes_cli.models import copilot_default_headers
+            from clawg_cli.models import copilot_default_headers
 
             headers.update(copilot_default_headers())
 
@@ -1036,7 +1036,7 @@ def _strict_vision_backend_available(provider: str) -> bool:
 def _preferred_main_vision_provider() -> Optional[str]:
     """Return the selected main provider when it is also a supported vision backend."""
     try:
-        from hermes_cli.config import load_config
+        from clawg_cli.config import load_config
 
         config = load_config()
         model_cfg = config.get("model", {})
@@ -1054,7 +1054,7 @@ def get_available_vision_backends() -> List[str]:
 
     This is the single source of truth for setup, tool gating, and runtime
     auto-routing of vision tasks. The selected main provider is preferred when
-    it is also a known-good vision backend; otherwise Hermes falls back through
+    it is also a known-good vision backend; otherwise clawg falls back through
     the standard conservative order.
     """
     ordered = list(_VISION_AUTO_PROVIDER_ORDER)
@@ -1256,7 +1256,7 @@ def _resolve_task_provider_model(
 
     if task:
         try:
-            from hermes_cli.config import load_config
+            from clawg_cli.config import load_config
             config = load_config()
         except ImportError:
             config = {}
@@ -1347,7 +1347,7 @@ def _build_call_kwargs(
     # Provider-specific extra_body
     merged_extra = dict(extra_body or {})
     if provider == "nous" or auxiliary_is_nous:
-        merged_extra.setdefault("tags", []).extend(["product=hermes-agent"])
+        merged_extra.setdefault("tags", []).extend(["product=clawg"])
     if merged_extra:
         kwargs["extra_body"] = merged_extra
 
@@ -1416,7 +1416,7 @@ def call_llm(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup"
+                f"Run: clawg setup"
             )
         resolved_provider = effective_provider or resolved_provider
     else:
@@ -1436,7 +1436,7 @@ def call_llm(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup")
+                f"Run: clawg setup")
 
     kwargs = _build_call_kwargs(
         resolved_provider, final_model, messages,
@@ -1498,7 +1498,7 @@ async def async_call_llm(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup"
+                f"Run: clawg setup"
             )
         resolved_provider = effective_provider or resolved_provider
     else:
@@ -1519,7 +1519,7 @@ async def async_call_llm(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup")
+                f"Run: clawg setup")
 
     kwargs = _build_call_kwargs(
         resolved_provider, final_model, messages,

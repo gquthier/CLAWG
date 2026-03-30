@@ -1,4 +1,4 @@
-"""Hermes execution environment backends.
+"""clawg execution environment backends.
 
 Each backend provides the same interface (BaseEnvironment ABC) for running
 shell commands in a specific execution context: local, Docker, Singularity,

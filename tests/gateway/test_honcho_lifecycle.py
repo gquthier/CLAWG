@@ -43,7 +43,7 @@ class TestGatewayHonchoLifecycle:
         hcfg = SimpleNamespace(
             enabled=True,
             api_key="honcho-key",
-            ai_peer="hermes",
+            ai_peer="clawg",
             peer_name="alice",
             context_tokens=123,
             peer_memory_mode=lambda peer: "hybrid",
@@ -69,7 +69,7 @@ class TestGatewayHonchoLifecycle:
         hcfg = SimpleNamespace(
             enabled=False,
             api_key="honcho-key",
-            ai_peer="hermes",
+            ai_peer="clawg",
             peer_name="alice",
         )
 

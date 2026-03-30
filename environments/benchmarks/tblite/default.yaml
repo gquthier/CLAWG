@@ -25,7 +25,7 @@ env:
   dataset_name: "NousResearch/openthoughts-tblite"
   test_timeout: 600
   task_timeout: 1200           # 20 min wall-clock per task (TBLite tasks are faster)
-  tokenizer_name: "NousResearch/Hermes-3-Llama-3.1-8B"
+  tokenizer_name: "NousResearch/Clawg-3-Llama-3.1-8B"
   use_wandb: true
   wandb_name: "openthoughts-tblite"
   ensure_scores_are_not_same: false

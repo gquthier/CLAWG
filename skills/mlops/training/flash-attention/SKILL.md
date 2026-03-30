@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [flash-attn, torch, transformers]
 metadata:
-  hermes:
+  clawg:
     tags: [Optimization, Flash Attention, Attention Optimization, Memory Efficiency, Speed Optimization, Long Context, PyTorch, SDPA, H100, FP8, Transformers]
 
 ---

@@ -2,11 +2,11 @@
 name: excalidraw
 description: Create hand-drawn style diagrams using Excalidraw JSON format. Generate .excalidraw files for architecture diagrams, flowcharts, sequence diagrams, concept maps, and more. Files can be opened at excalidraw.com or uploaded for shareable links.
 version: 1.0.0
-author: Hermes Agent
+author: CLAWG
 license: MIT
 dependencies: []
 metadata:
-  hermes:
+  clawg:
     tags: [Excalidraw, Diagrams, Flowcharts, Architecture, Visualization, JSON]
     related_skills: []
 
@@ -31,7 +31,7 @@ Wrap your elements array in the standard `.excalidraw` envelope and save with `w
 {
   "type": "excalidraw",
   "version": 2,
-  "source": "hermes-agent",
+  "source": "clawg",
   "elements": [ ...your elements array here... ],
   "appState": {
     "viewBackgroundColor": "#ffffff"

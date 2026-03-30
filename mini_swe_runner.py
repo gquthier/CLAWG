@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Mini-SWE-Agent Runner with Hermes Trajectory Format
+Mini-SWE-Agent Runner with clawg Trajectory Format
 
 This module provides a runner that uses mini-swe-agent's execution environments
-(local, docker, modal) but outputs trajectories in the Hermes-Agent format
+(local, docker, modal) but outputs trajectories in the clawg format
 compatible with batch_runner.py and trajectory_compressor.py.
 
 Features:
 - Uses mini-swe-agent's Docker, Modal, or Local environments for command execution
-- Outputs trajectories in Hermes format (from/value pairs with <tool_call>/<tool_response> XML)
+- Outputs trajectories in clawg format (from/value pairs with <tool_call>/<tool_response> XML)
 - Compatible with the trajectory compression pipeline
 - Supports batch processing from JSONL prompt files
 
@@ -50,7 +50,7 @@ ensure_minisweagent_on_path(Path(__file__).resolve().parent)
 
 
 # ============================================================================
-# Terminal Tool Definition (matches Hermes-Agent format)
+# Terminal Tool Definition (matches clawg format)
 # ============================================================================
 
 TERMINAL_TOOL_DEFINITION = {
@@ -139,13 +139,13 @@ def create_environment(
 
 
 # ============================================================================
-# Mini-SWE Runner with Hermes Trajectory Format
+# Mini-SWE Runner with clawg Trajectory Format
 # ============================================================================
 
 class MiniSWERunner:
     """
     Agent runner that uses mini-swe-agent environments but outputs
-    trajectories in Hermes-Agent format.
+    trajectories in clawg format.
     """
     
     def __init__(
@@ -289,14 +289,14 @@ class MiniSWERunner:
             })
         return json.dumps(formatted_tools, ensure_ascii=False)
     
-    def _convert_to_hermes_format(
+    def _convert_to_clawg_format(
         self,
         messages: List[Dict[str, Any]],
         user_query: str,
         completed: bool
     ) -> List[Dict[str, Any]]:
         """
-        Convert internal message format to Hermes trajectory format.
+        Convert internal message format to clawg trajectory format.
         
         This produces the exact format used by batch_runner.py.
         """
@@ -543,8 +543,8 @@ Complete the user's task step by step."""
             # Cleanup environment
             self._cleanup_env()
         
-        # Convert to Hermes trajectory format
-        trajectory = self._convert_to_hermes_format(messages, task, completed)
+        # Convert to clawg trajectory format
+        trajectory = self._convert_to_clawg_format(messages, task, completed)
         
         return {
             "conversations": trajectory,
@@ -629,7 +629,7 @@ def main(
     verbose: bool = False,
 ):
     """
-    Run mini-swe-agent tasks with Hermes trajectory format output.
+    Run mini-swe-agent tasks with clawg trajectory format output.
     
     Args:
         task: Single task to run (use this OR prompts_file)
@@ -655,7 +655,7 @@ def main(
         # Batch from file
         python mini_swe_runner.py --prompts_file tasks.jsonl --output_file results.jsonl
     """
-    print("🚀 Mini-SWE Runner with Hermes Trajectory Format")
+    print("🚀 Mini-SWE Runner with clawg Trajectory Format")
     print("=" * 60)
     
     # Initialize runner

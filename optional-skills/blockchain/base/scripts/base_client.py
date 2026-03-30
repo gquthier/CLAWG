@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Base Blockchain CLI Tool for Hermes Agent
+Base Blockchain CLI Tool for CLAWG
 ------------------------------------------
 Queries the Base (Ethereum L2) JSON-RPC API and CoinGecko for enriched on-chain data.
 Uses only Python standard library — no external packages required.
@@ -81,7 +81,7 @@ def _http_get_json(url: str, timeout: int = 10, retries: int = 2) -> Any:
     """GET JSON from a URL with retry on 429 rate-limit. Returns parsed JSON or None."""
     for attempt in range(retries + 1):
         req = urllib.request.Request(
-            url, headers={"Accept": "application/json", "User-Agent": "HermesAgent/1.0"},
+            url, headers={"Accept": "application/json", "User-Agent": "ClawgAgent/1.0"},
         )
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -103,7 +103,7 @@ def _rpc_call(method: str, params: list = None, retries: int = 2) -> Any:
         "method": method, "params": params or [],
     }).encode()
 
-    _headers = {"Content-Type": "application/json", "User-Agent": "HermesAgent/1.0"}
+    _headers = {"Content-Type": "application/json", "User-Agent": "ClawgAgent/1.0"}
 
     for attempt in range(retries + 1):
         req = urllib.request.Request(
@@ -140,7 +140,7 @@ _BATCH_LIMIT = 10  # Base public RPC limits to 10 calls per batch
 def _rpc_batch_chunk(items: list) -> list:
     """Send a single batch of JSON-RPC requests (max _BATCH_LIMIT)."""
     payload = json.dumps(items).encode()
-    _headers = {"Content-Type": "application/json", "User-Agent": "HermesAgent/1.0"}
+    _headers = {"Content-Type": "application/json", "User-Agent": "ClawgAgent/1.0"}
 
     for attempt in range(3):
         req = urllib.request.Request(
@@ -249,7 +249,7 @@ def _eth_call(to: str, selector: str, args: str = "", block: str = "latest") -> 
         }).encode()
         req = urllib.request.Request(
             RPC_URL, data=payload,
-            headers={"Content-Type": "application/json", "User-Agent": "HermesAgent/1.0"},
+            headers={"Content-Type": "application/json", "User-Agent": "ClawgAgent/1.0"},
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=20) as resp:
@@ -956,7 +956,7 @@ def cmd_price(args):
 def main():
     parser = argparse.ArgumentParser(
         prog="base_client.py",
-        description="Base blockchain query tool for Hermes Agent",
+        description="Base blockchain query tool for CLAWG",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 

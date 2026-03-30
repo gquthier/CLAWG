@@ -19,7 +19,7 @@ class TestHonchoSession:
         return HonchoSession(
             key="telegram:12345",
             user_peer_id="user-telegram-12345",
-            assistant_peer_id="hermes-assistant",
+            assistant_peer_id="clawg-assistant",
             honcho_session_id="telegram-12345",
         )
 

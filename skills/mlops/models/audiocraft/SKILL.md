@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [audiocraft, torch>=2.0.0, transformers>=4.30.0]
 metadata:
-  hermes:
+  clawg:
     tags: [Multimodal, Audio Generation, Text-to-Music, Text-to-Audio, MusicGen]
 
 ---

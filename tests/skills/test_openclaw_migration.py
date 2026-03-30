@@ -12,12 +12,12 @@ SCRIPT_PATH = (
     / "migration"
     / "openclaw-migration"
     / "scripts"
-    / "openclaw_to_hermes.py"
+    / "openclaw_to_clawg.py"
 )
 
 
 def load_module():
-    spec = importlib.util.spec_from_file_location("openclaw_to_hermes", SCRIPT_PATH)
+    spec = importlib.util.spec_from_file_location("openclaw_to_clawg", SCRIPT_PATH)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     sys.modules[spec.name] = module
@@ -48,12 +48,12 @@ def test_extract_markdown_entries_promotes_heading_context():
 
 ### Active Projects
 
-- Hermes Agent
+- CLAWG
 """
     entries = mod.extract_markdown_entries(text)
     assert "Tyler Williams: Founder of VANTA Research" in entries
     assert "Tyler Williams: Timezone: America/Los_Angeles" in entries
-    assert "Tyler Williams > Active Projects: Hermes Agent" in entries
+    assert "Tyler Williams > Active Projects: CLAWG" in entries
 
 
 def test_merge_entries_respects_limit_and_reports_overflow():
@@ -105,7 +105,7 @@ def test_resolve_selected_options_rejects_unknown_preset():
 def test_migrator_copies_skill_and_merges_allowlist(tmp_path: Path):
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
 
     (source / "workspace" / "skills" / "demo-skill").mkdir(parents=True)
@@ -150,7 +150,7 @@ def test_migrator_copies_skill_and_merges_allowlist(tmp_path: Path):
 def test_migrator_optionally_imports_supported_secrets_and_messaging_settings(tmp_path: Path):
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
 
     (source / "credentials").mkdir(parents=True)
     (source / "openclaw.json").write_text(
@@ -188,7 +188,7 @@ def test_migrator_optionally_imports_supported_secrets_and_messaging_settings(tm
 def test_migrator_can_execute_only_selected_categories(tmp_path: Path):
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
 
     (source / "workspace" / "skills" / "demo-skill").mkdir(parents=True)
@@ -225,7 +225,7 @@ def test_migrator_can_execute_only_selected_categories(tmp_path: Path):
 def test_migrator_records_preset_in_report(tmp_path: Path):
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
     (target / "config.yaml").write_text("command_allowlist: []\n", encoding="utf-8")
 
@@ -251,7 +251,7 @@ def test_migrator_records_preset_in_report(tmp_path: Path):
 def test_migrator_exports_full_overflow_entries(tmp_path: Path):
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
     (target / "config.yaml").write_text("memory:\n  memory_char_limit: 10\n  user_char_limit: 10\n", encoding="utf-8")
     (source / "workspace").mkdir(parents=True)
@@ -282,7 +282,7 @@ def test_migrator_exports_full_overflow_entries(tmp_path: Path):
 def test_migrator_can_rename_conflicting_imported_skill(tmp_path: Path):
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
 
     source_skill = source / "workspace" / "skills" / "demo-skill"
@@ -321,7 +321,7 @@ def test_migrator_can_rename_conflicting_imported_skill(tmp_path: Path):
 def test_migrator_can_overwrite_conflicting_imported_skill_with_backup(tmp_path: Path):
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
 
     source_skill = source / "workspace" / "skills" / "demo-skill"
@@ -359,7 +359,7 @@ def test_discord_settings_migrated(tmp_path: Path):
     """Discord bot token and allowlist migrate to .env."""
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
     source.mkdir()
 
@@ -390,7 +390,7 @@ def test_slack_settings_migrated(tmp_path: Path):
     """Slack bot/app tokens and allowlist migrate to .env."""
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
     source.mkdir()
 
@@ -423,7 +423,7 @@ def test_signal_settings_migrated(tmp_path: Path):
     """Signal account, HTTP URL, and allowlist migrate to .env."""
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
     source.mkdir()
 
@@ -456,7 +456,7 @@ def test_model_config_migrated(tmp_path: Path):
     """Default model setting migrates to config.yaml."""
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
     source.mkdir()
 
@@ -483,7 +483,7 @@ def test_model_config_object_format(tmp_path: Path):
     """Model config handles {primary: ...} object format."""
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
     source.mkdir()
 
@@ -509,7 +509,7 @@ def test_tts_config_migrated(tmp_path: Path):
     """TTS provider and voice settings migrate to config.yaml."""
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
     source.mkdir()
 
@@ -544,7 +544,7 @@ def test_shared_skills_migrated(tmp_path: Path):
     """Shared skills from ~/.openclaw/skills/ are migrated."""
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
 
     # Create a shared skill (not in workspace/skills/)
@@ -568,7 +568,7 @@ def test_daily_memory_merged(tmp_path: Path):
     """Daily memory notes from workspace/memory/*.md are merged into MEMORY.md."""
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
 
     mem_dir = source / "workspace" / "memory"
@@ -599,7 +599,7 @@ def test_provider_keys_require_migrate_secrets_flag(tmp_path: Path):
     """Provider keys migration is double-gated: needs option + --migrate-secrets."""
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     target.mkdir()
     source.mkdir()
 
@@ -643,7 +643,7 @@ def test_workspace_agents_records_skip_when_missing(tmp_path: Path):
     """Bug fix: workspace-agents records 'skipped' when source is missing."""
     mod = load_module()
     source = tmp_path / ".openclaw"
-    target = tmp_path / ".hermes"
+    target = tmp_path / ".clawg"
     source.mkdir()
     target.mkdir()
 

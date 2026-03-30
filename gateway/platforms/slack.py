@@ -62,7 +62,7 @@ class SlackAdapter(BasePlatformAdapter):
       - DMs and channel messages (mention-gated in channels)
       - Thread support
       - File/image/audio attachments
-      - Slash commands (/hermes)
+      - Slash commands (/clawg)
       - Typing indicators (not natively supported by Slack bots)
     """
 
@@ -114,8 +114,8 @@ class SlackAdapter(BasePlatformAdapter):
                 pass
 
             # Register slash command handler
-            @self._app.command("/hermes")
-            async def handle_hermes_command(ack, command):
+            @self._app.command("/clawg")
+            async def handle_clawg_command(ack, command):
                 await ack()
                 await self._handle_slash_command(command)
 
@@ -784,14 +784,14 @@ class SlackAdapter(BasePlatformAdapter):
         await self._add_reaction(channel_id, ts, "white_check_mark")
 
     async def _handle_slash_command(self, command: dict) -> None:
-        """Handle /hermes slash command."""
+        """Handle /clawg slash command."""
         text = command.get("text", "").strip()
         user_id = command.get("user_id", "")
         channel_id = command.get("channel_id", "")
 
         # Map subcommands to gateway commands — derived from central registry.
         # Also keep "compact" as a Slack-specific alias for /compress.
-        from hermes_cli.commands import slack_subcommand_map
+        from clawg_cli.commands import slack_subcommand_map
         subcommand_map = slack_subcommand_map()
         subcommand_map["compact"] = "/compress"
         first_word = text.split()[0] if text else ""

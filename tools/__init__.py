@@ -2,7 +2,7 @@
 """
 Tools Package
 
-This package contains all the specific tool implementations for the Hermes Agent.
+This package contains all the specific tool implementations for the CLAWG.
 Each module provides specialized functionality for different capabilities:
 
 - web_tools: Web search, content extraction, and crawling
@@ -82,7 +82,7 @@ from .browser_tool import (
     BROWSER_TOOL_SCHEMAS
 )
 
-# Cronjob management tools (CLI-only, hermes-cli toolset)
+# Cronjob management tools (CLI-only, clawg-cli toolset)
 from .cronjob_tools import (
     cronjob,
     schedule_cronjob,

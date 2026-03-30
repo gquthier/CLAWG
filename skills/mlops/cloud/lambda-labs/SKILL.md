@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [lambda-cloud-client>=1.0.0]
 metadata:
-  hermes:
+  clawg:
     tags: [Infrastructure, GPU Cloud, Training, Inference, Lambda Labs]
 
 ---

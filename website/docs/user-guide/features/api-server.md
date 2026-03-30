@@ -1,12 +1,12 @@
 ---
 sidebar_position: 14
 title: "API Server"
-description: "Expose hermes-agent as an OpenAI-compatible API for any frontend"
+description: "Expose clawg as an OpenAI-compatible API for any frontend"
 ---
 
 # API Server
 
-The API server exposes hermes-agent as an OpenAI-compatible HTTP endpoint. Any frontend that speaks the OpenAI format — Open WebUI, LobeChat, LibreChat, NextChat, ChatBox, and hundreds more — can connect to hermes-agent and use it as a backend.
+The API server exposes clawg as an OpenAI-compatible HTTP endpoint. Any frontend that speaks the OpenAI format — Open WebUI, LobeChat, LibreChat, NextChat, ChatBox, and hundreds more — can connect to clawg and use it as a backend.
 
 Your agent handles requests with its full toolset (terminal, file operations, web search, memory, skills) and returns the final response. Tool calls execute invisibly server-side.
 
@@ -14,7 +14,7 @@ Your agent handles requests with its full toolset (terminal, file operations, we
 
 ### 1. Enable the API server
 
-Add to `~/.hermes/.env`:
+Add to `~/.clawg/.env`:
 
 ```bash
 API_SERVER_ENABLED=true
@@ -23,7 +23,7 @@ API_SERVER_ENABLED=true
 ### 2. Start the gateway
 
 ```bash
-hermes gateway
+clawg gateway
 ```
 
 You'll see:
@@ -40,7 +40,7 @@ Point any OpenAI-compatible client at `http://localhost:8642/v1`:
 # Test with curl
 curl http://localhost:8642/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -d '{"model": "hermes-agent", "messages": [{"role": "user", "content": "Hello!"}]}'
+  -d '{"model": "clawg", "messages": [{"role": "user", "content": "Hello!"}]}'
 ```
 
 Or connect Open WebUI, LobeChat, or any other frontend — see the [Open WebUI integration guide](/docs/user-guide/messaging/open-webui) for step-by-step instructions.
@@ -54,7 +54,7 @@ Standard OpenAI Chat Completions format. Stateless — the full conversation is 
 **Request:**
 ```json
 {
-  "model": "hermes-agent",
+  "model": "clawg",
   "messages": [
     {"role": "system", "content": "You are a Python expert."},
     {"role": "user", "content": "Write a fibonacci function"}
@@ -69,7 +69,7 @@ Standard OpenAI Chat Completions format. Stateless — the full conversation is 
   "id": "chatcmpl-abc123",
   "object": "chat.completion",
   "created": 1710000000,
-  "model": "hermes-agent",
+  "model": "clawg",
   "choices": [{
     "index": 0,
     "message": {"role": "assistant", "content": "Here's a fibonacci function..."},
@@ -88,7 +88,7 @@ OpenAI Responses API format. Supports server-side conversation state via `previo
 **Request:**
 ```json
 {
-  "model": "hermes-agent",
+  "model": "clawg",
   "input": "What files are in my project?",
   "instructions": "You are a helpful coding assistant.",
   "store": true
@@ -101,7 +101,7 @@ OpenAI Responses API format. Supports server-side conversation state via `previo
   "id": "resp_abc123",
   "object": "response",
   "status": "completed",
-  "model": "hermes-agent",
+  "model": "clawg",
   "output": [
     {"type": "function_call", "name": "terminal", "arguments": "{\"command\": \"ls\"}", "call_id": "call_1"},
     {"type": "function_call_output", "call_id": "call_1", "output": "README.md src/ tests/"},
@@ -146,7 +146,7 @@ Delete a stored response.
 
 ### GET /v1/models
 
-Lists `hermes-agent` as an available model. Required by most frontends for model discovery.
+Lists `clawg` as an available model. Required by most frontends for model discovery.
 
 ### GET /health
 
@@ -154,7 +154,7 @@ Health check. Returns `{"status": "ok"}`.
 
 ## System Prompt Handling
 
-When a frontend sends a `system` message (Chat Completions) or `instructions` field (Responses API), hermes-agent **layers it on top** of its core system prompt. Your agent keeps all its tools, memory, and skills — the frontend's system prompt adds extra instructions.
+When a frontend sends a `system` message (Chat Completions) or `instructions` field (Responses API), clawg **layers it on top** of its core system prompt. Your agent keeps all its tools, memory, and skills — the frontend's system prompt adds extra instructions.
 
 This means you can customize behavior per-frontend without losing capabilities:
 - Open WebUI system prompt: "You are a Python expert. Always include type hints."
@@ -171,7 +171,7 @@ Authorization: Bearer ***
 Configure the key via `API_SERVER_KEY` env var. If no key is set, all requests are allowed (for local-only use).
 
 :::warning Security
-The API server gives full access to hermes-agent's toolset, **including terminal commands**. If you change the bind address to `0.0.0.0` (network-accessible), **always set `API_SERVER_KEY`** — without it, anyone on your network can execute arbitrary commands on your machine.
+The API server gives full access to clawg's toolset, **including terminal commands**. If you change the bind address to `0.0.0.0` (network-accessible), **always set `API_SERVER_KEY`** — without it, anyone on your network can execute arbitrary commands on your machine.
 
 The default bind address (`127.0.0.1`) is safe for local-only use.
 :::

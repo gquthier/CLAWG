@@ -117,14 +117,14 @@ class TelegramAdapter(BasePlatformAdapter):
         self._bot: Optional[Bot] = None
         # Buffer rapid/album photo updates so Telegram image bursts are handled
         # as a single MessageEvent instead of self-interrupting multiple turns.
-        self._media_batch_delay_seconds = float(os.getenv("HERMES_TELEGRAM_MEDIA_BATCH_DELAY_SECONDS", "0.8"))
+        self._media_batch_delay_seconds = float(os.getenv("CLAWG_TELEGRAM_MEDIA_BATCH_DELAY_SECONDS", "0.8"))
         self._pending_photo_batches: Dict[str, MessageEvent] = {}
         self._pending_photo_batch_tasks: Dict[str, asyncio.Task] = {}
         self._media_group_events: Dict[str, MessageEvent] = {}
         self._media_group_tasks: Dict[str, asyncio.Task] = {}
         # Buffer rapid text messages so Telegram client-side splits of long
         # messages are aggregated into a single MessageEvent.
-        self._text_batch_delay_seconds = float(os.getenv("HERMES_TELEGRAM_TEXT_BATCH_DELAY_SECONDS", "0.6"))
+        self._text_batch_delay_seconds = float(os.getenv("CLAWG_TELEGRAM_TEXT_BATCH_DELAY_SECONDS", "0.6"))
         self._pending_text_batches: Dict[str, MessageEvent] = {}
         self._pending_text_batch_tasks: Dict[str, asyncio.Task] = {}
         self._token_lock_identity: Optional[str] = None
@@ -144,7 +144,7 @@ class TelegramAdapter(BasePlatformAdapter):
             return
         message = (
             "Another Telegram bot poller is already using this token. "
-            "Hermes stopped Telegram polling to avoid endless retry spam. "
+            "clawg stopped Telegram polling to avoid endless retry spam. "
             "Make sure only one gateway instance is running for this bot token."
         )
         logger.error("[%s] %s Original error: %s", self.name, message, error)
@@ -181,7 +181,7 @@ class TelegramAdapter(BasePlatformAdapter):
             if not acquired:
                 owner_pid = existing.get("pid") if isinstance(existing, dict) else None
                 message = (
-                    "Another local Hermes gateway is already using this Telegram bot token"
+                    "Another local clawg gateway is already using this Telegram bot token"
                     + (f" (PID {owner_pid})." if owner_pid else ".")
                     + " Stop the other gateway before starting a second Telegram poller."
                 )
@@ -253,7 +253,7 @@ class TelegramAdapter(BasePlatformAdapter):
             # gateway command there automatically adds it to the Telegram menu.
             try:
                 from telegram import BotCommand
-                from hermes_cli.commands import telegram_bot_commands
+                from clawg_cli.commands import telegram_bot_commands
                 await self._bot.set_my_commands([
                     BotCommand(name, desc) for name, desc in telegram_bot_commands()
                 ])

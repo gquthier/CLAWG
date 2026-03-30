@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
 title: "Telegram"
-description: "Set up Hermes Agent as a Telegram bot"
+description: "Set up CLAWG as a Telegram bot"
 ---
 
 # Telegram Setup
 
-Hermes Agent integrates with Telegram as a full-featured conversational bot. Once connected, you can chat with your agent from any device, send voice memos that get auto-transcribed, receive scheduled task results, and use the agent in group chats. The integration is built on [python-telegram-bot](https://python-telegram-bot.org/) and supports text, voice, images, and file attachments.
+CLAWG integrates with Telegram as a full-featured conversational bot. Once connected, you can chat with your agent from any device, send voice memos that get auto-transcribed, receive scheduled task results, and use the agent in group chats. The integration is built on [python-telegram-bot](https://python-telegram-bot.org/) and supports text, voice, images, and file attachments.
 
 ## Step 1: Create a Bot via BotFather
 
@@ -14,8 +14,8 @@ Every Telegram bot requires an API token issued by [@BotFather](https://t.me/Bot
 
 1. Open Telegram and search for **@BotFather**, or visit [t.me/BotFather](https://t.me/BotFather)
 2. Send `/newbot`
-3. Choose a **display name** (e.g., "Hermes Agent") — this can be anything
-4. Choose a **username** — this must be unique and end in `bot` (e.g., `my_hermes_bot`)
+3. Choose a **display name** (e.g., "CLAWG") — this can be anything
+4. Choose a **username** — this must be unique and end in `bot` (e.g., `my_clawg_bot`)
 5. BotFather replies with your **API token**. It looks like this:
 
 ```
@@ -77,7 +77,7 @@ An alternative to disabling privacy mode: promote the bot to **group admin**. Ad
 
 ## Step 4: Find Your User ID
 
-Hermes Agent uses numeric Telegram user IDs to control access. Your user ID is **not** your username — it's a number like `123456789`.
+CLAWG uses numeric Telegram user IDs to control access. Your user ID is **not** your username — it's a number like `123456789`.
 
 **Method 1 (recommended):** Message [@userinfobot](https://t.me/userinfobot) — it instantly replies with your user ID.
 
@@ -85,19 +85,19 @@ Hermes Agent uses numeric Telegram user IDs to control access. Your user ID is *
 
 Save this number; you'll need it for the next step.
 
-## Step 5: Configure Hermes
+## Step 5: Configure clawg
 
 ### Option A: Interactive Setup (Recommended)
 
 ```bash
-hermes gateway setup
+clawg gateway setup
 ```
 
 Select **Telegram** when prompted. The wizard asks for your bot token and allowed user IDs, then writes the configuration for you.
 
 ### Option B: Manual Configuration
 
-Add the following to `~/.hermes/.env`:
+Add the following to `~/.clawg/.env`:
 
 ```bash
 TELEGRAM_BOT_TOKEN=123456789:ABCdefGHIjklMNOpqrSTUvwxYZ
@@ -107,7 +107,7 @@ TELEGRAM_ALLOWED_USERS=123456789    # Comma-separated for multiple users
 ### Start the Gateway
 
 ```bash
-hermes gateway
+clawg gateway
 ```
 
 The bot should come online within seconds. Send it a message on Telegram to verify.
@@ -116,7 +116,7 @@ The bot should come online within seconds. Send it a message on Telegram to veri
 
 Use the `/sethome` command in any Telegram chat (DM or group) to designate it as the **home channel**. Scheduled tasks (cron jobs) deliver their results to this channel.
 
-You can also set it manually in `~/.hermes/.env`:
+You can also set it manually in `~/.clawg/.env`:
 
 ```bash
 TELEGRAM_HOME_CHANNEL=-1001234567890
@@ -131,9 +131,9 @@ Group chat IDs are negative numbers (e.g., `-1001234567890`). Your personal DM c
 
 ### Incoming Voice (Speech-to-Text)
 
-Voice messages you send on Telegram are automatically transcribed by Hermes's configured STT provider and injected as text into the conversation.
+Voice messages you send on Telegram are automatically transcribed by clawg's configured STT provider and injected as text into the conversation.
 
-- `local` uses `faster-whisper` on the machine running Hermes — no API key required
+- `local` uses `faster-whisper` on the machine running clawg — no API key required
 - `groq` uses Groq Whisper and requires `GROQ_API_KEY`
 - `openai` uses OpenAI Whisper and requires `VOICE_TOOLS_OPENAI_KEY`
 
@@ -158,10 +158,10 @@ Configure the TTS provider in your `config.yaml` under the `tts.provider` key.
 
 ## Group Chat Usage
 
-Hermes Agent works in Telegram group chats with a few considerations:
+CLAWG works in Telegram group chats with a few considerations:
 
 - **Privacy mode** determines what messages the bot can see (see [Step 3](#step-3-privacy-mode-critical-for-groups))
-- When privacy mode is on, **@mention the bot** (e.g., `@my_hermes_bot what's the weather?`) or **reply to its messages** to interact
+- When privacy mode is on, **@mention the bot** (e.g., `@my_clawg_bot what's the weather?`) or **reply to its messages** to interact
 - When privacy mode is off (or bot is admin), the bot sees all messages and can participate naturally
 - `TELEGRAM_ALLOWED_USERS` still applies — only authorized users can trigger the bot, even in groups
 
@@ -174,10 +174,10 @@ Hermes Agent works in Telegram group chats with a few considerations:
 
 | Problem | Solution |
 |---------|----------|
-| Bot not responding at all | Verify `TELEGRAM_BOT_TOKEN` is correct. Check `hermes gateway` logs for errors. |
+| Bot not responding at all | Verify `TELEGRAM_BOT_TOKEN` is correct. Check `clawg gateway` logs for errors. |
 | Bot responds with "unauthorized" | Your user ID is not in `TELEGRAM_ALLOWED_USERS`. Double-check with @userinfobot. |
 | Bot ignores group messages | Privacy mode is likely on. Disable it (Step 3) or make the bot a group admin. **Remember to remove and re-add the bot after changing privacy.** |
-| Voice messages not transcribed | Verify STT is available: install `faster-whisper` for local transcription, or set `GROQ_API_KEY` / `VOICE_TOOLS_OPENAI_KEY` in `~/.hermes/.env`. |
+| Voice messages not transcribed | Verify STT is available: install `faster-whisper` for local transcription, or set `GROQ_API_KEY` / `VOICE_TOOLS_OPENAI_KEY` in `~/.clawg/.env`. |
 | Voice replies are files, not bubbles | Install `ffmpeg` (needed for Edge TTS Opus conversion). |
 | Bot token revoked/invalid | Generate a new token via `/revoke` then `/newbot` or `/token` in BotFather. Update your `.env` file. |
 

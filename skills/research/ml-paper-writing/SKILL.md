@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [semanticscholar, arxiv, habanero, requests]
 metadata:
-  hermes:
+  clawg:
     tags: [Academic Writing, NeurIPS, ICML, ICLR, ACL, AAAI, COLM, LaTeX, Paper Writing, Citations, Research]
 
 ---

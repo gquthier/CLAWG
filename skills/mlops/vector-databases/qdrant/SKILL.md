@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [qdrant-client>=1.12.0]
 metadata:
-  hermes:
+  clawg:
     tags: [RAG, Vector Search, Qdrant, Semantic Search, Embeddings, Similarity Search, HNSW, Production, Distributed]
 
 ---

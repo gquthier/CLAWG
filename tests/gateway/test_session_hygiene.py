@@ -297,7 +297,7 @@ async def test_session_hygiene_messages_stay_in_originating_topic(monkeypatch, t
         }
     )
 
-    monkeypatch.setattr(gateway_run, "_hermes_home", tmp_path)
+    monkeypatch.setattr(gateway_run, "_clawg_home", tmp_path)
     monkeypatch.setattr(gateway_run, "_resolve_runtime_agent_kwargs", lambda: {"api_key": "fake"})
     monkeypatch.setattr(
         "agent.model_metadata.get_model_context_length",

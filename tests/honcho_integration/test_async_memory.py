@@ -36,7 +36,7 @@ def _make_session(**kwargs) -> HonchoSession:
     return HonchoSession(
         key=kwargs.get("key", "cli:test"),
         user_peer_id=kwargs.get("user_peer_id", "eri"),
-        assistant_peer_id=kwargs.get("assistant_peer_id", "hermes"),
+        assistant_peer_id=kwargs.get("assistant_peer_id", "clawg"),
         honcho_session_id=kwargs.get("honcho_session_id", "cli-test"),
         messages=kwargs.get("messages", []),
     )
@@ -94,7 +94,7 @@ class TestWriteFrequencyParsing:
         cfg_file.write_text(json.dumps({
             "apiKey": "k",
             "writeFrequency": "turn",
-            "hosts": {"hermes": {"writeFrequency": "session"}},
+            "hosts": {"clawg": {"writeFrequency": "session"}},
         }))
         cfg = HonchoClientConfig.from_global_config(config_path=cfg_file)
         assert cfg.write_frequency == "session"
@@ -134,7 +134,7 @@ class TestMemoryModeParsing:
         cfg_file.write_text(json.dumps({
             "apiKey": "k",
             "memoryMode": "hybrid",
-            "hosts": {"hermes": {"memoryMode": "honcho"}},
+            "hosts": {"clawg": {"memoryMode": "honcho"}},
         }))
         cfg = HonchoClientConfig.from_global_config(config_path=cfg_file)
         assert cfg.memory_mode == "honcho"
@@ -143,25 +143,25 @@ class TestMemoryModeParsing:
         cfg_file = tmp_path / "config.json"
         cfg_file.write_text(json.dumps({
             "apiKey": "k",
-            "hosts": {"hermes": {"memoryMode": {
+            "hosts": {"clawg": {"memoryMode": {
                 "default": "hybrid",
-                "hermes": "honcho",
+                "clawg": "honcho",
             }}},
         }))
         cfg = HonchoClientConfig.from_global_config(config_path=cfg_file)
         assert cfg.memory_mode == "hybrid"
-        assert cfg.peer_memory_mode("hermes") == "honcho"
+        assert cfg.peer_memory_mode("clawg") == "honcho"
         assert cfg.peer_memory_mode("unknown") == "hybrid"  # falls through to default
 
     def test_object_form_no_default_falls_back_to_hybrid(self, tmp_path):
         cfg_file = tmp_path / "config.json"
         cfg_file.write_text(json.dumps({
             "apiKey": "k",
-            "hosts": {"hermes": {"memoryMode": {"hermes": "honcho"}}},
+            "hosts": {"clawg": {"memoryMode": {"clawg": "honcho"}}},
         }))
         cfg = HonchoClientConfig.from_global_config(config_path=cfg_file)
         assert cfg.memory_mode == "hybrid"
-        assert cfg.peer_memory_mode("hermes") == "honcho"
+        assert cfg.peer_memory_mode("clawg") == "honcho"
         assert cfg.peer_memory_mode("other") == "hybrid"
 
     def test_global_string_host_object_override(self, tmp_path):
@@ -170,11 +170,11 @@ class TestMemoryModeParsing:
         cfg_file.write_text(json.dumps({
             "apiKey": "k",
             "memoryMode": "honcho",
-            "hosts": {"hermes": {"memoryMode": {"default": "hybrid", "hermes": "honcho"}}},
+            "hosts": {"clawg": {"memoryMode": {"default": "hybrid", "clawg": "honcho"}}},
         }))
         cfg = HonchoClientConfig.from_global_config(config_path=cfg_file)
         assert cfg.memory_mode == "hybrid"  # host default wins over global "honcho"
-        assert cfg.peer_memory_mode("hermes") == "honcho"
+        assert cfg.peer_memory_mode("clawg") == "honcho"
 
 
 # ---------------------------------------------------------------------------
@@ -536,8 +536,8 @@ class TestNewConfigFieldDefaults:
         assert cfg.peer_memory_mode("any-peer") == "honcho"
 
     def test_peer_memory_mode_override(self):
-        cfg = HonchoClientConfig(memory_mode="hybrid", peer_memory_modes={"hermes": "honcho"})
-        assert cfg.peer_memory_mode("hermes") == "honcho"
+        cfg = HonchoClientConfig(memory_mode="hybrid", peer_memory_modes={"clawg": "honcho"})
+        assert cfg.peer_memory_mode("clawg") == "honcho"
         assert cfg.peer_memory_mode("other") == "hybrid"
 
 

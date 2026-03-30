@@ -47,12 +47,12 @@ from typing import Any, Dict, List, Optional
 # Path Configuration
 # ============================================================================
 
-# Path to tinker-atropos submodule (relative to hermes-agent root)
-HERMES_ROOT = Path(__file__).parent.parent
-TINKER_ATROPOS_ROOT = HERMES_ROOT / "tinker-atropos"
+# Path to tinker-atropos submodule (relative to clawg root)
+CLAWG_ROOT = Path(__file__).parent.parent
+TINKER_ATROPOS_ROOT = CLAWG_ROOT / "tinker-atropos"
 ENVIRONMENTS_DIR = TINKER_ATROPOS_ROOT / "tinker_atropos" / "environments"
 CONFIGS_DIR = TINKER_ATROPOS_ROOT / "configs"
-LOGS_DIR = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes")) / "logs" / "rl_training"
+LOGS_DIR = Path(os.getenv("CLAWG_HOME", Path.home() / ".clawg")) / "logs" / "rl_training"
 
 def _ensure_logs_dir():
     """Lazily create logs directory on first use (avoid side effects at import time)."""
@@ -732,7 +732,7 @@ async def rl_start_training() -> str:
     # Check API keys
     if not os.getenv("TINKER_API_KEY"):
         return json.dumps({
-            "error": "TINKER_API_KEY not set. Add it to ~/.hermes/.env",
+            "error": "TINKER_API_KEY not set. Add it to ~/.clawg/.env",
         }, indent=2)
     
     # Find environment file

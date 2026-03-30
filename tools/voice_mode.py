@@ -6,7 +6,7 @@ sounddevice or system audio players.
 
 Dependencies (optional):
     pip install sounddevice numpy
-    or: pip install hermes-agent[voice]
+    or: pip install clawg[voice]
 """
 
 import logging
@@ -103,7 +103,7 @@ SILENCE_RMS_THRESHOLD = 200  # RMS below this = silence (int16 range 0-32767)
 SILENCE_DURATION_SECONDS = 3.0  # Seconds of continuous silence before auto-stop
 
 # Temp directory for voice recordings
-_TEMP_DIR = os.path.join(tempfile.gettempdir(), "hermes_voice")
+_TEMP_DIR = os.path.join(tempfile.gettempdir(), "clawg_voice")
 
 
 # ============================================================================
@@ -364,7 +364,7 @@ class AudioRecorder:
             raise RuntimeError(
                 "Voice mode requires sounddevice and numpy.\n"
                 "Install with: pip install sounddevice numpy\n"
-                "Or: pip install hermes-agent[voice]"
+                "Or: pip install clawg[voice]"
             ) from e
 
         with self._lock:

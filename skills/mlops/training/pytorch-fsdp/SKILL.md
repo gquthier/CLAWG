@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [torch>=2.0, transformers]
 metadata:
-  hermes:
+  clawg:
     tags: [Distributed Training, PyTorch, FSDP, Data Parallel, Sharding, Mixed Precision, CPU Offloading, FSDP2, Large-Scale Training]
 
 ---

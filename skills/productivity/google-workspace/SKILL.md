@@ -1,13 +1,13 @@
 ---
 name: google-workspace
-description: Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration via Python. Uses OAuth2 with automatic token refresh. No external binaries needed — runs entirely with Google's Python client libraries in the Hermes venv.
+description: Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration via Python. Uses OAuth2 with automatic token refresh. No external binaries needed — runs entirely with Google's Python client libraries in the clawg venv.
 version: 1.0.0
 author: Nous Research
 license: MIT
 metadata:
-  hermes:
+  clawg:
     tags: [Google, Gmail, Calendar, Drive, Sheets, Docs, Contacts, Email, OAuth]
-    homepage: https://github.com/NousResearch/hermes-agent
+    homepage: https://github.com/NousResearch/clawg
     related_skills: [himalaya]
 ---
 
@@ -32,7 +32,7 @@ on CLI, Telegram, Discord, or any platform.
 Define a shorthand first:
 
 ```bash
-GSETUP="python ~/.hermes/skills/productivity/google-workspace/scripts/setup.py"
+GSETUP="python ~/.clawg/skills/productivity/google-workspace/scripts/setup.py"
 ```
 
 ### Step 0: Check if already set up
@@ -120,8 +120,8 @@ Should print `AUTHENTICATED`. Setup is complete — token refreshes automaticall
 
 ### Notes
 
-- Token is stored at `~/.hermes/google_token.json` and auto-refreshes.
-- Pending OAuth session state/verifier are stored temporarily at `~/.hermes/google_oauth_pending.json` until exchange completes.
+- Token is stored at `~/.clawg/google_token.json` and auto-refreshes.
+- Pending OAuth session state/verifier are stored temporarily at `~/.clawg/google_oauth_pending.json` until exchange completes.
 - To revoke: `$GSETUP --revoke`
 
 ## Usage
@@ -129,7 +129,7 @@ Should print `AUTHENTICATED`. Setup is complete — token refreshes automaticall
 All commands go through the API script. Set `GAPI` as a shorthand:
 
 ```bash
-GAPI="python ~/.hermes/skills/productivity/google-workspace/scripts/google_api.py"
+GAPI="python ~/.clawg/skills/productivity/google-workspace/scripts/google_api.py"
 ```
 
 ### Gmail

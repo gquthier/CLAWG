@@ -2,7 +2,7 @@
 
 # YC-Bench Evaluation
 #
-# Requires: pip install "hermes-agent[yc-bench]"
+# Requires: pip install "clawg[yc-bench]"
 #
 # Run from repo root:
 #   bash environments/benchmarks/yc_bench/run_eval.sh

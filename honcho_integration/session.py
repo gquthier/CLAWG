@@ -69,7 +69,7 @@ class HonchoSessionManager:
     """
     Manages conversation sessions using Honcho.
 
-    Runs alongside hermes' existing SQLite state and file-based memory,
+    Runs alongside clawg' existing SQLite state and file-based memory,
     adding persistent cross-session user modeling via Honcho's AI-native memory.
     """
 
@@ -232,7 +232,7 @@ class HonchoSessionManager:
             user_peer_id = self._sanitize_id(f"user-{channel}-{chat_id}")
 
         assistant_peer_id = (
-            self._config.ai_peer if self._config else "hermes-assistant"
+            self._config.ai_peer if self._config else "clawg-assistant"
         )
 
         # Sanitize session ID for Honcho
@@ -493,7 +493,7 @@ class HonchoSessionManager:
 
         try:
             result = target_peer.chat(query, reasoning_level=level) or ""
-            # Apply Hermes-side char cap before caching
+            # Apply Clawg-side char cap before caching
             if result and self._dialectic_max_chars and len(result) > self._dialectic_max_chars:
                 result = result[:self._dialectic_max_chars].rsplit(" ", 1)[0] + " …"
             return result
@@ -607,7 +607,7 @@ class HonchoSessionManager:
         except Exception as e:
             logger.warning("Failed to fetch user context from Honcho: %s", e)
 
-        # Also fetch AI peer's own representation so Hermes knows itself.
+        # Also fetch AI peer's own representation so clawg knows itself.
         try:
             ai_ctx = honcho_session.context(
                 summary=False,
@@ -704,7 +704,7 @@ class HonchoSessionManager:
 
         Args:
             session_key: The session key to associate files with.
-            memory_dir: Path to the memories directory (~/.hermes/memories/).
+            memory_dir: Path to the memories directory (~/.clawg/memories/).
 
         Returns:
             True if at least one file was uploaded, False otherwise.

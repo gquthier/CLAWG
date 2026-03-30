@@ -33,7 +33,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 
-from hermes_cli.paths import get_shared_memory_dir
+from clawg_cli.paths import get_shared_memory_dir
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ _MEMORY_THREAT_PATTERNS = [
     # Persistence via shell rc
     (r'authorized_keys', "ssh_backdoor"),
     (r'\$HOME/\.ssh|\~/\.ssh', "ssh_access"),
-    (r'\$HOME/\.(?:hermes|clawg)/\.env|\~/\.(?:hermes|clawg)/\.env', "agent_env"),
+    (r'\$HOME/\.(?:clawg|clawg)/\.env|\~/\.(?:clawg|clawg)/\.env', "agent_env"),
 ]
 
 # Subset of invisible chars for injection detection

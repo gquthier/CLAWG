@@ -1,6 +1,6 @@
 # Filesystem Checkpoints
 
-Hermes automatically snapshots your working directory before making file changes, giving you a safety net to roll back if something goes wrong. Checkpoints are **enabled by default**.
+clawg automatically snapshots your working directory before making file changes, giving you a safety net to roll back if something goes wrong. Checkpoints are **enabled by default**.
 
 ## Quick Reference
 
@@ -19,7 +19,7 @@ Hermes automatically snapshots your working directory before making file changes
 ## Configuration
 
 ```yaml
-# ~/.hermes/config.yaml
+# ~/.clawg/config.yaml
 checkpoints:
   enabled: true          # default: true
   max_snapshots: 50      # max checkpoints per directory

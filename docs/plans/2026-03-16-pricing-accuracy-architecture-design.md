@@ -4,7 +4,7 @@ Date: 2026-03-16
 
 ## Goal
 
-Hermes should only show dollar costs when they are backed by an official source for the user's actual billing path.
+clawg should only show dollar costs when they are backed by an official source for the user's actual billing path.
 
 This design replaces the current static, heuristic pricing flow in:
 
@@ -22,7 +22,7 @@ with a provider-aware pricing system that:
 
 ## Problems In The Current Design
 
-Current Hermes behavior has four structural issues:
+Current clawg behavior has four structural issues:
 
 1. It stores only `prompt_tokens` and `completion_tokens`, which is insufficient for providers that bill cache reads and cache writes separately.
 2. It uses a static model price table and fuzzy heuristics, which can drift from current official pricing.
@@ -166,7 +166,7 @@ Tokens are tracked normally. Cost depends on billing mode, not on whether usage 
 
 ## Billing Route Model
 
-Hermes must stop keying pricing solely by `model`.
+clawg must stop keying pricing solely by `model`.
 
 Introduce a billing route descriptor:
 
@@ -367,17 +367,17 @@ Cache pricing entries locally with:
 
 - startup warm cache
 - background refresh every 6 to 24 hours depending on source
-- manual `hermes pricing sync`
+- manual `clawg pricing sync`
 
 ## Reconciliation Architecture
 
-Live requests may produce only an estimate initially. Hermes should reconcile them later when a provider exposes actual billed cost.
+Live requests may produce only an estimate initially. clawg should reconcile them later when a provider exposes actual billed cost.
 
 Suggested flow:
 
 1. Agent call completes.
-2. Hermes stores canonical usage plus reconciliation ids.
-3. Hermes computes an immediate estimate if a pricing source exists.
+2. clawg stores canonical usage plus reconciliation ids.
+3. clawg computes an immediate estimate if a pricing source exists.
 4. A reconciliation worker fetches actual cost when supported.
 5. Session and message records are updated with `actual` cost.
 
@@ -428,7 +428,7 @@ session_cost_events
   updated_at
 ```
 
-## Hermes Touchpoints
+## clawg Touchpoints
 
 ### `run_agent.py`
 
@@ -598,11 +598,11 @@ Current tests that assume heuristic pricing should be replaced with route-aware 
 
 Do not expand the existing `MODEL_PRICING` dict.
 
-That path cannot satisfy the product requirement. Hermes should instead migrate to:
+That path cannot satisfy the product requirement. clawg should instead migrate to:
 
 - canonical usage normalization
 - route-aware pricing sources
 - estimate-then-reconcile cost lifecycle
 - explicit certainty states in the UI
 
-This is the minimum architecture that makes the statement "Hermes pricing is backed by official sources where possible, and otherwise clearly labeled" defensible.
+This is the minimum architecture that makes the statement "clawg pricing is backed by official sources where possible, and otherwise clearly labeled" defensible.

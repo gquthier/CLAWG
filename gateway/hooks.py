@@ -2,7 +2,7 @@
 Event Hook System
 
 A lightweight event-driven system that fires handlers at key lifecycle points.
-Hooks are discovered from ~/.hermes/hooks/ directories, each containing:
+Hooks are discovered from ~/.clawg/hooks/ directories, each containing:
   - HOOK.yaml  (metadata: name, description, events list)
   - handler.py (Python handler with async def handle(event_type, context))
 
@@ -27,10 +27,10 @@ from typing import Any, Callable, Dict, List, Optional
 
 import yaml
 
-from hermes_cli.config import get_hermes_home
+from clawg_cli.config import get_clawg_home
 
 
-HOOKS_DIR = get_hermes_home() / "hooks"
+HOOKS_DIR = get_clawg_home() / "hooks"
 
 
 class HookRegistry:
@@ -88,7 +88,7 @@ class HookRegistry:
 
                 # Dynamically load the handler module
                 spec = importlib.util.spec_from_file_location(
-                    f"hermes_hook_{hook_name}", handler_path
+                    f"clawg_hook_{hook_name}", handler_path
                 )
                 if spec is None or spec.loader is None:
                     print(f"[hooks] Skipping {hook_name}: could not load handler.py", flush=True)

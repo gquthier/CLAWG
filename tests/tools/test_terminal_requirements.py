@@ -19,7 +19,7 @@ def _clear_terminal_env(monkeypatch):
 
 
 def test_local_terminal_requirements_do_not_depend_on_minisweagent(monkeypatch, caplog):
-    """Local backend uses Hermes' own LocalEnvironment wrapper and should not
+    """Local backend uses clawg' own LocalEnvironment wrapper and should not
     be marked unavailable just because `minisweagent` isn't importable."""
     _clear_terminal_env(monkeypatch)
     monkeypatch.setenv("TERMINAL_ENV", "local")

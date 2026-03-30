@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "CLI Commands Reference"
-description: "Authoritative reference for Hermes terminal commands and command families"
+description: "Authoritative reference for clawg terminal commands and command families"
 ---
 
 # CLI Commands Reference
@@ -13,7 +13,7 @@ For in-chat slash commands, see [Slash Commands Reference](./slash-commands.md).
 ## Global entrypoint
 
 ```bash
-hermes [global-options] <command> [subcommand/options]
+clawg [global-options] <command> [subcommand/options]
 ```
 
 ### Global options
@@ -31,32 +31,32 @@ hermes [global-options] <command> [subcommand/options]
 
 | Command | Purpose |
 |---------|---------|
-| `hermes chat` | Interactive or one-shot chat with the agent. |
-| `hermes model` | Interactively choose the default provider and model. |
-| `hermes gateway` | Run or manage the messaging gateway service. |
-| `hermes setup` | Interactive setup wizard for all or part of the configuration. |
-| `hermes whatsapp` | Configure and pair the WhatsApp bridge. |
-| `hermes login` / `logout` | Authenticate with OAuth-backed providers. |
-| `hermes status` | Show agent, auth, and platform status. |
-| `hermes cron` | Inspect and tick the cron scheduler. |
-| `hermes doctor` | Diagnose config and dependency issues. |
-| `hermes config` | Show, edit, migrate, and query configuration files. |
-| `hermes pairing` | Approve or revoke messaging pairing codes. |
-| `hermes skills` | Browse, install, publish, audit, and configure skills. |
-| `hermes honcho` | Manage Honcho cross-session memory integration. |
-| `hermes acp` | Run Hermes as an ACP server for editor integration. |
-| `hermes tools` | Configure enabled tools per platform. |
-| `hermes sessions` | Browse, export, prune, rename, and delete sessions. |
-| `hermes insights` | Show token/cost/activity analytics. |
-| `hermes claw` | OpenClaw migration helpers. |
-| `hermes version` | Show version information. |
-| `hermes update` | Pull latest code and reinstall dependencies. |
-| `hermes uninstall` | Remove Hermes from the system. |
+| `clawg chat` | Interactive or one-shot chat with the agent. |
+| `clawg model` | Interactively choose the default provider and model. |
+| `clawg gateway` | Run or manage the messaging gateway service. |
+| `clawg setup` | Interactive setup wizard for all or part of the configuration. |
+| `clawg whatsapp` | Configure and pair the WhatsApp bridge. |
+| `clawg login` / `logout` | Authenticate with OAuth-backed providers. |
+| `clawg status` | Show agent, auth, and platform status. |
+| `clawg cron` | Inspect and tick the cron scheduler. |
+| `clawg doctor` | Diagnose config and dependency issues. |
+| `clawg config` | Show, edit, migrate, and query configuration files. |
+| `clawg pairing` | Approve or revoke messaging pairing codes. |
+| `clawg skills` | Browse, install, publish, audit, and configure skills. |
+| `clawg honcho` | Manage Honcho cross-session memory integration. |
+| `clawg acp` | Run clawg as an ACP server for editor integration. |
+| `clawg tools` | Configure enabled tools per platform. |
+| `clawg sessions` | Browse, export, prune, rename, and delete sessions. |
+| `clawg insights` | Show token/cost/activity analytics. |
+| `clawg claw` | OpenClaw migration helpers. |
+| `clawg version` | Show version information. |
+| `clawg update` | Pull latest code and reinstall dependencies. |
+| `clawg uninstall` | Remove clawg from the system. |
 
-## `hermes chat`
+## `clawg chat`
 
 ```bash
-hermes chat [options]
+clawg chat [options]
 ```
 
 Common options:
@@ -78,20 +78,20 @@ Common options:
 Examples:
 
 ```bash
-hermes
-hermes chat -q "Summarize the latest PRs"
-hermes chat --provider openrouter --model anthropic/claude-sonnet-4.6
-hermes chat --toolsets web,terminal,skills
-hermes chat --quiet -q "Return only JSON"
-hermes chat --worktree -q "Review this repo and open a PR"
+clawg
+clawg chat -q "Summarize the latest PRs"
+clawg chat --provider openrouter --model anthropic/claude-sonnet-4.6
+clawg chat --toolsets web,terminal,skills
+clawg chat --quiet -q "Return only JSON"
+clawg chat --worktree -q "Review this repo and open a PR"
 ```
 
-## `hermes model`
+## `clawg model`
 
 Interactive provider + model selector.
 
 ```bash
-hermes model
+clawg model
 ```
 
 Use this when you want to:
@@ -100,10 +100,10 @@ Use this when you want to:
 - pick from provider-specific model lists
 - save the new default into config
 
-## `hermes gateway`
+## `clawg gateway`
 
 ```bash
-hermes gateway <subcommand>
+clawg gateway <subcommand>
 ```
 
 Subcommands:
@@ -119,10 +119,10 @@ Subcommands:
 | `uninstall` | Remove the installed service. |
 | `setup` | Interactive messaging-platform setup. |
 
-## `hermes setup`
+## `clawg setup`
 
 ```bash
-hermes setup [model|terminal|gateway|tools|agent] [--non-interactive] [--reset]
+clawg setup [model|terminal|gateway|tools|agent] [--non-interactive] [--reset]
 ```
 
 Use the full wizard or jump into one section:
@@ -142,19 +142,19 @@ Options:
 | `--non-interactive` | Use defaults / environment values without prompts. |
 | `--reset` | Reset configuration to defaults before setup. |
 
-## `hermes whatsapp`
+## `clawg whatsapp`
 
 ```bash
-hermes whatsapp
+clawg whatsapp
 ```
 
 Runs the WhatsApp pairing/setup flow, including mode selection and QR-code pairing.
 
-## `hermes login` / `hermes logout`
+## `clawg login` / `clawg logout`
 
 ```bash
-hermes login [--provider nous|openai-codex] [--portal-url ...] [--inference-url ...]
-hermes logout [--provider nous|openai-codex]
+clawg login [--provider nous|openai-codex] [--portal-url ...] [--inference-url ...]
+clawg logout [--provider nous|openai-codex]
 ```
 
 `login` supports:
@@ -167,10 +167,10 @@ Useful options for `login`:
 - `--ca-bundle <pem>`
 - `--insecure`
 
-## `hermes status`
+## `clawg status`
 
 ```bash
-hermes status [--all] [--deep]
+clawg status [--all] [--deep]
 ```
 
 | Option | Description |
@@ -178,10 +178,10 @@ hermes status [--all] [--deep]
 | `--all` | Show all details in a shareable redacted format. |
 | `--deep` | Run deeper checks that may take longer. |
 
-## `hermes cron`
+## `clawg cron`
 
 ```bash
-hermes cron <list|create|edit|pause|resume|run|remove|status|tick>
+clawg cron <list|create|edit|pause|resume|run|remove|status|tick>
 ```
 
 | Subcommand | Description |
@@ -196,20 +196,20 @@ hermes cron <list|create|edit|pause|resume|run|remove|status|tick>
 | `status` | Check whether the cron scheduler is running. |
 | `tick` | Run due jobs once and exit. |
 
-## `hermes doctor`
+## `clawg doctor`
 
 ```bash
-hermes doctor [--fix]
+clawg doctor [--fix]
 ```
 
 | Option | Description |
 |--------|-------------|
 | `--fix` | Attempt automatic repairs where possible. |
 
-## `hermes config`
+## `clawg config`
 
 ```bash
-hermes config <subcommand>
+clawg config <subcommand>
 ```
 
 Subcommands:
@@ -224,10 +224,10 @@ Subcommands:
 | `check` | Check for missing or stale config. |
 | `migrate` | Add newly introduced options interactively. |
 
-## `hermes pairing`
+## `clawg pairing`
 
 ```bash
-hermes pairing <list|approve|revoke|clear-pending>
+clawg pairing <list|approve|revoke|clear-pending>
 ```
 
 | Subcommand | Description |
@@ -237,10 +237,10 @@ hermes pairing <list|approve|revoke|clear-pending>
 | `revoke <platform> <user-id>` | Revoke a user's access. |
 | `clear-pending` | Clear pending pairing codes. |
 
-## `hermes skills`
+## `clawg skills`
 
 ```bash
-hermes skills <subcommand>
+clawg skills <subcommand>
 ```
 
 Subcommands:
@@ -264,29 +264,29 @@ Subcommands:
 Common examples:
 
 ```bash
-hermes skills browse
-hermes skills browse --source official
-hermes skills search react --source skills-sh
-hermes skills search https://mintlify.com/docs --source well-known
-hermes skills inspect official/security/1password
-hermes skills inspect skills-sh/vercel-labs/json-render/json-render-react
-hermes skills install official/migration/openclaw-migration
-hermes skills install skills-sh/anthropics/skills/pdf --force
-hermes skills check
-hermes skills update
-hermes skills config
+clawg skills browse
+clawg skills browse --source official
+clawg skills search react --source skills-sh
+clawg skills search https://mintlify.com/docs --source well-known
+clawg skills inspect official/security/1password
+clawg skills inspect skills-sh/vercel-labs/json-render/json-render-react
+clawg skills install official/migration/openclaw-migration
+clawg skills install skills-sh/anthropics/skills/pdf --force
+clawg skills check
+clawg skills update
+clawg skills config
 ```
 
 Notes:
 - `--force` can override non-dangerous policy blocks for third-party/community skills.
 - `--force` does not override a `dangerous` scan verdict.
 - `--source skills-sh` searches the public `skills.sh` directory.
-- `--source well-known` lets you point Hermes at a site exposing `/.well-known/skills/index.json`.
+- `--source well-known` lets you point clawg at a site exposing `/.well-known/skills/index.json`.
 
-## `hermes honcho`
+## `clawg honcho`
 
 ```bash
-hermes honcho <subcommand>
+clawg honcho <subcommand>
 ```
 
 Subcommands:
@@ -301,20 +301,20 @@ Subcommands:
 | `mode` | Show or set memory mode: `hybrid`, `honcho`, or `local`. |
 | `tokens` | Show or set token budgets for context and dialectic. |
 | `identity` | Seed or show the AI peer identity representation. |
-| `migrate` | Migration guide from openclaw-honcho to Hermes Honcho. |
+| `migrate` | Migration guide from openclaw-honcho to clawg Honcho. |
 
-## `hermes acp`
+## `clawg acp`
 
 ```bash
-hermes acp
+clawg acp
 ```
 
-Starts Hermes as an ACP (Agent Client Protocol) stdio server for editor integration.
+Starts clawg as an ACP (Agent Client Protocol) stdio server for editor integration.
 
 Related entrypoints:
 
 ```bash
-hermes-acp
+clawg-acp
 python -m acp_adapter
 ```
 
@@ -326,10 +326,10 @@ pip install -e '.[acp]'
 
 See [ACP Editor Integration](../user-guide/features/acp.md) and [ACP Internals](../developer-guide/acp-internals.md).
 
-## `hermes tools`
+## `clawg tools`
 
 ```bash
-hermes tools [--summary]
+clawg tools [--summary]
 ```
 
 | Option | Description |
@@ -338,10 +338,10 @@ hermes tools [--summary]
 
 Without `--summary`, this launches the interactive per-platform tool configuration UI.
 
-## `hermes sessions`
+## `clawg sessions`
 
 ```bash
-hermes sessions <subcommand>
+clawg sessions <subcommand>
 ```
 
 Subcommands:
@@ -356,10 +356,10 @@ Subcommands:
 | `stats` | Show session-store statistics. |
 | `rename <session-id> <title>` | Set or change a session title. |
 
-## `hermes insights`
+## `clawg insights`
 
 ```bash
-hermes insights [--days N] [--source platform]
+clawg insights [--days N] [--source platform]
 ```
 
 | Option | Description |
@@ -367,21 +367,21 @@ hermes insights [--days N] [--source platform]
 | `--days <n>` | Analyze the last `n` days (default: 30). |
 | `--source <platform>` | Filter by source such as `cli`, `telegram`, or `discord`. |
 
-## `hermes claw`
+## `clawg claw`
 
 ```bash
-hermes claw migrate
+clawg claw migrate
 ```
 
-Used to migrate settings, memories, skills, and keys from OpenClaw to Hermes.
+Used to migrate settings, memories, skills, and keys from OpenClaw to clawg.
 
 ## Maintenance commands
 
 | Command | Description |
 |---------|-------------|
-| `hermes version` | Print version information. |
-| `hermes update` | Pull latest changes and reinstall dependencies. |
-| `hermes uninstall [--full] [--yes]` | Remove Hermes, optionally deleting all config/data. |
+| `clawg version` | Print version information. |
+| `clawg update` | Pull latest changes and reinstall dependencies. |
+| `clawg uninstall [--full] [--yes]` | Remove clawg, optionally deleting all config/data. |
 
 ## See also
 

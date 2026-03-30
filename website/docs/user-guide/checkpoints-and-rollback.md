@@ -6,9 +6,9 @@ description: "Filesystem safety nets for destructive operations using shadow git
 
 # Checkpoints and `/rollback`
 
-Hermes Agent automatically snapshots your project before **destructive operations** and lets you restore it with a single command. Checkpoints are **enabled by default** — there's zero cost when no file-mutating tools fire.
+CLAWG automatically snapshots your project before **destructive operations** and lets you restore it with a single command. Checkpoints are **enabled by default** — there's zero cost when no file-mutating tools fire.
 
-This safety net is powered by an internal **Checkpoint Manager** that keeps a separate shadow git repository under `~/.hermes/checkpoints/` — your real project `.git` is never touched.
+This safety net is powered by an internal **Checkpoint Manager** that keeps a separate shadow git repository under `~/.clawg/checkpoints/` — your real project `.git` is never touched.
 
 ## What Triggers a Checkpoint
 
@@ -32,7 +32,7 @@ The agent creates **at most one checkpoint per directory per turn**, so long-run
 
 At a high level:
 
-- Hermes detects when tools are about to **modify files** in your working tree.
+- clawg detects when tools are about to **modify files** in your working tree.
 - Once per conversation turn (per directory), it:
   - Resolves a reasonable project root for the file.
   - Initialises or reuses a **shadow git repo** tied to that directory.
@@ -41,11 +41,11 @@ At a high level:
 
 ```mermaid
 flowchart LR
-  user["User command\n(hermes, gateway)"]
+  user["User command\n(clawg, gateway)"]
   agent["AIAgent\n(run_agent.py)"]
   tools["File & terminal tools"]
   cpMgr["CheckpointManager"]
-  shadowRepo["Shadow git repo\n~/.hermes/checkpoints/<hash>"]
+  shadowRepo["Shadow git repo\n~/.clawg/checkpoints/<hash>"]
 
   user --> agent
   agent -->|"tool call"| tools
@@ -57,7 +57,7 @@ flowchart LR
 
 ## Configuration
 
-Checkpoints are enabled by default. Configure in `~/.hermes/config.yaml`:
+Checkpoints are enabled by default. Configure in `~/.clawg/config.yaml`:
 
 ```yaml
 checkpoints:
@@ -82,7 +82,7 @@ From a CLI session:
 /rollback
 ```
 
-Hermes responds with a formatted list showing change statistics:
+clawg responds with a formatted list showing change statistics:
 
 ```text
 📸 Checkpoints for /path/to/project:
@@ -135,7 +135,7 @@ Restore to a checkpoint by number:
 /rollback 1
 ```
 
-Behind the scenes, Hermes:
+Behind the scenes, clawg:
 
 1. Verifies the target commit exists in the shadow repo.
 2. Takes a **pre‑rollback snapshot** of the current state so you can "undo the undo" later.
@@ -166,10 +166,10 @@ This is useful when the agent made changes to multiple files but only one needs 
 
 ## Safety and Performance Guards
 
-To keep checkpointing safe and fast, Hermes applies several guardrails:
+To keep checkpointing safe and fast, clawg applies several guardrails:
 
 - **Git availability** — if `git` is not found on `PATH`, checkpoints are transparently disabled.
-- **Directory scope** — Hermes skips overly broad directories (root `/`, home `$HOME`).
+- **Directory scope** — clawg skips overly broad directories (root `/`, home `$HOME`).
 - **Repository size** — directories with more than 50,000 files are skipped to avoid slow git operations.
 - **No‑change snapshots** — if there are no changes since the last snapshot, the checkpoint is skipped.
 - **Non‑fatal errors** — all errors inside the Checkpoint Manager are logged at debug level; your tools continue to run.
@@ -179,7 +179,7 @@ To keep checkpointing safe and fast, Hermes applies several guardrails:
 All shadow repos live under:
 
 ```text
-~/.hermes/checkpoints/
+~/.clawg/checkpoints/
   ├── <hash1>/   # shadow git repo for one working directory
   ├── <hash2>/
   └── ...
@@ -189,7 +189,7 @@ Each `<hash>` is derived from the absolute path of the working directory. Inside
 
 - Standard git internals (`HEAD`, `refs/`, `objects/`)
 - An `info/exclude` file containing a curated ignore list
-- A `HERMES_WORKDIR` file pointing back to the original project root
+- A `CLAWG_WORKDIR` file pointing back to the original project root
 
 You normally never need to touch these manually.
 
@@ -198,6 +198,6 @@ You normally never need to touch these manually.
 - **Leave checkpoints enabled** — they're on by default and have zero cost when no files are modified.
 - **Use `/rollback diff` before restoring** — preview what will change to pick the right checkpoint.
 - **Use `/rollback` instead of `git reset`** when you want to undo agent-driven changes only.
-- **Combine with Git worktrees** for maximum safety — keep each Hermes session in its own worktree/branch, with checkpoints as an extra layer.
+- **Combine with Git worktrees** for maximum safety — keep each clawg session in its own worktree/branch, with checkpoints as an extra layer.
 
 For running multiple agents in parallel on the same repo, see the guide on [Git worktrees](./git-worktrees.md).

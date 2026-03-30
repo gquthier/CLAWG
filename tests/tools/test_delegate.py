@@ -542,7 +542,7 @@ class TestDelegationCredentialResolution(unittest.TestCase):
         self.assertIsNone(creds["base_url"])
         self.assertIsNone(creds["api_key"])
 
-    @patch("hermes_cli.runtime_provider.resolve_runtime_provider")
+    @patch("clawg_cli.runtime_provider.resolve_runtime_provider")
     def test_provider_resolves_full_credentials(self, mock_resolve):
         """When delegation.provider is set, full credentials are resolved."""
         mock_resolve.return_value = {
@@ -598,7 +598,7 @@ class TestDelegationCredentialResolution(unittest.TestCase):
                 _resolve_delegation_credentials(cfg, parent)
         self.assertIn("OPENAI_API_KEY", str(ctx.exception))
 
-    @patch("hermes_cli.runtime_provider.resolve_runtime_provider")
+    @patch("clawg_cli.runtime_provider.resolve_runtime_provider")
     def test_nous_provider_resolves_nous_credentials(self, mock_resolve):
         """Nous provider resolves Nous Portal base_url and api_key."""
         mock_resolve.return_value = {
@@ -608,14 +608,14 @@ class TestDelegationCredentialResolution(unittest.TestCase):
             "api_mode": "chat_completions",
         }
         parent = _make_mock_parent(depth=0)
-        cfg = {"model": "hermes-3-llama-3.1-8b", "provider": "nous"}
+        cfg = {"model": "clawg-3-llama-3.1-8b", "provider": "nous"}
         creds = _resolve_delegation_credentials(cfg, parent)
         self.assertEqual(creds["provider"], "nous")
         self.assertEqual(creds["base_url"], "https://inference-api.nousresearch.com/v1")
         self.assertEqual(creds["api_key"], "nous-agent-key-xyz")
         mock_resolve.assert_called_once_with(requested="nous")
 
-    @patch("hermes_cli.runtime_provider.resolve_runtime_provider")
+    @patch("clawg_cli.runtime_provider.resolve_runtime_provider")
     def test_provider_resolution_failure_raises_valueerror(self, mock_resolve):
         """When provider resolution fails, ValueError is raised with helpful message."""
         mock_resolve.side_effect = RuntimeError("OPENROUTER_API_KEY not set")
@@ -626,7 +626,7 @@ class TestDelegationCredentialResolution(unittest.TestCase):
         self.assertIn("openrouter", str(ctx.exception).lower())
         self.assertIn("Cannot resolve", str(ctx.exception))
 
-    @patch("hermes_cli.runtime_provider.resolve_runtime_provider")
+    @patch("clawg_cli.runtime_provider.resolve_runtime_provider")
     def test_provider_resolves_but_no_api_key_raises(self, mock_resolve):
         """When provider resolves but has no API key, ValueError is raised."""
         mock_resolve.return_value = {

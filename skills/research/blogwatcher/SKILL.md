@@ -5,7 +5,7 @@ version: 1.0.0
 author: community
 license: MIT
 metadata:
-  hermes:
+  clawg:
     tags: [RSS, Blogs, Feed-Reader, Monitoring]
     homepage: https://github.com/Hyaxia/blogwatcher
 prerequisites:

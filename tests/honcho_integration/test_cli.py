@@ -8,7 +8,7 @@ class TestResolveApiKey:
         cfg = {
             "apiKey": "root-key",
             "hosts": {
-                "hermes": {
+                "clawg": {
                     "apiKey": "host-key",
                 }
             },
@@ -18,7 +18,7 @@ class TestResolveApiKey:
     def test_falls_back_to_root_key(self):
         cfg = {
             "apiKey": "root-key",
-            "hosts": {"hermes": {}},
+            "hosts": {"clawg": {}},
         }
         assert _resolve_api_key(cfg) == "root-key"
 

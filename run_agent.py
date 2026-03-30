@@ -47,12 +47,12 @@ from pathlib import Path
 
 # Load .env from CLAWG_HOME first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
-from hermes_cli.env_loader import load_hermes_dotenv
-from hermes_cli.paths import get_runtime_home, sync_home_env_vars
+from clawg_cli.env_loader import load_clawg_dotenv
+from clawg_cli.paths import get_runtime_home, sync_home_env_vars
 
-_hermes_home = sync_home_env_vars(get_runtime_home())
+_clawg_home = sync_home_env_vars(get_runtime_home())
 _project_env = Path(__file__).parent / '.env'
-_loaded_env_paths = load_hermes_dotenv(hermes_home=_hermes_home, project_env=_project_env)
+_loaded_env_paths = load_clawg_dotenv(clawg_home=_clawg_home, project_env=_project_env)
 if _loaded_env_paths:
     for _env_path in _loaded_env_paths:
         logger.info("Loaded environment variables from %s", _env_path)
@@ -60,7 +60,7 @@ else:
     logger.info("No .env file found. Using system environment variables.")
 
 # Point mini-swe-agent at CLAWG_HOME so it shares our config
-os.environ.setdefault("MSWEA_GLOBAL_CONFIG_DIR", str(_hermes_home))
+os.environ.setdefault("MSWEA_GLOBAL_CONFIG_DIR", str(_clawg_home))
 os.environ.setdefault("MSWEA_SILENT_STARTUP", "1")
 
 # Import our tool system
@@ -71,7 +71,7 @@ from tools.browser_tool import cleanup_browser
 
 import requests
 
-from hermes_constants import OPENROUTER_BASE_URL, OPENROUTER_MODELS_URL
+from clawg_constants import OPENROUTER_BASE_URL, OPENROUTER_MODELS_URL
 
 # Agent internals extracted to agent/ package for modularity
 from agent.prompt_builder import (
@@ -591,7 +591,7 @@ class AIAgent:
         # handler would cause each warning/error line to be written multiple times.
         from logging.handlers import RotatingFileHandler
         root_logger = logging.getLogger()
-        error_log_dir = _hermes_home / "logs"
+        error_log_dir = _clawg_home / "logs"
         error_log_path = error_log_dir / "errors.log"
         resolved_error_log_path = error_log_path.resolve()
         has_errors_log_handler = any(
@@ -658,7 +658,7 @@ class AIAgent:
                     'run_agent',            # agent runner internals
                     'trajectory_compressor',
                     'cron',                 # scheduler (only relevant in daemon mode)
-                    'hermes_cli',           # CLI helpers
+                    'clawg_cli',           # CLI helpers
                 ]:
                     logging.getLogger(quiet_logger).setLevel(logging.ERROR)
         
@@ -716,7 +716,7 @@ class AIAgent:
                         "X-OpenRouter-Categories": "productivity,cli-agent",
                     }
                 elif "api.githubcopilot.com" in effective_base.lower():
-                    from hermes_cli.models import copilot_default_headers
+                    from clawg_cli.models import copilot_default_headers
 
                     client_kwargs["default_headers"] = copilot_default_headers()
                 elif "api.kimi.com" in effective_base.lower():
@@ -875,7 +875,7 @@ class AIAgent:
         
         # Load config once for memory, skills, and compression sections
         try:
-            from hermes_cli.config import load_config as _load_agent_config
+            from clawg_cli.config import load_config as _load_agent_config
             _agent_cfg = _load_agent_config()
         except Exception:
             _agent_cfg = {}
@@ -1780,7 +1780,7 @@ class AIAgent:
 
             self._vprint(f"{self.log_prefix}🧾 Request debug dump written to: {dump_file}")
 
-            if os.getenv("HERMES_DUMP_REQUEST_STDOUT", "").strip().lower() in {"1", "true", "yes", "on"}:
+            if os.getenv("CLAWG_DUMP_REQUEST_STDOUT", "").strip().lower() in {"1", "true", "yes", "on"}:
                 print(json.dumps(dump_payload, ensure_ascii=False, indent=2, default=str))
 
             return dump_file
@@ -1982,9 +1982,9 @@ class AIAgent:
         honcho_sess = self._honcho.get_or_create(self._honcho_session_key)
         if not honcho_sess.messages:
             try:
-                from hermes_cli.config import get_hermes_home
+                from clawg_cli.config import get_clawg_home
 
-                mem_dir = str(get_hermes_home() / "memories")
+                mem_dir = str(get_clawg_home() / "memories")
                 self._honcho.migrate_memory_files(
                     self._honcho_session_key,
                     mem_dir,
@@ -2176,7 +2176,7 @@ class AIAgent:
             # Fallback to hardcoded identity
             _ai_peer_name = (
                 self._honcho_config.ai_peer
-                if self._honcho_config and self._honcho_config.ai_peer not in {"hermes", "clawg"}
+                if self._honcho_config and self._honcho_config.ai_peer not in {"clawg", "clawg"}
                 else None
             )
             if _ai_peer_name:
@@ -2292,8 +2292,8 @@ class AIAgent:
             if context_files_prompt:
                 prompt_parts.append(context_files_prompt)
 
-        from hermes_time import now as _hermes_now
-        now = _hermes_now()
+        from clawg_time import now as _clawg_now
+        now = _clawg_now()
         timestamp_line = f"Conversation started: {now.strftime('%A, %B %d, %Y %I:%M %p')}"
         if self.pass_session_id and self.session_id:
             timestamp_line += f"\nSession ID: {self.session_id}"
@@ -3236,7 +3236,7 @@ class AIAgent:
             return False
 
         try:
-            from hermes_cli.auth import resolve_codex_runtime_credentials
+            from clawg_cli.auth import resolve_codex_runtime_credentials
 
             creds = resolve_codex_runtime_credentials(force_refresh=force)
         except Exception as exc:
@@ -3265,11 +3265,11 @@ class AIAgent:
             return False
 
         try:
-            from hermes_cli.auth import resolve_nous_runtime_credentials
+            from clawg_cli.auth import resolve_nous_runtime_credentials
 
             creds = resolve_nous_runtime_credentials(
-                min_key_ttl_seconds=max(60, int(os.getenv("HERMES_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
-                timeout_seconds=float(os.getenv("HERMES_NOUS_TIMEOUT_SECONDS", "15")),
+                min_key_ttl_seconds=max(60, int(os.getenv("CLAWG_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
+                timeout_seconds=float(os.getenv("CLAWG_NOUS_TIMEOUT_SECONDS", "15")),
                 force_mint=force,
             )
         except Exception as exc:
@@ -4024,7 +4024,7 @@ class AIAgent:
             "model": self.model,
             "messages": sanitized_messages,
             "tools": self.tools if self.tools else None,
-            "timeout": float(os.getenv("HERMES_API_TIMEOUT", 900.0)),
+            "timeout": float(os.getenv("CLAWG_API_TIMEOUT", 900.0)),
         }
 
         if self.max_tokens is not None:
@@ -4088,7 +4088,7 @@ class AIAgent:
             return True
         if "models.github.ai" in self._base_url_lower or "api.githubcopilot.com" in self._base_url_lower:
             try:
-                from hermes_cli.models import github_model_reasoning_efforts
+                from clawg_cli.models import github_model_reasoning_efforts
 
                 return bool(github_model_reasoning_efforts(self.model))
             except Exception:
@@ -4112,7 +4112,7 @@ class AIAgent:
     def _github_models_reasoning_extra_body(self) -> dict | None:
         """Format reasoning payload for GitHub Models/OpenAI-compatible routes."""
         try:
-            from hermes_cli.models import github_model_reasoning_efforts
+            from clawg_cli.models import github_model_reasoning_efforts
         except Exception:
             return None
 
@@ -5627,7 +5627,7 @@ class AIAgent:
                     if self.api_mode == "codex_responses":
                         api_kwargs = self._preflight_codex_api_kwargs(api_kwargs, allow_stream=False)
 
-                    if os.getenv("HERMES_DUMP_REQUESTS", "").strip().lower() in {"1", "true", "yes", "on"}:
+                    if os.getenv("CLAWG_DUMP_REQUESTS", "").strip().lower() in {"1", "true", "yes", "on"}:
                         self._dump_api_request_debug(api_kwargs, reason="preflight")
 
                     if self._has_stream_consumers():

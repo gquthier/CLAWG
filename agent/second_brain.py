@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 from typing import Iterable, Optional
 
-from hermes_cli.paths import (
+from clawg_cli.paths import (
     get_second_brain_root,
     get_second_brain_memory_dir,
     get_second_brain_skills_dir,
@@ -47,7 +47,7 @@ _MAX_INDEX_ITEMS = 60
 
 def _load_config_safe() -> dict:
     try:
-        from hermes_cli.config import load_config
+        from clawg_cli.config import load_config
 
         cfg = load_config()
         return cfg if isinstance(cfg, dict) else {}

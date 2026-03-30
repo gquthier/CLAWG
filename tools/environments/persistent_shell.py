@@ -44,7 +44,7 @@ class PersistentShellMixin:
 
     @property
     def _temp_prefix(self) -> str:
-        return f"/tmp/hermes-persistent-{self._session_id}"
+        return f"/tmp/clawg-persistent-{self._session_id}"
 
     # ------------------------------------------------------------------
     # Lifecycle

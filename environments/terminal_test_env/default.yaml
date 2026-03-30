@@ -1,8 +1,8 @@
 # Terminal Test Environment -- Default Configuration
 #
-# Simple file-creation tasks for validating the full Atropos + hermes-agent stack.
+# Simple file-creation tasks for validating the full Atropos + clawg stack.
 # Uses Modal terminal backend and OpenRouter (Claude) for inference.
-# API keys loaded from ~/hermes-agent/.env
+# API keys loaded from ~/clawg/.env
 #
 # Usage:
 #   run-api
@@ -17,8 +17,8 @@ env:
   total_steps: 3
   steps_per_eval: 3
   terminal_backend: "modal"
-  tool_call_parser: "hermes"
-  tokenizer_name: "NousResearch/DeepHermes-3-Llama-3-3B-Preview"
+  tool_call_parser: "clawg"
+  tokenizer_name: "NousResearch/DeepClawg-3-Llama-3-3B-Preview"
   ensure_scores_are_not_same: false
   use_wandb: false
   system_prompt: >

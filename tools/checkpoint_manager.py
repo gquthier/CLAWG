@@ -9,9 +9,9 @@ This is NOT a tool — the LLM never sees it.  It's transparent infrastructure
 controlled by the ``checkpoints`` config flag or ``--checkpoints`` CLI flag.
 
 Architecture:
-    ~/.hermes/checkpoints/{sha256(abs_dir)[:16]}/   — shadow git repo
+    ~/.clawg/checkpoints/{sha256(abs_dir)[:16]}/   — shadow git repo
         HEAD, refs/, objects/                        — standard git internals
-        HERMES_WORKDIR                               — original dir path
+        CLAWG_WORKDIR                               — original dir path
         info/exclude                                 — default excludes
 
 The shadow repo uses GIT_DIR + GIT_WORK_TREE so no git state leaks
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 # Constants
 # ---------------------------------------------------------------------------
 
-CHECKPOINT_BASE = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes")) / "checkpoints"
+CHECKPOINT_BASE = Path(os.getenv("CLAWG_HOME", Path.home() / ".clawg")) / "checkpoints"
 
 DEFAULT_EXCLUDES = [
     "node_modules/",
@@ -59,7 +59,7 @@ DEFAULT_EXCLUDES = [
 ]
 
 # Git subprocess timeout (seconds).
-_GIT_TIMEOUT: int = max(10, min(60, int(os.getenv("HERMES_CHECKPOINT_TIMEOUT", "30"))))
+_GIT_TIMEOUT: int = max(10, min(60, int(os.getenv("CLAWG_CHECKPOINT_TIMEOUT", "30"))))
 
 # Max files to snapshot — skip huge directories to avoid slowdowns.
 _MAX_FILES = 50_000
@@ -144,8 +144,8 @@ def _init_shadow_repo(shadow_repo: Path, working_dir: str) -> Optional[str]:
     if not ok:
         return f"Shadow repo init failed: {err}"
 
-    _run_git(["config", "user.email", "hermes@local"], shadow_repo, working_dir)
-    _run_git(["config", "user.name", "Hermes Checkpoint"], shadow_repo, working_dir)
+    _run_git(["config", "user.email", "clawg@local"], shadow_repo, working_dir)
+    _run_git(["config", "user.name", "clawg Checkpoint"], shadow_repo, working_dir)
 
     info_dir = shadow_repo / "info"
     info_dir.mkdir(exist_ok=True)
@@ -153,7 +153,7 @@ def _init_shadow_repo(shadow_repo: Path, working_dir: str) -> Optional[str]:
         "\n".join(DEFAULT_EXCLUDES) + "\n", encoding="utf-8"
     )
 
-    (shadow_repo / "HERMES_WORKDIR").write_text(
+    (shadow_repo / "CLAWG_WORKDIR").write_text(
         str(Path(working_dir).resolve()) + "\n", encoding="utf-8"
     )
 

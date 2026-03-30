@@ -4,7 +4,7 @@ import time
 import pytest
 from pathlib import Path
 
-from hermes_state import SessionDB
+from clawg_state import SessionDB
 from agent.insights import (
     InsightsEngine,
     _get_pricing,
@@ -143,7 +143,7 @@ class TestPricing:
 
     def test_custom_endpoint_model_zero_cost(self):
         """Self-hosted models should return zero cost."""
-        for model in ["FP16_Hermes_4.5", "Hermes_4.5_1T_epoch2", "my-local-llama"]:
+        for model in ["FP16_Clawg_4.5", "Clawg_4.5_1T_epoch2", "my-local-llama"]:
             pricing = _get_pricing(model)
             assert pricing["input"] == 0.0, f"{model} should have zero cost"
             assert pricing["output"] == 0.0, f"{model} should have zero cost"
@@ -164,7 +164,7 @@ class TestHasKnownPricing:
         assert _has_known_pricing("gpt-4.1", provider="openai") is True
 
     def test_unknown_custom_model(self):
-        assert _has_known_pricing("FP16_Hermes_4.5") is False
+        assert _has_known_pricing("FP16_Clawg_4.5") is False
         assert _has_known_pricing("my-custom-model") is False
         assert _has_known_pricing("glm-5") is False
         assert _has_known_pricing("") is False
@@ -437,7 +437,7 @@ class TestTerminalFormatting:
         report = engine.generate(days=30)
         text = engine.format_terminal(report)
 
-        assert "Hermes Insights" in text
+        assert "clawg Insights" in text
         assert "Overview" in text
         assert "Models Used" in text
         assert "Top Tools" in text
@@ -565,17 +565,17 @@ class TestEdgeCases:
 
     def test_custom_model_shows_zero_cost(self, db):
         """Custom/self-hosted models should show $0 cost, not fake estimates."""
-        db.create_session(session_id="s1", source="cli", model="FP16_Hermes_4.5")
+        db.create_session(session_id="s1", source="cli", model="FP16_Clawg_4.5")
         db.update_token_counts("s1", input_tokens=100000, output_tokens=50000)
         db._conn.commit()
 
         engine = InsightsEngine(db)
         report = engine.generate(days=30)
         assert report["overview"]["estimated_cost"] == 0.0
-        assert "FP16_Hermes_4.5" in report["overview"]["models_without_pricing"]
+        assert "FP16_Clawg_4.5" in report["overview"]["models_without_pricing"]
 
         models = report["models"]
-        custom = next(m for m in models if m["model"] == "FP16_Hermes_4.5")
+        custom = next(m for m in models if m["model"] == "FP16_Clawg_4.5")
         assert custom["cost"] == 0.0
         assert custom["has_pricing"] is False
 

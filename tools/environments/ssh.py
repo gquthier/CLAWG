@@ -50,7 +50,7 @@ class SSHEnvironment(PersistentShellMixin, BaseEnvironment):
         self.key_path = key_path
         self.persistent = persistent
 
-        self.control_dir = Path(tempfile.gettempdir()) / "hermes-ssh"
+        self.control_dir = Path(tempfile.gettempdir()) / "clawg-ssh"
         self.control_dir.mkdir(parents=True, exist_ok=True)
         self.control_socket = self.control_dir / f"{user}@{host}:{port}.sock"
         _ensure_ssh_available()
@@ -91,7 +91,7 @@ class SSHEnvironment(PersistentShellMixin, BaseEnvironment):
 
     @property
     def _temp_prefix(self) -> str:
-        return f"/tmp/hermes-ssh-{self._session_id}"
+        return f"/tmp/clawg-ssh-{self._session_id}"
 
     def _spawn_shell_process(self) -> subprocess.Popen:
         cmd = self._build_ssh_command()
@@ -116,7 +116,7 @@ class SSHEnvironment(PersistentShellMixin, BaseEnvironment):
             except (subprocess.TimeoutExpired, OSError):
                 return [""]
 
-        delim = f"__HERMES_SEP_{self._session_id}__"
+        delim = f"__CLAWG_SEP_{self._session_id}__"
         script = "; ".join(
             f"cat {p} 2>/dev/null; echo '{delim}'" for p in paths
         )

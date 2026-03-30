@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [llama-cpp-python]
 metadata:
-  hermes:
+  clawg:
     tags: [Inference Serving, Llama.cpp, CPU Inference, Apple Silicon, Edge Deployment, GGUF, Quantization, Non-NVIDIA, AMD GPUs, Intel GPUs, Embedded]
 
 ---

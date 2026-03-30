@@ -59,10 +59,10 @@ def _normalize_forward_env_names(forward_env: list[str] | None) -> list[str]:
     return normalized
 
 
-def _load_hermes_env_vars() -> dict[str, str]:
-    """Load ~/.hermes/.env values without failing Docker command execution."""
+def _load_clawg_env_vars() -> dict[str, str]:
+    """Load ~/.clawg/.env values without failing Docker command execution."""
     try:
-        from hermes_cli.config import load_env
+        from clawg_cli.config import load_env
 
         return load_env() or {}
     except Exception:
@@ -251,7 +251,7 @@ class DockerEnvironment(BaseEnvironment):
             resource_args.append("--network=none")
 
         # Persistent workspace via bind mounts from a configurable host directory
-        # (TERMINAL_SANDBOX_DIR, default ~/.hermes/sandboxes/). Non-persistent
+        # (TERMINAL_SANDBOX_DIR, default ~/.clawg/sandboxes/). Non-persistent
         # mode uses tmpfs (ephemeral, fast, gone on cleanup).
         from tools.environments.base import get_sandbox_dir
 
@@ -394,11 +394,11 @@ class DockerEnvironment(BaseEnvironment):
         if effective_stdin is not None:
             cmd.append("-i")
         cmd.extend(["-w", work_dir])
-        hermes_env = _load_hermes_env_vars() if self._forward_env else {}
+        clawg_env = _load_clawg_env_vars() if self._forward_env else {}
         for key in self._forward_env:
             value = os.getenv(key)
             if value is None:
-                value = hermes_env.get(key)
+                value = clawg_env.get(key)
             if value is not None:
                 cmd.extend(["-e", f"{key}={value}"])
         for key, value in self._inner.config.env.items():

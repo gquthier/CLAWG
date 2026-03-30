@@ -1,12 +1,12 @@
 # ============================================================================
-# Hermes Agent — Example Skin Template
+# CLAWG — Example Skin Template
 # ============================================================================
 #
-# Copy this file to ~/.hermes/skins/<name>.yaml to create a custom skin.
+# Copy this file to ~/.clawg/skins/<name>.yaml to create a custom skin.
 # All fields are optional — missing values inherit from the default skin.
 # Activate with: /skin <name>  or  display.skin: <name> in config.yaml
 #
-# See hermes_cli/skin_engine.py for the full schema reference.
+# See clawg_cli/skin_engine.py for the full schema reference.
 # ============================================================================
 
 # Required: unique skin name (used in /skin command and config)
@@ -72,10 +72,10 @@ spinner:
 # ── Branding ────────────────────────────────────────────────────────────────
 # Text strings used throughout the CLI interface.
 branding:
-  agent_name: "Hermes Agent"          # Banner title, about display
+  agent_name: "CLAWG"          # Banner title, about display
   welcome: "Welcome! Type your message or /help for commands."
   goodbye: "Goodbye! ⚕"              # Exit message
-  response_label: " ⚕ Hermes "       # Response box header label
+  response_label: " ⚕ clawg "       # Response box header label
   prompt_symbol: "❯ "                 # Input prompt symbol
   help_header: "(^_^)? Available Commands"  # /help header text
 

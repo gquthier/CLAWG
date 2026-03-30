@@ -12,7 +12,7 @@ non-streaming extract_tool_calls() logic. No VLLM dependency -- only standard li
 Usage:
     from environments.tool_call_parsers import get_parser
 
-    parser = get_parser("hermes")
+    parser = get_parser("clawg")
     content, tool_calls = parser.parse(raw_model_output)
     # content = text with tool call markup stripped
     # tool_calls = list of ChatCompletionMessageToolCall objects, or None
@@ -67,8 +67,8 @@ def register_parser(name: str):
     Decorator to register a parser class under a given name.
 
     Usage:
-        @register_parser("hermes")
-        class HermesToolCallParser(ToolCallParser):
+        @register_parser("clawg")
+        class ClawgToolCallParser(ToolCallParser):
             ...
     """
 
@@ -84,7 +84,7 @@ def get_parser(name: str) -> ToolCallParser:
     Get a parser instance by name.
 
     Args:
-        name: Parser name (e.g., "hermes", "mistral", "llama3_json")
+        name: Parser name (e.g., "clawg", "mistral", "llama3_json")
 
     Returns:
         Instantiated parser
@@ -107,7 +107,7 @@ def list_parsers() -> List[str]:
 
 # Import all parser modules to trigger registration via @register_parser decorators
 # Each module registers itself when imported
-from environments.tool_call_parsers.hermes_parser import HermesToolCallParser  # noqa: E402, F401
+from environments.tool_call_parsers.clawg_parser import ClawgToolCallParser  # noqa: E402, F401
 from environments.tool_call_parsers.longcat_parser import LongcatToolCallParser  # noqa: E402, F401
 from environments.tool_call_parsers.mistral_parser import MistralToolCallParser  # noqa: E402, F401
 from environments.tool_call_parsers.llama_parser import LlamaToolCallParser  # noqa: E402, F401

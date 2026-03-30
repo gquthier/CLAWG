@@ -1,4 +1,4 @@
-"""Integration tests for HermesAgentLoop tool calling.
+"""Integration tests for ClawgAgentLoop tool calling.
 
 Tests the full agent loop with real LLM calls via OpenRouter.
 Uses stepfun/step-3.5-flash:free by default (zero cost), falls back
@@ -36,7 +36,7 @@ if str(_repo_root) not in sys.path:
     sys.path.insert(0, str(_repo_root))
 
 try:
-    from environments.agent_loop import AgentResult, HermesAgentLoop
+    from environments.agent_loop import AgentResult, ClawgAgentLoop
     from atroposlib.envs.server_handling.openai_server import OpenAIServer  # noqa: F401
 except ImportError:
     pytest.skip("atroposlib not installed", allow_module_level=True)
@@ -208,7 +208,7 @@ async def test_single_tool_call():
     """Model should call a single tool, get the result, and respond."""
 
     async def _run(server, model):
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=[WEATHER_TOOL],
             valid_tool_names={"get_weather"},
@@ -257,7 +257,7 @@ async def test_multi_tool_single_turn():
     """Model should call multiple tools in a single turn."""
 
     async def _run(server, model):
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=[WEATHER_TOOL, CALC_TOOL],
             valid_tool_names={"get_weather", "calculate"},
@@ -299,7 +299,7 @@ async def test_multi_turn_conversation():
     """Agent should handle multiple turns of tool calls."""
 
     async def _run(server, model):
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=[LOOKUP_TOOL, CALC_TOOL],
             valid_tool_names={"lookup", "calculate"},
@@ -343,7 +343,7 @@ async def test_unknown_tool_rejected():
 
     async def _run(server, model):
         # Only allow "calculate" but give schema for both
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=[CALC_TOOL, WEATHER_TOOL],
             valid_tool_names={"calculate"},  # weather NOT allowed
@@ -375,7 +375,7 @@ async def test_max_turns_limit():
     """Agent should stop after max_turns even if model keeps calling tools."""
 
     async def _run(server, model):
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=[LOOKUP_TOOL],
             valid_tool_names={"lookup"},
@@ -407,7 +407,7 @@ async def test_no_tools_direct_response():
     """When no tools are useful, model should respond directly."""
 
     async def _run(server, model):
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=[WEATHER_TOOL],
             valid_tool_names={"get_weather"},
@@ -441,7 +441,7 @@ async def test_tool_error_handling():
     """Tool execution errors should be captured and reported to the model."""
 
     async def _run(server, model):
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=[ERROR_TOOL],
             valid_tool_names={"failing_tool"},
@@ -477,7 +477,7 @@ async def test_agent_result_structure():
     """Verify the AgentResult has all expected fields populated."""
 
     async def _run(server, model):
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=[CALC_TOOL],
             valid_tool_names={"calculate"},
@@ -518,7 +518,7 @@ async def test_conversation_history_preserved():
     """The full conversation history should be in result.messages."""
 
     async def _run(server, model):
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=[WEATHER_TOOL],
             valid_tool_names={"get_weather"},

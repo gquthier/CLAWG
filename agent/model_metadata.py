@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 import requests
 import yaml
 
-from hermes_constants import OPENROUTER_MODELS_URL
+from clawg_constants import OPENROUTER_MODELS_URL
 
 logger = logging.getLogger(__name__)
 
@@ -482,8 +482,8 @@ def fetch_endpoint_model_metadata(
 
 def _get_context_cache_path() -> Path:
     """Return path to the persistent context length cache file."""
-    hermes_home = Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes"))
-    return hermes_home / "context_length_cache.yaml"
+    clawg_home = Path(os.environ.get("CLAWG_HOME", Path.home() / ".clawg"))
+    return clawg_home / "context_length_cache.yaml"
 
 
 def _load_context_cache() -> Dict[str, int]:

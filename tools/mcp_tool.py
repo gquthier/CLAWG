@@ -3,10 +3,10 @@
 MCP (Model Context Protocol) Client Support
 
 Connects to external MCP servers via stdio or HTTP/StreamableHTTP transport,
-discovers their tools, and registers them into the hermes-agent tool registry
+discovers their tools, and registers them into the clawg tool registry
 so the agent can call them like any built-in tool.
 
-Configuration is read from ~/.hermes/config.yaml under the ``mcp_servers`` key.
+Configuration is read from ~/.clawg/config.yaml under the ``mcp_servers`` key.
 The ``mcp`` Python package is optional -- if not installed, this module is a
 no-op and logs a debug message.
 
@@ -206,13 +206,13 @@ def _resolve_stdio_command(command: str, env: dict) -> tuple[str, dict]:
         if which_hit:
             resolved_command = which_hit
         elif resolved_command in {"npx", "npm", "node"}:
-            hermes_home = os.path.expanduser(
+            clawg_home = os.path.expanduser(
                 os.getenv(
-                    "HERMES_HOME", os.path.join(os.path.expanduser("~"), ".hermes")
+                    "CLAWG_HOME", os.path.join(os.path.expanduser("~"), ".clawg")
                 )
             )
             candidates = [
-                os.path.join(hermes_home, "node", "bin", resolved_command),
+                os.path.join(clawg_home, "node", "bin", resolved_command),
                 os.path.join(os.path.expanduser("~"), ".local", "bin", resolved_command),
             ]
             for candidate in candidates:
@@ -921,7 +921,7 @@ def _run_on_mcp_loop(coro, timeout: float = 30):
 # ---------------------------------------------------------------------------
 
 def _load_mcp_config() -> Dict[str, dict]:
-    """Read ``mcp_servers`` from the Hermes config file.
+    """Read ``mcp_servers`` from the clawg config file.
 
     Returns a dict of ``{server_name: server_config}`` or empty dict.
     Server config can contain either ``command``/``args``/``env`` for stdio
@@ -929,7 +929,7 @@ def _load_mcp_config() -> Dict[str, dict]:
     ``timeout`` and ``connect_timeout`` overrides.
     """
     try:
-        from hermes_cli.config import load_config
+        from clawg_cli.config import load_config
         config = load_config()
         servers = config.get("mcp_servers")
         if not servers or not isinstance(servers, dict):
@@ -1227,7 +1227,7 @@ def _normalize_mcp_input_schema(schema: dict | None) -> dict:
 
 
 def _convert_mcp_schema(server_name: str, mcp_tool) -> dict:
-    """Convert an MCP tool listing to the Hermes registry schema format.
+    """Convert an MCP tool listing to the clawg registry schema format.
 
     Args:
         server_name: The logical server name for prefixing.
@@ -1249,13 +1249,13 @@ def _convert_mcp_schema(server_name: str, mcp_tool) -> dict:
 
 
 def _sync_mcp_toolsets(server_names: Optional[List[str]] = None) -> None:
-    """Expose each MCP server as a standalone toolset and inject into hermes-* sets.
+    """Expose each MCP server as a standalone toolset and inject into clawg-* sets.
 
     Creates a real toolset entry in TOOLSETS for each server name (e.g.
     TOOLSETS["github"] = {"tools": ["mcp_github_list_files", ...]}). This
     makes raw server names resolvable in platform_toolsets overrides.
 
-    Also injects all MCP tools into hermes-* umbrella toolsets for the
+    Also injects all MCP tools into clawg-* umbrella toolsets for the
     default behavior.
 
     Skips server names that collide with built-in toolsets.
@@ -1290,9 +1290,9 @@ def _sync_mcp_toolsets(server_names: Optional[List[str]] = None) -> None:
             "includes": [],
         }
 
-    # Also inject into hermes-* umbrella toolsets for default behavior.
+    # Also inject into clawg-* umbrella toolsets for default behavior.
     for ts_name, ts in TOOLSETS.items():
-        if not ts_name.startswith("hermes-"):
+        if not ts_name.startswith("clawg-"):
             continue
         for tool_name in all_mcp_tools:
             if tool_name not in ts["tools"]:
@@ -1682,9 +1682,9 @@ def get_mcp_status() -> List[dict]:
 def probe_mcp_server_tools() -> Dict[str, List[tuple]]:
     """Temporarily connect to configured MCP servers and list their tools.
 
-    Designed for ``hermes tools`` interactive configuration — connects to each
+    Designed for ``clawg tools`` interactive configuration — connects to each
     enabled server, grabs tool names and descriptions, then disconnects.
-    Does NOT register tools in the Hermes registry.
+    Does NOT register tools in the clawg registry.
 
     Returns:
         Dict mapping server name to list of (tool_name, description) tuples.

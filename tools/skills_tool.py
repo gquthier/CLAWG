@@ -40,7 +40,7 @@ SKILL.md Format (YAML Frontmatter, agentskills.io compatible):
       commands: [curl, jq]        #   Command checks remain advisory only.
     compatibility: Requires X     # Optional (agentskills.io)
     metadata:                     # Optional, arbitrary key-value (agentskills.io)
-      hermes:
+      clawg:
         tags: [fine-tuning, llm]
         related_skills: [peft, lora]
     ---
@@ -76,8 +76,8 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional, Set, Tuple
 
 import yaml
-from hermes_cli.config import load_env, _ENV_VAR_NAME_RE
-from hermes_cli.paths import get_shared_skills_dir
+from clawg_cli.config import load_env, _ENV_VAR_NAME_RE
+from clawg_cli.paths import get_shared_skills_dir
 from tools.registry import registry
 
 logger = logging.getLogger(__name__)
@@ -346,9 +346,9 @@ def _capture_required_environment_variables(
 
 
 def _is_gateway_surface() -> bool:
-    if os.getenv("HERMES_GATEWAY_SESSION"):
+    if os.getenv("CLAWG_GATEWAY_SESSION"):
         return True
-    return bool(os.getenv("HERMES_SESSION_PLATFORM"))
+    return bool(os.getenv("CLAWG_SESSION_PLATFORM"))
 
 
 def _get_terminal_backend_name() -> str:
@@ -394,7 +394,7 @@ def _gateway_setup_hint() -> str:
 
         return GATEWAY_SECRET_CAPTURE_UNSUPPORTED_MESSAGE
     except Exception:
-        return "Secure secret entry is not available. Load this skill in the local CLI to be prompted, or add the key to ~/.hermes/.env manually."
+        return "Secure secret entry is not available. Load this skill in the local CLI to be prompted, or add the key to ~/.clawg/.env manually."
 
 
 def _build_setup_note(
@@ -457,7 +457,7 @@ def _get_category_from_path(skill_path: Path) -> Optional[str]:
     """
     Extract category from skill path based on directory structure.
 
-    For paths like: ~/.hermes/skills/mlops/axolotl/SKILL.md -> "mlops"
+    For paths like: ~/.clawg/skills/mlops/axolotl/SKILL.md -> "mlops"
     """
     try:
         rel_path = skill_path.relative_to(SKILLS_DIR)
@@ -516,15 +516,15 @@ def _parse_tags(tags_value) -> List[str]:
 def _get_disabled_skill_names() -> Set[str]:
     """Load disabled skill names from config (once per call).
 
-    Resolves platform from ``HERMES_PLATFORM`` env var, falls back to
+    Resolves platform from ``CLAWG_PLATFORM`` env var, falls back to
     the global disabled list.
     """
     import os
     try:
-        from hermes_cli.config import load_config
+        from clawg_cli.config import load_config
         config = load_config()
         skills_cfg = config.get("skills", {})
-        resolved_platform = os.getenv("HERMES_PLATFORM")
+        resolved_platform = os.getenv("CLAWG_PLATFORM")
         if resolved_platform:
             platform_disabled = skills_cfg.get("platform_disabled", {}).get(resolved_platform)
             if platform_disabled is not None:
@@ -538,10 +538,10 @@ def _is_skill_disabled(name: str, platform: str = None) -> bool:
     """Check if a skill is disabled in config."""
     import os
     try:
-        from hermes_cli.config import load_config
+        from clawg_cli.config import load_config
         config = load_config()
         skills_cfg = config.get("skills", {})
-        resolved_platform = platform or os.getenv("HERMES_PLATFORM")
+        resolved_platform = platform or os.getenv("CLAWG_PLATFORM")
         if resolved_platform:
             platform_disabled = skills_cfg.get("platform_disabled", {}).get(resolved_platform)
             if platform_disabled is not None:
@@ -552,11 +552,11 @@ def _is_skill_disabled(name: str, platform: str = None) -> bool:
 
 
 def _find_all_skills(*, skip_disabled: bool = False) -> List[Dict[str, Any]]:
-    """Recursively find all skills in ~/.hermes/skills/.
+    """Recursively find all skills in ~/.clawg/skills/.
 
     Args:
         skip_disabled: If True, return ALL skills regardless of disabled
-            state (used by ``hermes skills`` config UI). Default False
+            state (used by ``clawg skills`` config UI). Default False
             filters out disabled skills.
 
     Returns:
@@ -755,7 +755,7 @@ def skills_list(category: str = None, task_id: str = None) -> str:
                     "success": True,
                     "skills": [],
                     "categories": [],
-                    "message": "No skills found. Skills directory created at ~/.hermes/skills/",
+                    "message": "No skills found. Skills directory created at ~/.clawg/skills/",
                 },
                 ensure_ascii=False,
             )
@@ -898,7 +898,7 @@ def skill_view(name: str, file_path: str = None, task_id: str = None) -> str:
         if _outside_skills_dir or _injection_detected:
             _warnings = []
             if _outside_skills_dir:
-                _warnings.append(f"skill file is outside the trusted skills directory (~/.hermes/skills/): {skill_md}")
+                _warnings.append(f"skill file is outside the trusted skills directory (~/.clawg/skills/): {skill_md}")
             if _injection_detected:
                 _warnings.append("skill content contains patterns that may indicate prompt injection")
             import logging as _logging
@@ -928,7 +928,7 @@ def skill_view(name: str, file_path: str = None, task_id: str = None) -> str:
                     "success": False,
                     "error": (
                         f"Skill '{resolved_name}' is disabled. "
-                        "Enable it with `hermes skills` or inspect the files directly on disk."
+                        "Enable it with `clawg skills` or inspect the files directly on disk."
                     ),
                 },
                 ensure_ascii=False,
@@ -1094,15 +1094,15 @@ def skill_view(name: str, file_path: str = None, task_id: str = None) -> str:
                     )
 
         # Read tags/related_skills with backward compat:
-        # Check metadata.hermes.* first (agentskills.io convention), fall back to top-level
-        hermes_meta = {}
+        # Check metadata.clawg.* first (agentskills.io convention), fall back to top-level
+        clawg_meta = {}
         metadata = frontmatter.get("metadata")
         if isinstance(metadata, dict):
-            hermes_meta = metadata.get("hermes", {}) or {}
+            clawg_meta = metadata.get("clawg", {}) or {}
 
-        tags = _parse_tags(hermes_meta.get("tags") or frontmatter.get("tags", ""))
+        tags = _parse_tags(clawg_meta.get("tags") or frontmatter.get("tags", ""))
         related_skills = _parse_tags(
-            hermes_meta.get("related_skills") or frontmatter.get("related_skills", "")
+            clawg_meta.get("related_skills") or frontmatter.get("related_skills", "")
         )
 
         # Build linked files structure for clear discovery

@@ -3,7 +3,7 @@
 # Long-horizon agent benchmark: agent plays CEO of an AI startup over
 # a simulated 1-3 year run, interacting via yc-bench CLI subcommands.
 #
-# Requires: pip install "hermes-agent[yc-bench]"
+# Requires: pip install "clawg[yc-bench]"
 #
 # Usage:
 #   python environments/benchmarks/yc_bench/yc_bench_env.py evaluate \
@@ -29,7 +29,7 @@ env:
   db_dir: "/tmp/yc_bench_dbs"
   company_name: "BenchCo"
   start_date: "01/01/2025"   # MM/DD/YYYY (yc-bench convention)
-  tokenizer_name: "NousResearch/Hermes-3-Llama-3.1-8B"
+  tokenizer_name: "NousResearch/Clawg-3-Llama-3.1-8B"
   use_wandb: true
   wandb_name: "yc-bench"
   ensure_scores_are_not_same: false

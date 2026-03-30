@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [vllm, torch, transformers]
 metadata:
-  hermes:
+  clawg:
     tags: [vLLM, Inference Serving, PagedAttention, Continuous Batching, High Throughput, Production, OpenAI API, Quantization, Tensor Parallelism]
 
 ---

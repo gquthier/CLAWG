@@ -1,4 +1,4 @@
-"""Tests for HermesCLI initialization -- catches configuration bugs
+"""Tests for ClawgCLI initialization -- catches configuration bugs
 that only manifest at runtime (not in mocked unit tests)."""
 
 import os
@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
 def _make_cli(env_overrides=None, config_overrides=None, **kwargs):
-    """Create a HermesCLI instance with minimal mocking."""
+    """Create a ClawgCLI instance with minimal mocking."""
     import importlib
 
     _clean_config = {
@@ -24,7 +24,7 @@ def _make_cli(env_overrides=None, config_overrides=None, **kwargs):
     }
     if config_overrides:
         _clean_config.update(config_overrides)
-    clean_env = {"LLM_MODEL": "", "HERMES_MAX_ITERATIONS": ""}
+    clean_env = {"LLM_MODEL": "", "CLAWG_MAX_ITERATIONS": ""}
     if env_overrides:
         clean_env.update(env_overrides)
     prompt_toolkit_stubs = {
@@ -50,7 +50,7 @@ def _make_cli(env_overrides=None, config_overrides=None, **kwargs):
         _cli_mod = importlib.reload(_cli_mod)
         with patch.object(_cli_mod, "get_tool_definitions", return_value=[]), \
              patch.dict(_cli_mod.__dict__, {"CLI_CONFIG": _clean_config}):
-            return _cli_mod.HermesCLI(**kwargs)
+            return _cli_mod.ClawgCLI(**kwargs)
 
 
 class TestMaxTurnsResolution:
@@ -72,7 +72,7 @@ class TestMaxTurnsResolution:
 
     def test_env_var_max_turns(self):
         """Env var is used when config file doesn't set max_turns."""
-        cli_obj = _make_cli(env_overrides={"HERMES_MAX_ITERATIONS": "42"})
+        cli_obj = _make_cli(env_overrides={"CLAWG_MAX_ITERATIONS": "42"})
         assert cli_obj.max_turns == 42
 
     def test_legacy_root_max_turns_is_used_when_agent_key_exists_without_value(self):
@@ -128,11 +128,11 @@ class TestHistoryDisplay:
         output = capsys.readouterr().out
 
         assert "[You #1]" in output
-        assert "[Hermes #2]" in output
+        assert "[clawg #2]" in output
         assert "(requested 2 tool calls)" in output
         assert "[Tools]" in output
         assert "(2 tool messages hidden)" in output
-        assert "[Hermes #3]" in output
+        assert "[clawg #3]" in output
         assert "[You #4]" in output
         assert "[You #5]" not in output
         assert "A" * 250 in output

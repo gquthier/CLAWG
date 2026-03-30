@@ -251,14 +251,14 @@ class TestVisionModelOverride:
 
 
 class TestDefaultConfigShape:
-    """Verify the DEFAULT_CONFIG in hermes_cli/config.py has correct auxiliary structure."""
+    """Verify the DEFAULT_CONFIG in clawg_cli/config.py has correct auxiliary structure."""
 
     def test_auxiliary_section_exists(self):
-        from hermes_cli.config import DEFAULT_CONFIG
+        from clawg_cli.config import DEFAULT_CONFIG
         assert "auxiliary" in DEFAULT_CONFIG
 
     def test_vision_task_structure(self):
-        from hermes_cli.config import DEFAULT_CONFIG
+        from clawg_cli.config import DEFAULT_CONFIG
         vision = DEFAULT_CONFIG["auxiliary"]["vision"]
         assert "provider" in vision
         assert "model" in vision
@@ -266,7 +266,7 @@ class TestDefaultConfigShape:
         assert vision["model"] == ""
 
     def test_web_extract_task_structure(self):
-        from hermes_cli.config import DEFAULT_CONFIG
+        from clawg_cli.config import DEFAULT_CONFIG
         web = DEFAULT_CONFIG["auxiliary"]["web_extract"]
         assert "provider" in web
         assert "model" in web
@@ -274,13 +274,13 @@ class TestDefaultConfigShape:
         assert web["model"] == ""
 
     def test_compression_provider_default(self):
-        from hermes_cli.config import DEFAULT_CONFIG
+        from clawg_cli.config import DEFAULT_CONFIG
         compression = DEFAULT_CONFIG["compression"]
         assert "summary_provider" in compression
         assert compression["summary_provider"] == "auto"
 
     def test_compression_base_url_default(self):
-        from hermes_cli.config import DEFAULT_CONFIG
+        from clawg_cli.config import DEFAULT_CONFIG
         compression = DEFAULT_CONFIG["compression"]
         assert "summary_base_url" in compression
         assert compression["summary_base_url"] is None

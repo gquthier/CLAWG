@@ -32,12 +32,12 @@ class TestParserRegistry:
         parsers = list_parsers()
         assert len(parsers) > 0
 
-    def test_hermes_parser_registered(self):
+    def test_clawg_parser_registered(self):
         parsers = list_parsers()
-        assert "hermes" in parsers
+        assert "clawg" in parsers
 
     def test_get_parser_returns_instance(self):
-        parser = get_parser("hermes")
+        parser = get_parser("clawg")
         assert isinstance(parser, ToolCallParser)
 
     def test_get_parser_unknown_raises(self):
@@ -52,12 +52,12 @@ class TestParserRegistry:
             assert hasattr(parser, "parse")
 
 
-# ─── Hermes parser tests ────────────────────────────────────────────────
+# ─── clawg parser tests ────────────────────────────────────────────────
 
-class TestHermesParser:
+class TestClawgParser:
     @pytest.fixture
     def parser(self):
-        return get_parser("hermes")
+        return get_parser("clawg")
 
     def test_no_tool_call(self, parser):
         text = "Hello, I can help you with that."
@@ -129,7 +129,7 @@ class TestHermesParser:
 class TestParseResultContract:
     """Ensure all parsers conform to the ParseResult contract."""
 
-    @pytest.fixture(params=["hermes"])  # Add more as needed
+    @pytest.fixture(params=["clawg"])  # Add more as needed
     def parser(self, request):
         return get_parser(request.param)
 
@@ -145,7 +145,7 @@ class TestParseResultContract:
 
     def test_tool_calls_are_proper_objects(self, parser):
         """When tool calls are found, they should be ChatCompletionMessageToolCall objects."""
-        # Use hermes format since that's universal
+        # Use clawg format since that's universal
         text = '<tool_call>{"name": "terminal", "arguments": {"command": "echo hi"}}</tool_call>'
         content, tool_calls = parser.parse(text)
         if tool_calls is not None:

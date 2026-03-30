@@ -6,7 +6,7 @@ description: "Text-to-speech and voice message transcription across all platform
 
 # Voice & TTS
 
-Hermes Agent supports both text-to-speech output and voice message transcription across all messaging platforms.
+CLAWG supports both text-to-speech output and voice message transcription across all messaging platforms.
 
 ## Text-to-Speech
 
@@ -26,12 +26,12 @@ Convert text to speech with four providers:
 | Telegram | Voice bubble (plays inline) | Opus `.ogg` |
 | Discord | Audio file attachment | MP3 |
 | WhatsApp | Audio file attachment | MP3 |
-| CLI | Saved to `~/.hermes/audio_cache/` | MP3 |
+| CLI | Saved to `~/.clawg/audio_cache/` | MP3 |
 
 ### Configuration
 
 ```yaml
-# In ~/.hermes/config.yaml
+# In ~/.clawg/config.yaml
 tts:
   provider: "edge"              # "edge" | "elevenlabs" | "openai" | "neutts"
   edge:
@@ -86,13 +86,13 @@ Voice messages sent on Telegram, Discord, WhatsApp, Slack, or Signal are automat
 | **OpenAI Whisper API** | Good–Best | Paid | `VOICE_TOOLS_OPENAI_KEY` or `OPENAI_API_KEY` |
 
 :::info Zero Config
-Local transcription works out of the box when `faster-whisper` is installed. If that's unavailable, Hermes can also use a local `whisper` CLI from common install locations (like `/opt/homebrew/bin`) or a custom command via `HERMES_LOCAL_STT_COMMAND`.
+Local transcription works out of the box when `faster-whisper` is installed. If that's unavailable, clawg can also use a local `whisper` CLI from common install locations (like `/opt/homebrew/bin`) or a custom command via `CLAWG_LOCAL_STT_COMMAND`.
 :::
 
 ### Configuration
 
 ```yaml
-# In ~/.hermes/config.yaml
+# In ~/.clawg/config.yaml
 stt:
   provider: "local"           # "local" | "groq" | "openai"
   local:
@@ -117,12 +117,12 @@ stt:
 
 **OpenAI API** — Accepts `VOICE_TOOLS_OPENAI_KEY` first and falls back to `OPENAI_API_KEY`. Supports `whisper-1`, `gpt-4o-mini-transcribe`, and `gpt-4o-transcribe`.
 
-**Custom local CLI fallback** — Set `HERMES_LOCAL_STT_COMMAND` if you want Hermes to call a local transcription command directly. The command template supports `{input_path}`, `{output_dir}`, `{language}`, and `{model}` placeholders.
+**Custom local CLI fallback** — Set `CLAWG_LOCAL_STT_COMMAND` if you want clawg to call a local transcription command directly. The command template supports `{input_path}`, `{output_dir}`, `{language}`, and `{model}` placeholders.
 
 ### Fallback Behavior
 
-If your configured provider isn't available, Hermes automatically falls back:
-- **Local faster-whisper unavailable** → Tries a local `whisper` CLI or `HERMES_LOCAL_STT_COMMAND` before cloud providers
+If your configured provider isn't available, clawg automatically falls back:
+- **Local faster-whisper unavailable** → Tries a local `whisper` CLI or `CLAWG_LOCAL_STT_COMMAND` before cloud providers
 - **Groq key not set** → Falls back to local transcription, then OpenAI
 - **OpenAI key not set** → Falls back to local transcription, then Groq
 - **Nothing available** → Voice messages pass through with an accurate note to the user

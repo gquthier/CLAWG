@@ -2,10 +2,10 @@
 name: parallel-cli
 description: Optional vendor skill for Parallel CLI — agent-native web search, extraction, deep research, enrichment, FindAll, and monitoring. Prefer JSON output and non-interactive flows.
 version: 1.1.0
-author: Hermes Agent
+author: CLAWG
 license: MIT
 metadata:
-  hermes:
+  clawg:
     tags: [Research, Web, Search, Deep-Research, Enrichment, CLI]
     related_skills: [duckduckgo-search, mcporter]
 ---
@@ -14,11 +14,11 @@ metadata:
 
 Use `parallel-cli` when the user explicitly wants Parallel, or when a terminal-native workflow would benefit from Parallel's vendor-specific stack for web search, extraction, deep research, enrichment, entity discovery, or monitoring.
 
-This is an optional third-party workflow, not a Hermes core capability.
+This is an optional third-party workflow, not a clawg core capability.
 
 Important expectations:
 - Parallel is a paid service with a free tier, not a fully free local tool.
-- It overlaps with Hermes native `web_search` / `web_extract`, so do not prefer it by default for ordinary lookups.
+- It overlaps with clawg native `web_search` / `web_extract`, so do not prefer it by default for ordinary lookups.
 - Prefer this skill when the user mentions Parallel specifically or needs capabilities like Parallel's enrichment, FindAll, or monitor workflows.
 
 `parallel-cli` is designed for agents:
@@ -36,7 +36,7 @@ Prefer this skill when:
 - You need async deep research jobs that can be launched and polled later
 - You need structured enrichment, FindAll entity discovery, or monitoring
 
-Prefer Hermes native `web_search` / `web_extract` for quick one-off lookups when Parallel is not specifically requested.
+Prefer clawg native `web_search` / `web_extract` for quick one-off lookups when Parallel is not specifically requested.
 
 ## Installation
 
@@ -109,7 +109,7 @@ If auth requires browser interaction, run with `pty=true`.
 4. Cite only URLs returned by the CLI output.
 5. Save large JSON outputs to a temp file when follow-up questions are likely.
 6. Use background processes only for genuinely long-running workflows; otherwise run in foreground.
-7. Prefer Hermes native tools unless the user wants Parallel specifically or needs Parallel-only workflows.
+7. Prefer clawg native tools unless the user wants Parallel specifically or needs Parallel-only workflows.
 
 ## Quick reference
 
@@ -230,7 +230,7 @@ parallel-cli research run \
   --json
 ```
 
-Recommended Hermes workflow:
+Recommended clawg workflow:
 1. launch with `--no-wait --json`
 2. capture the returned run/task ID
 3. if the user wants to continue other work, keep moving
@@ -323,7 +323,7 @@ parallel-cli monitor create --help
 
 Use this when the user wants recurring tracking of a page or source rather than a one-time fetch.
 
-## Recommended Hermes usage patterns
+## Recommended clawg usage patterns
 
 ### Fast answer with citations
 1. Run `parallel-cli search ... --json`
@@ -386,5 +386,5 @@ parallel-cli config auto-update-check off
 - `login` may require PTY/browser interaction.
 - Prefer foreground execution for short tasks; do not overuse background processes.
 - For large result sets, save JSON to `/tmp/*.json` instead of stuffing everything into context.
-- Do not silently choose Parallel when Hermes native tools are already sufficient.
+- Do not silently choose Parallel when clawg native tools are already sufficient.
 - Remember this is a vendor workflow that usually requires account auth and paid usage beyond the free tier.

@@ -1,12 +1,12 @@
 ---
 sidebar_position: 4
 title: "Toolsets Reference"
-description: "Reference for Hermes core, composite, platform, and dynamic toolsets"
+description: "Reference for clawg core, composite, platform, and dynamic toolsets"
 ---
 
 # Toolsets Reference
 
-Toolsets are named bundles of tools that you can enable with `hermes chat --toolsets ...`, configure per platform, or resolve inside the agent runtime.
+Toolsets are named bundles of tools that you can enable with `clawg chat --toolsets ...`, configure per platform, or resolve inside the agent runtime.
 
 | Toolset | Kind | Resolves to |
 |---------|------|-------------|
@@ -17,17 +17,17 @@ Toolsets are named bundles of tools that you can enable with `hermes chat --tool
 | `debugging` | composite | `patch`, `process`, `read_file`, `search_files`, `terminal`, `web_extract`, `web_search`, `write_file` |
 | `delegation` | core | `delegate_task` |
 | `file` | core | `patch`, `read_file`, `search_files`, `write_file` |
-| `hermes-acp` | platform | `browser_back`, `browser_click`, `browser_close`, `browser_console`, `browser_get_images`, `browser_navigate`, `browser_press`, `browser_scroll`, `browser_snapshot`, `browser_type`, `browser_vision`, `delegate_task`, `execute_code`, `memory`, `patch`, `process`, `read_file`, `search_files`, `session_search`, `skill_manage`, `skill_view`, `skills_list`, `terminal`, `todo`, `vision_analyze`, `web_extract`, `web_search`, `write_file` |
-| `hermes-cli` | platform | `browser_back`, `browser_click`, `browser_close`, `browser_console`, `browser_get_images`, `browser_navigate`, `browser_press`, `browser_scroll`, `browser_snapshot`, `browser_type`, `browser_vision`, `clarify`, `cronjob`, `delegate_task`, `execute_code`, `ha_call_service`, `ha_get_state`, `ha_list_entities`, `ha_list_services`, `honcho_conclude`, `honcho_context`, `honcho_profile`, `honcho_search`, `image_generate`, `memory`, `mixture_of_agents`, `patch`, `process`, `read_file`, `search_files`, `send_message`, `session_search`, `skill_manage`, `skill_view`, `skills_list`, `terminal`, `text_to_speech`, `todo`, `vision_analyze`, `web_extract`, `web_search`, `write_file` |
-| `hermes-discord` | platform | _(same as hermes-cli)_ |
-| `hermes-email` | platform | _(same as hermes-cli)_ |
-| `hermes-gateway` | composite | Union of all messaging platform toolsets |
-| `hermes-homeassistant` | platform | _(same as hermes-cli)_ |
-| `hermes-signal` | platform | _(same as hermes-cli)_ |
-| `hermes-slack` | platform | _(same as hermes-cli)_ |
-| `hermes-sms` | platform | _(same as hermes-cli)_ |
-| `hermes-telegram` | platform | _(same as hermes-cli)_ |
-| `hermes-whatsapp` | platform | _(same as hermes-cli)_ |
+| `clawg-acp` | platform | `browser_back`, `browser_click`, `browser_close`, `browser_console`, `browser_get_images`, `browser_navigate`, `browser_press`, `browser_scroll`, `browser_snapshot`, `browser_type`, `browser_vision`, `delegate_task`, `execute_code`, `memory`, `patch`, `process`, `read_file`, `search_files`, `session_search`, `skill_manage`, `skill_view`, `skills_list`, `terminal`, `todo`, `vision_analyze`, `web_extract`, `web_search`, `write_file` |
+| `clawg-cli` | platform | `browser_back`, `browser_click`, `browser_close`, `browser_console`, `browser_get_images`, `browser_navigate`, `browser_press`, `browser_scroll`, `browser_snapshot`, `browser_type`, `browser_vision`, `clarify`, `cronjob`, `delegate_task`, `execute_code`, `ha_call_service`, `ha_get_state`, `ha_list_entities`, `ha_list_services`, `honcho_conclude`, `honcho_context`, `honcho_profile`, `honcho_search`, `image_generate`, `memory`, `mixture_of_agents`, `patch`, `process`, `read_file`, `search_files`, `send_message`, `session_search`, `skill_manage`, `skill_view`, `skills_list`, `terminal`, `text_to_speech`, `todo`, `vision_analyze`, `web_extract`, `web_search`, `write_file` |
+| `clawg-discord` | platform | _(same as clawg-cli)_ |
+| `clawg-email` | platform | _(same as clawg-cli)_ |
+| `clawg-gateway` | composite | Union of all messaging platform toolsets |
+| `clawg-homeassistant` | platform | _(same as clawg-cli)_ |
+| `clawg-signal` | platform | _(same as clawg-cli)_ |
+| `clawg-slack` | platform | _(same as clawg-cli)_ |
+| `clawg-sms` | platform | _(same as clawg-cli)_ |
+| `clawg-telegram` | platform | _(same as clawg-cli)_ |
+| `clawg-whatsapp` | platform | _(same as clawg-cli)_ |
 | `homeassistant` | core | `ha_call_service`, `ha_get_state`, `ha_list_entities`, `ha_list_services` |
 | `honcho` | core | `honcho_conclude`, `honcho_context`, `honcho_profile`, `honcho_search` |
 | `image_gen` | core | `image_generate` |

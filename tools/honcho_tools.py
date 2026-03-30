@@ -143,7 +143,7 @@ _QUERY_SCHEMA = {
         "Ask Honcho a natural language question and get a synthesized answer. "
         "Uses Honcho's LLM (dialectic reasoning) — higher cost than honcho_profile or honcho_search. "
         "Can query about any peer: the user (default), the AI assistant, or any named peer. "
-        "Examples: 'What are the user's main goals?', 'What has hermes been working on?', "
+        "Examples: 'What are the user's main goals?', 'What has clawg been working on?', "
         "'What is the user's technical expertise level?'"
     ),
     "parameters": {

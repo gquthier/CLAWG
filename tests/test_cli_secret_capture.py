@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 import cli as cli_module
 import tools.skills_tool as skills_tool_module
-from cli import HermesCLI
-from hermes_cli.callbacks import prompt_for_secret
+from cli import ClawgCLI
+from clawg_cli.callbacks import prompt_for_secret
 from tools.skills_tool import set_secret_capture_callback
 
 
@@ -28,7 +28,7 @@ class _FakeApp:
 
 
 def _make_cli_stub(with_app=False):
-    cli = HermesCLI.__new__(HermesCLI)
+    cli = ClawgCLI.__new__(ClawgCLI)
     cli._app = _FakeApp() if with_app else None
     cli._last_invalidate = 0.0
     cli._secret_state = None
@@ -40,7 +40,7 @@ def test_secret_capture_callback_can_be_completed_from_cli_state_machine():
     cli = _make_cli_stub(with_app=True)
     results = []
 
-    with patch("hermes_cli.callbacks.save_env_value_secure") as save_secret:
+    with patch("clawg_cli.callbacks.save_env_value_secure") as save_secret:
         save_secret.return_value = {
             "success": True,
             "stored_as": "TENOR_API_KEY",
@@ -86,8 +86,8 @@ def test_cancel_secret_capture_marks_setup_skipped():
 def test_secret_capture_uses_getpass_without_tui():
     cli = _make_cli_stub()
 
-    with patch("hermes_cli.callbacks.getpass.getpass", return_value="secret-value"), patch(
-        "hermes_cli.callbacks.save_env_value_secure"
+    with patch("clawg_cli.callbacks.getpass.getpass", return_value="secret-value"), patch(
+        "clawg_cli.callbacks.save_env_value_secure"
     ) as save_secret:
         save_secret.return_value = {
             "success": True,
@@ -110,8 +110,8 @@ def test_secret_capture_timeout_clears_hidden_input_buffer():
 
     cli._clear_secret_input_buffer = clear_buffer
 
-    with patch("hermes_cli.callbacks.queue.Queue.get", side_effect=queue.Empty), patch(
-        "hermes_cli.callbacks._time.monotonic",
+    with patch("clawg_cli.callbacks.queue.Queue.get", side_effect=queue.Empty), patch(
+        "clawg_cli.callbacks._time.monotonic",
         side_effect=[0, 121],
     ):
         result = prompt_for_secret(cli, "TENOR_API_KEY", "Tenor API key")
@@ -135,9 +135,9 @@ def test_cli_chat_registers_secret_capture_callback():
     }
 
     with patch("cli.get_tool_definitions", return_value=[]), patch.dict(
-        "os.environ", {"LLM_MODEL": "", "HERMES_MAX_ITERATIONS": ""}, clear=False
+        "os.environ", {"LLM_MODEL": "", "CLAWG_MAX_ITERATIONS": ""}, clear=False
     ), patch.dict(cli_module.__dict__, {"CLI_CONFIG": clean_config}):
-        cli_obj = HermesCLI()
+        cli_obj = ClawgCLI()
         with patch.object(cli_obj, "_ensure_runtime_credentials", return_value=False):
             cli_obj.chat("hello")
 

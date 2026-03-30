@@ -1,12 +1,12 @@
 ---
 sidebar_position: 10
 title: "Trajectories & Training Format"
-description: "How Hermes saves trajectories, normalizes tool calls, and produces training-friendly outputs"
+description: "How clawg saves trajectories, normalizes tool calls, and produces training-friendly outputs"
 ---
 
 # Trajectories & Training Format
 
-Hermes can save conversation trajectories for training, evaluation, and batch data generation workflows.
+clawg can save conversation trajectories for training, evaluation, and batch data generation workflows.
 
 Primary files:
 
@@ -26,7 +26,7 @@ Trajectory outputs are used for:
 
 ## Normalization strategy
 
-Hermes converts live conversation structure into a training-friendly format.
+clawg converts live conversation structure into a training-friendly format.
 
 Important behaviors include:
 

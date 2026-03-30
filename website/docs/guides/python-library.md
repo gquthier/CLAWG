@@ -1,44 +1,44 @@
 ---
 sidebar_position: 4
-title: "Using Hermes as a Python Library"
+title: "Using clawg as a Python Library"
 description: "Embed AIAgent in your own Python scripts, web apps, or automation pipelines — no CLI required"
 ---
 
-# Using Hermes as a Python Library
+# Using clawg as a Python Library
 
-Hermes isn't just a CLI tool. You can import `AIAgent` directly and use it programmatically in your own Python scripts, web applications, or automation pipelines. This guide shows you how.
+clawg isn't just a CLI tool. You can import `AIAgent` directly and use it programmatically in your own Python scripts, web applications, or automation pipelines. This guide shows you how.
 
 ---
 
 ## Installation
 
-Install Hermes directly from the repository:
+Install clawg directly from the repository:
 
 ```bash
-pip install git+https://github.com/NousResearch/hermes-agent.git
+pip install git+https://github.com/NousResearch/clawg.git
 ```
 
 Or with [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv pip install git+https://github.com/NousResearch/hermes-agent.git
+uv pip install git+https://github.com/NousResearch/clawg.git
 ```
 
 You can also pin it in your `requirements.txt`:
 
 ```text
-hermes-agent @ git+https://github.com/NousResearch/hermes-agent.git
+clawg @ git+https://github.com/NousResearch/clawg.git
 ```
 
 :::tip
-The same environment variables used by the CLI are required when using Hermes as a library. At minimum, set `OPENROUTER_API_KEY` (or `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` if using direct provider access).
+The same environment variables used by the CLI are required when using clawg as a library. At minimum, set `OPENROUTER_API_KEY` (or `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` if using direct provider access).
 :::
 
 ---
 
 ## Basic Usage
 
-The simplest way to use Hermes is the `chat()` method — pass a message, get a string back:
+The simplest way to use clawg is the `chat()` method — pass a message, get a string back:
 
 ```python
 from run_agent import AIAgent
@@ -54,7 +54,7 @@ print(response)
 `chat()` handles the full conversation loop internally — tool calls, retries, everything — and returns just the final text response.
 
 :::warning
-Always set `quiet_mode=True` when embedding Hermes in your own code. Without it, the agent prints CLI spinners, progress indicators, and other terminal output that will clutter your application's output.
+Always set `quiet_mode=True` when embedding clawg in your own code. Without it, the agent prints CLI spinners, progress indicators, and other terminal output that will clutter your application's output.
 :::
 
 ---
@@ -186,7 +186,7 @@ This is ideal for building specialized agents — a code reviewer, a documentati
 
 ## Batch Processing
 
-For running many prompts in parallel, Hermes includes `batch_runner.py`. It manages concurrent `AIAgent` instances with proper resource isolation:
+For running many prompts in parallel, clawg includes `batch_runner.py`. It manages concurrent `AIAgent` instances with proper resource isolation:
 
 ```bash
 python batch_runner.py --input prompts.jsonl --output results.jsonl
@@ -265,7 +265,7 @@ client = discord.Client(intents=discord.Intents.default())
 async def on_message(message):
     if message.author == client.user:
         return
-    if message.content.startswith("!hermes "):
+    if message.content.startswith("!clawg "):
         query = message.content[8:]
         agent = AIAgent(
             model="anthropic/claude-sonnet-4",

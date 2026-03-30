@@ -5,7 +5,7 @@ version: 1.0.0
 author: community
 license: MIT
 metadata:
-  hermes:
+  clawg:
     tags: [Audio, Visualization, Spectrogram, Music, Analysis]
     homepage: https://github.com/steipete/songsee
 prerequisites:

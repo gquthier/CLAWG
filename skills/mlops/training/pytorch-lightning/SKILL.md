@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [lightning, torch, transformers]
 metadata:
-  hermes:
+  clawg:
     tags: [PyTorch Lightning, Training Framework, Distributed Training, DDP, FSDP, DeepSpeed, High-Level API, Callbacks, Best Practices, Scalable]
 
 ---

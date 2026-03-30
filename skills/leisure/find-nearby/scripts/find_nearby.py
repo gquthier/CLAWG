@@ -29,7 +29,7 @@ OVERPASS_URLS = [
     "https://overpass.kumi.systems/api/interpreter",
 ]
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
-USER_AGENT = "HermesAgent/1.0 (find-nearby skill)"
+USER_AGENT = "ClawgAgent/1.0 (find-nearby skill)"
 TIMEOUT = 15
 
 

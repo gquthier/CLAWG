@@ -205,7 +205,7 @@ Delegation has a **depth limit of 2** — a parent (depth 0) can spawn children 
 ## Configuration
 
 ```yaml
-# In ~/.hermes/config.yaml
+# In ~/.clawg/config.yaml
 delegation:
   max_iterations: 50                        # Max turns per child (default: 50)
   default_toolsets: ["terminal", "file", "web"]  # Default toolsets

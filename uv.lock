@@ -984,7 +984,7 @@ wheels = [
 ]
 
 [[package]]
-name = "hermes-agent"
+name = "clawg"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
@@ -1076,17 +1076,17 @@ requires-dist = [
     { name = "fal-client" },
     { name = "fire" },
     { name = "firecrawl-py" },
-    { name = "hermes-agent", extras = ["cli"], marker = "extra == 'all'" },
-    { name = "hermes-agent", extras = ["cron"], marker = "extra == 'all'" },
-    { name = "hermes-agent", extras = ["dev"], marker = "extra == 'all'" },
-    { name = "hermes-agent", extras = ["homeassistant"], marker = "extra == 'all'" },
-    { name = "hermes-agent", extras = ["honcho"], marker = "extra == 'all'" },
-    { name = "hermes-agent", extras = ["mcp"], marker = "extra == 'all'" },
-    { name = "hermes-agent", extras = ["messaging"], marker = "extra == 'all'" },
-    { name = "hermes-agent", extras = ["modal"], marker = "extra == 'all'" },
-    { name = "hermes-agent", extras = ["pty"], marker = "extra == 'all'" },
-    { name = "hermes-agent", extras = ["slack"], marker = "extra == 'all'" },
-    { name = "hermes-agent", extras = ["tts-premium"], marker = "extra == 'all'" },
+    { name = "clawg", extras = ["cli"], marker = "extra == 'all'" },
+    { name = "clawg", extras = ["cron"], marker = "extra == 'all'" },
+    { name = "clawg", extras = ["dev"], marker = "extra == 'all'" },
+    { name = "clawg", extras = ["homeassistant"], marker = "extra == 'all'" },
+    { name = "clawg", extras = ["honcho"], marker = "extra == 'all'" },
+    { name = "clawg", extras = ["mcp"], marker = "extra == 'all'" },
+    { name = "clawg", extras = ["messaging"], marker = "extra == 'all'" },
+    { name = "clawg", extras = ["modal"], marker = "extra == 'all'" },
+    { name = "clawg", extras = ["pty"], marker = "extra == 'all'" },
+    { name = "clawg", extras = ["slack"], marker = "extra == 'all'" },
+    { name = "clawg", extras = ["tts-premium"], marker = "extra == 'all'" },
     { name = "honcho-ai", marker = "extra == 'honcho'", specifier = ">=2.0.1" },
     { name = "httpx" },
     { name = "jinja2" },

@@ -5,7 +5,7 @@ version: 1.0.0
 author: community
 license: MIT
 metadata:
-  hermes:
+  clawg:
     tags: [Notion, Productivity, Notes, Database, API]
     homepage: https://developers.notion.com
 prerequisites:
@@ -20,7 +20,7 @@ Use the Notion API via curl to create, read, update pages, databases (data sourc
 
 1. Create an integration at https://notion.so/my-integrations
 2. Copy the API key (starts with `ntn_` or `secret_`)
-3. Store it in `~/.hermes/.env`:
+3. Store it in `~/.clawg/.env`:
    ```
    NOTION_API_KEY=ntn_your_key_here
    ```
@@ -133,7 +133,7 @@ curl -s -X PATCH "https://api.notion.com/v1/blocks/{page_id}/children" \
   -H "Content-Type: application/json" \
   -d '{
     "children": [
-      {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"text": {"content": "Hello from Hermes!"}}]}}
+      {"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"text": {"content": "Hello from clawg!"}}]}}
     ]
   }'
 ```
@@ -167,5 +167,5 @@ Common property formats for database items:
 - Rate limit: ~3 requests/second average
 - The API cannot set database view filters — that's UI-only
 - Use `is_inline: true` when creating data sources to embed them in pages
-- Add `-s` flag to curl to suppress progress bars (cleaner output for Hermes)
+- Add `-s` flag to curl to suppress progress bars (cleaner output for clawg)
 - Pipe output through `jq` for readable JSON: `... | jq '.results[0].properties'`

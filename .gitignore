@@ -19,7 +19,7 @@ data/
 .pytest_cache/
 tmp/
 temp_vision_images/
-hermes-*/*
+clawg-*/*
 examples/
 tests/quick_test_dataset.jsonl
 tests/sample_dataset.jsonl
@@ -38,14 +38,14 @@ agent-browser/
 privvy*
 images/
 __pycache__/
-hermes_agent.egg-info/
+clawg_agent.egg-info/
 wandb/
 testlogs
 
 # CLI config (may contain sensitive SSH paths)
 cli-config.yaml
 
-# Skills Hub state (lives in ~/.hermes/skills/.hub/ at runtime, but just in case)
+# Skills Hub state (lives in ~/.clawg/skills/.hub/ at runtime, but just in case)
 skills/.hub/
 ignored/
 .worktrees/

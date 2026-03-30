@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Google Workspace API CLI for Hermes Agent.
+"""Google Workspace API CLI for CLAWG.
 
 A thin CLI wrapper around Google's Python client libraries.
 Authenticates using the token stored by setup.py.
@@ -28,8 +28,8 @@ from datetime import datetime, timedelta, timezone
 from email.mime.text import MIMEText
 from pathlib import Path
 
-HERMES_HOME = Path(os.getenv("HERMES_HOME", Path.home() / ".hermes"))
-TOKEN_PATH = HERMES_HOME / "google_token.json"
+CLAWG_HOME = Path(os.getenv("CLAWG_HOME", Path.home() / ".clawg"))
+TOKEN_PATH = CLAWG_HOME / "google_token.json"
 
 SCOPES = [
     "https://www.googleapis.com/auth/gmail.readonly",
@@ -366,7 +366,7 @@ def docs_get(args):
 # =========================================================================
 
 def main():
-    parser = argparse.ArgumentParser(description="Google Workspace API for Hermes Agent")
+    parser = argparse.ArgumentParser(description="Google Workspace API for CLAWG")
     sub = parser.add_subparsers(dest="service", required=True)
 
     # --- Gmail ---

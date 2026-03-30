@@ -7,7 +7,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from tools.environments.local import _HERMES_PROVIDER_ENV_FORCE_PREFIX
+from tools.environments.local import _CLAWG_PROVIDER_ENV_FORCE_PREFIX
 from tools.process_registry import (
     ProcessRegistry,
     ProcessSession,
@@ -251,7 +251,7 @@ class TestSpawnEnvSanitization:
                 env_vars={
                     "MY_CUSTOM_VAR": "keep-me",
                     "TELEGRAM_BOT_TOKEN": "drop-me",
-                    f"{_HERMES_PROVIDER_ENV_FORCE_PREFIX}TELEGRAM_BOT_TOKEN": "forced-bot-token",
+                    f"{_CLAWG_PROVIDER_ENV_FORCE_PREFIX}TELEGRAM_BOT_TOKEN": "forced-bot-token",
                 },
             )
 
@@ -259,7 +259,7 @@ class TestSpawnEnvSanitization:
         assert env["MY_CUSTOM_VAR"] == "keep-me"
         assert env["TELEGRAM_BOT_TOKEN"] == "forced-bot-token"
         assert "FIRECRAWL_API_KEY" not in env
-        assert f"{_HERMES_PROVIDER_ENV_FORCE_PREFIX}TELEGRAM_BOT_TOKEN" not in env
+        assert f"{_CLAWG_PROVIDER_ENV_FORCE_PREFIX}TELEGRAM_BOT_TOKEN" not in env
         assert env["PYTHONUNBUFFERED"] == "1"
 
 

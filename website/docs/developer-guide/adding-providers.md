@@ -1,16 +1,16 @@
 ---
 sidebar_position: 5
 title: "Adding Providers"
-description: "How to add a new inference provider to Hermes Agent — auth, runtime resolution, CLI flows, adapters, tests, and docs"
+description: "How to add a new inference provider to CLAWG — auth, runtime resolution, CLI flows, adapters, tests, and docs"
 ---
 
 # Adding Providers
 
-Hermes can already talk to any OpenAI-compatible endpoint through the custom provider path. Do not add a built-in provider unless you want first-class UX for that service:
+clawg can already talk to any OpenAI-compatible endpoint through the custom provider path. Do not add a built-in provider unless you want first-class UX for that service:
 
 - provider-specific auth or token refresh
 - a curated model catalog
-- setup / `hermes model` menu entries
+- setup / `clawg model` menu entries
 - provider aliases for `provider:model` syntax
 - a non-OpenAI API shape that needs an adapter
 
@@ -20,15 +20,15 @@ If the provider is just "another OpenAI-compatible base URL and API key", a name
 
 A built-in provider has to line up across a few layers:
 
-1. `hermes_cli/auth.py` decides how credentials are found.
-2. `hermes_cli/runtime_provider.py` turns that into runtime data:
+1. `clawg_cli/auth.py` decides how credentials are found.
+2. `clawg_cli/runtime_provider.py` turns that into runtime data:
    - `provider`
    - `api_mode`
    - `base_url`
    - `api_key`
    - `source`
 3. `run_agent.py` uses `api_mode` to decide how requests are built and sent.
-4. `hermes_cli/models.py`, `hermes_cli/main.py`, and `hermes_cli/setup.py` make the provider show up in the CLI.
+4. `clawg_cli/models.py`, `clawg_cli/main.py`, and `clawg_cli/setup.py` make the provider show up in the CLI.
 5. `agent/auxiliary_client.py` and `agent/model_metadata.py` keep side tasks and token budgeting working.
 
 The important abstraction is `api_mode`.
@@ -74,11 +74,11 @@ This path includes everything from Path A plus:
 
 ### Required for every built-in provider
 
-1. `hermes_cli/auth.py`
-2. `hermes_cli/models.py`
-3. `hermes_cli/runtime_provider.py`
-4. `hermes_cli/main.py`
-5. `hermes_cli/setup.py`
+1. `clawg_cli/auth.py`
+2. `clawg_cli/models.py`
+3. `clawg_cli/runtime_provider.py`
+4. `clawg_cli/main.py`
+5. `clawg_cli/setup.py`
 6. `agent/auxiliary_client.py`
 7. `agent/model_metadata.py`
 8. tests
@@ -102,17 +102,17 @@ Examples from the repo:
 
 That same id should appear in:
 
-- `PROVIDER_REGISTRY` in `hermes_cli/auth.py`
-- `_PROVIDER_LABELS` in `hermes_cli/models.py`
-- `_PROVIDER_ALIASES` in both `hermes_cli/auth.py` and `hermes_cli/models.py`
-- CLI `--provider` choices in `hermes_cli/main.py`
+- `PROVIDER_REGISTRY` in `clawg_cli/auth.py`
+- `_PROVIDER_LABELS` in `clawg_cli/models.py`
+- `_PROVIDER_ALIASES` in both `clawg_cli/auth.py` and `clawg_cli/models.py`
+- CLI `--provider` choices in `clawg_cli/main.py`
 - setup / model selection branches
 - auxiliary-model defaults
 - tests
 
 If the id differs between those files, the provider will feel half-wired: auth may work while `/model`, setup, or runtime resolution silently misses it.
 
-## Step 2: Add auth metadata in `hermes_cli/auth.py`
+## Step 2: Add auth metadata in `clawg_cli/auth.py`
 
 For API-key providers, add a `ProviderConfig` entry to `PROVIDER_REGISTRY` with:
 
@@ -134,14 +134,14 @@ Use the existing providers as templates:
 
 Questions to answer here:
 
-- What env vars should Hermes check, and in what priority order?
+- What env vars should clawg check, and in what priority order?
 - Does the provider need base-URL overrides?
 - Does it need endpoint probing or token refresh?
 - What should the auth error say when credentials are missing?
 
 If the provider needs something more than "look up an API key", add a dedicated credential resolver instead of shoving logic into unrelated branches.
 
-## Step 3: Add model catalog and aliases in `hermes_cli/models.py`
+## Step 3: Add model catalog and aliases in `clawg_cli/models.py`
 
 Update the provider catalog so the provider works in menus and in `provider:model` syntax.
 
@@ -164,7 +164,7 @@ kimi:model-name
 
 If aliases are missing here, the provider may authenticate correctly but still fail in `/model` parsing.
 
-## Step 4: Resolve runtime data in `hermes_cli/runtime_provider.py`
+## Step 4: Resolve runtime data in `clawg_cli/runtime_provider.py`
 
 `resolve_runtime_provider()` is the shared path used by CLI, gateway, cron, ACP, and helper clients.
 
@@ -183,15 +183,15 @@ Add a branch that returns a dict with at least:
 
 If the provider is OpenAI-compatible, `api_mode` should usually stay `chat_completions`.
 
-Be careful with API-key precedence. Hermes already contains logic to avoid leaking an OpenRouter key to unrelated endpoints. A new provider should be equally explicit about which key goes to which base URL.
+Be careful with API-key precedence. clawg already contains logic to avoid leaking an OpenRouter key to unrelated endpoints. A new provider should be equally explicit about which key goes to which base URL.
 
-## Step 5: Wire the CLI in `hermes_cli/main.py` and `hermes_cli/setup.py`
+## Step 5: Wire the CLI in `clawg_cli/main.py` and `clawg_cli/setup.py`
 
 A provider is not discoverable until it shows up in the interactive flows.
 
 Update:
 
-### `hermes_cli/main.py`
+### `clawg_cli/main.py`
 
 - `provider_labels`
 - provider dispatch inside the `model` command
@@ -199,7 +199,7 @@ Update:
 - login/logout choices if the provider supports those flows
 - a `_model_flow_<provider>()` function, or reuse `_model_flow_api_key_provider()` if it fits
 
-### `hermes_cli/setup.py`
+### `clawg_cli/setup.py`
 
 - `provider_choices`
 - auth branch for the provider
@@ -207,7 +207,7 @@ Update:
 - any provider-specific explanatory text
 - any place where a provider should be excluded from OpenRouter-only prompts or routing settings
 
-If you only update one of these files, `hermes model` and `hermes setup` will drift.
+If you only update one of these files, `clawg model` and `clawg setup` will drift.
 
 ## Step 6: Keep auxiliary calls working
 
@@ -277,7 +277,7 @@ Examples already in-tree:
 - OpenRouter gets provider-routing fields
 - not every provider should receive every request-side option
 
-When you add a native provider, double-check that Hermes is only sending fields that provider actually understands.
+When you add a native provider, double-check that clawg is only sending fields that provider actually understands.
 
 ## Step 8: Tests
 
@@ -322,15 +322,15 @@ After tests, run a real smoke test.
 
 ```bash
 source venv/bin/activate
-python -m hermes_cli.main chat -q "Say hello" --provider your-provider --model your-model
+python -m clawg_cli.main chat -q "Say hello" --provider your-provider --model your-model
 ```
 
 Also test the interactive flows if you changed menus:
 
 ```bash
 source venv/bin/activate
-python -m hermes_cli.main model
-python -m hermes_cli.main setup
+python -m clawg_cli.main model
+python -m clawg_cli.main setup
 ```
 
 For native providers, verify at least one tool call too, not just a plain text response.
@@ -349,12 +349,12 @@ A developer can wire the provider perfectly and still leave users unable to disc
 
 Use this if the provider is standard chat completions.
 
-- [ ] `ProviderConfig` added in `hermes_cli/auth.py`
-- [ ] aliases added in `hermes_cli/auth.py` and `hermes_cli/models.py`
-- [ ] model catalog added in `hermes_cli/models.py`
-- [ ] runtime branch added in `hermes_cli/runtime_provider.py`
-- [ ] CLI wiring added in `hermes_cli/main.py`
-- [ ] setup wiring added in `hermes_cli/setup.py`
+- [ ] `ProviderConfig` added in `clawg_cli/auth.py`
+- [ ] aliases added in `clawg_cli/auth.py` and `clawg_cli/models.py`
+- [ ] model catalog added in `clawg_cli/models.py`
+- [ ] runtime branch added in `clawg_cli/runtime_provider.py`
+- [ ] CLI wiring added in `clawg_cli/main.py`
+- [ ] setup wiring added in `clawg_cli/setup.py`
 - [ ] aux model added in `agent/auxiliary_client.py`
 - [ ] context lengths added in `agent/model_metadata.py`
 - [ ] runtime / CLI tests updated
@@ -399,7 +399,7 @@ Search for `api_mode` and `self.client.`. Do not assume the obvious request path
 
 Fields like provider routing belong only on the providers that support them.
 
-### 7. Updating `hermes model` but not `hermes setup`
+### 7. Updating `clawg model` but not `clawg setup`
 
 Both flows need to know about the provider.
 

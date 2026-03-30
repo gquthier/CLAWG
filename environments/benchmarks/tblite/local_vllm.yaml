@@ -25,7 +25,7 @@ env:
   test_timeout: 600
   task_timeout: 1200
   eval_concurrency: 8
-  tool_call_parser: "hermes"
+  tool_call_parser: "clawg"
   system_prompt: "You are an expert terminal agent. You MUST use the provided tools to complete tasks. Use the terminal tool to run shell commands, read_file to read files, write_file to write files, search_files to search, and patch to edit files. Do NOT write out solutions as text - execute them using the tools. Always start by exploring the environment with terminal commands."
   tokenizer_name: "Qwen/Qwen3-4B-Instruct-2507"
   use_wandb: false

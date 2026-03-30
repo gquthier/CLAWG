@@ -2,11 +2,11 @@
 """
 Code Execution Tool -- Programmatic Tool Calling (PTC)
 
-Lets the LLM write a Python script that calls Hermes tools via RPC,
+Lets the LLM write a Python script that calls clawg tools via RPC,
 collapsing multi-step tool chains into a single inference turn.
 
 Architecture:
-  1. Parent generates a `hermes_tools.py` stub module with RPC functions
+  1. Parent generates a `clawg_tools.py` stub module with RPC functions
   2. Parent opens a Unix domain socket and starts an RPC listener thread
   3. Parent spawns a child process that runs the LLM's script
   4. When the script calls a tool function, the call travels over the UDS
@@ -63,7 +63,7 @@ def check_sandbox_requirements() -> bool:
 
 
 # ---------------------------------------------------------------------------
-# hermes_tools.py code generator
+# clawg_tools.py code generator
 # ---------------------------------------------------------------------------
 
 # Per-tool stub templates: (function_name, signature, docstring, args_dict_expr)
@@ -114,9 +114,9 @@ _TOOL_STUBS = {
 }
 
 
-def generate_hermes_tools_module(enabled_tools: List[str]) -> str:
+def generate_clawg_tools_module(enabled_tools: List[str]) -> str:
     """
-    Build the source code for the hermes_tools.py stub module.
+    Build the source code for the clawg_tools.py stub module.
 
     Only tools in both SANDBOX_ALLOWED_TOOLS and enabled_tools get stubs.
     """
@@ -136,7 +136,7 @@ def generate_hermes_tools_module(enabled_tools: List[str]) -> str:
         export_names.append(func_name)
 
     header = '''\
-"""Auto-generated Hermes tools RPC stubs."""
+"""Auto-generated clawg tools RPC stubs."""
 import json, os, socket, shlex, time
 
 _sock = None
@@ -180,7 +180,7 @@ def _connect():
     global _sock
     if _sock is None:
         _sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        _sock.connect(os.environ["HERMES_RPC_SOCKET"])
+        _sock.connect(os.environ["CLAWG_RPC_SOCKET"])
         _sock.settimeout(300)
     return _sock
 
@@ -350,7 +350,7 @@ def execute_code(
 ) -> str:
     """
     Run a Python script in a sandboxed child process with RPC access
-    to a subset of Hermes tools.
+    to a subset of clawg tools.
 
     Args:
         code:          Python source code to execute.
@@ -384,13 +384,13 @@ def execute_code(
     if not sandbox_tools:
         sandbox_tools = SANDBOX_ALLOWED_TOOLS
 
-    # --- Set up temp directory with hermes_tools.py and script.py ---
-    tmpdir = tempfile.mkdtemp(prefix="hermes_sandbox_")
+    # --- Set up temp directory with clawg_tools.py and script.py ---
+    tmpdir = tempfile.mkdtemp(prefix="clawg_sandbox_")
     # Use /tmp on macOS to avoid the long /var/folders/... path that pushes
     # Unix domain socket paths past the 104-byte macOS AF_UNIX limit.
     # On Linux, tempfile.gettempdir() already returns /tmp.
     _sock_tmpdir = "/tmp" if sys.platform == "darwin" else tempfile.gettempdir()
-    sock_path = os.path.join(_sock_tmpdir, f"hermes_rpc_{uuid.uuid4().hex}.sock")
+    sock_path = os.path.join(_sock_tmpdir, f"clawg_rpc_{uuid.uuid4().hex}.sock")
 
     tool_call_log: list = []
     tool_call_counter = [0]  # mutable so the RPC thread can increment
@@ -398,11 +398,11 @@ def execute_code(
     server_sock = None
 
     try:
-        # Write the auto-generated hermes_tools module
+        # Write the auto-generated clawg_tools module
         # sandbox_tools is already the correct set (intersection with session
         # tools, or SANDBOX_ALLOWED_TOOLS as fallback — see lines above).
-        tools_src = generate_hermes_tools_module(list(sandbox_tools))
-        with open(os.path.join(tmpdir, "hermes_tools.py"), "w") as f:
+        tools_src = generate_clawg_tools_module(list(sandbox_tools))
+        with open(os.path.join(tmpdir, "clawg_tools.py"), "w") as f:
             f.write(tools_src)
 
         # Write the user's script
@@ -439,16 +439,16 @@ def execute_code(
                 continue
             if any(k.startswith(p) for p in _SAFE_ENV_PREFIXES):
                 child_env[k] = v
-        child_env["HERMES_RPC_SOCKET"] = sock_path
+        child_env["CLAWG_RPC_SOCKET"] = sock_path
         child_env["PYTHONDONTWRITEBYTECODE"] = "1"
-        # Ensure the hermes-agent root is importable in the sandbox so
+        # Ensure the clawg root is importable in the sandbox so
         # modules like minisweagent_path are available to child scripts.
-        _hermes_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        _clawg_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         _existing_pp = child_env.get("PYTHONPATH", "")
-        child_env["PYTHONPATH"] = _hermes_root + (os.pathsep + _existing_pp if _existing_pp else "")
+        child_env["PYTHONPATH"] = _clawg_root + (os.pathsep + _existing_pp if _existing_pp else "")
         # Inject user's configured timezone so datetime.now() in sandboxed
         # code reflects the correct wall-clock time.
-        _tz_name = os.getenv("HERMES_TIMEZONE", "").strip()
+        _tz_name = os.getenv("CLAWG_TIMEZONE", "").strip()
         if _tz_name:
             child_env["TZ"] = _tz_name
 
@@ -704,7 +704,7 @@ _TOOL_DOC_LINES = [
 def build_execute_code_schema(enabled_sandbox_tools: set = None) -> dict:
     """Build the execute_code schema with description listing only enabled tools.
 
-    When tools are disabled via ``hermes tools`` (e.g. web is turned off),
+    When tools are disabled via ``clawg tools`` (e.g. web is turned off),
     the schema description should NOT mention web_search / web_extract —
     otherwise the model thinks they are available and keeps trying to use them.
     """
@@ -726,7 +726,7 @@ def build_execute_code_schema(enabled_sandbox_tools: set = None) -> dict:
         import_str = "..."
 
     description = (
-        "Run a Python script that can call Hermes tools programmatically. "
+        "Run a Python script that can call clawg tools programmatically. "
         "Use this when you need 3+ tool calls with processing logic between them, "
         "need to filter/reduce large tool outputs before they enter your context, "
         "need conditional branching (if X then Y else Z), or need to loop "
@@ -734,13 +734,13 @@ def build_execute_code_schema(enabled_sandbox_tools: set = None) -> dict:
         "Use normal tool calls instead when: single tool call with no processing, "
         "you need to see the full result and apply complex reasoning, "
         "or the task requires interactive user input.\n\n"
-        f"Available via `from hermes_tools import ...`:\n\n"
+        f"Available via `from clawg_tools import ...`:\n\n"
         f"{tool_lines}\n\n"
         "Limits: 5-minute timeout, 50KB stdout cap, max 50 tool calls per script. "
         "terminal() is foreground-only (no background or pty).\n\n"
         "Print your final result to stdout. Use Python stdlib (json, re, math, csv, "
         "datetime, collections, etc.) for processing between tool calls.\n\n"
-        "Also available (no import needed — built into hermes_tools):\n"
+        "Also available (no import needed — built into clawg_tools):\n"
         "  json_parse(text: str) — json.loads with strict=False; use for terminal() output with control chars\n"
         "  shell_quote(s: str) — shlex.quote(); use when interpolating dynamic strings into shell commands\n"
         "  retry(fn, max_attempts=3, delay=2) — retry with exponential backoff for transient failures"
@@ -756,7 +756,7 @@ def build_execute_code_schema(enabled_sandbox_tools: set = None) -> dict:
                     "type": "string",
                     "description": (
                         "Python code to execute. Import tools with "
-                        f"`from hermes_tools import {import_str}` "
+                        f"`from clawg_tools import {import_str}` "
                         "and print your final result to stdout."
                     ),
                 },

@@ -1,17 +1,17 @@
 ---
 sidebar_position: 6
 title: "Signal"
-description: "Set up Hermes Agent as a Signal messenger bot via signal-cli daemon"
+description: "Set up CLAWG as a Signal messenger bot via signal-cli daemon"
 ---
 
 # Signal Setup
 
-Hermes connects to Signal through the [signal-cli](https://github.com/AsamK/signal-cli) daemon running in HTTP mode. The adapter streams messages in real-time via SSE (Server-Sent Events) and sends responses via JSON-RPC.
+clawg connects to Signal through the [signal-cli](https://github.com/AsamK/signal-cli) daemon running in HTTP mode. The adapter streams messages in real-time via SSE (Server-Sent Events) and sends responses via JSON-RPC.
 
 Signal is the most privacy-focused mainstream messenger — end-to-end encrypted by default, open-source protocol, minimal metadata collection. This makes it ideal for security-sensitive agent workflows.
 
 :::info No New Python Dependencies
-The Signal adapter uses `httpx` (already a core Hermes dependency) for all communication. No additional Python packages are required. You just need signal-cli installed externally.
+The Signal adapter uses `httpx` (already a core clawg dependency) for all communication. No additional Python packages are required. You just need signal-cli installed externally.
 :::
 
 ---
@@ -60,7 +60,7 @@ Signal-cli works as a **linked device** — like WhatsApp Web, but for Signal. Y
 
 ```bash
 # Generate a linking URI (displays a QR code or link)
-signal-cli link -n "HermesAgent"
+signal-cli link -n "ClawgAgent"
 ```
 
 1. Open **Signal** on your phone
@@ -90,12 +90,12 @@ curl http://127.0.0.1:8080/api/v1/check
 
 ---
 
-## Step 3: Configure Hermes
+## Step 3: Configure clawg
 
 The easiest way:
 
 ```bash
-hermes gateway setup
+clawg gateway setup
 ```
 
 Select **Signal** from the platform menu. The wizard will:
@@ -108,7 +108,7 @@ Select **Signal** from the platform menu. The wizard will:
 
 ### Manual Configuration
 
-Add to `~/.hermes/.env`:
+Add to `~/.clawg/.env`:
 
 ```bash
 # Required
@@ -126,9 +126,9 @@ SIGNAL_HOME_CHANNEL=+1234567890                  # Default delivery target for c
 Then start the gateway:
 
 ```bash
-hermes gateway              # Foreground
-hermes gateway install      # Install as a user service
-sudo hermes gateway install --system   # Linux only: boot-time system service
+clawg gateway              # Foreground
+clawg gateway install      # Install as a user service
+sudo clawg gateway install --system   # Linux only: boot-time system service
 ```
 
 ---
@@ -137,10 +137,10 @@ sudo hermes gateway install --system   # Linux only: boot-time system service
 
 ### DM Access
 
-DM access follows the same pattern as all other Hermes platforms:
+DM access follows the same pattern as all other clawg platforms:
 
 1. **`SIGNAL_ALLOWED_USERS` set** → only those users can message
-2. **No allowlist set** → unknown users get a DM pairing code (approve via `hermes pairing approve signal CODE`)
+2. **No allowlist set** → unknown users get a DM pairing code (approve via `clawg pairing approve signal CODE`)
 3. **`SIGNAL_ALLOW_ALL_USERS=true`** → anyone can message (use with caution)
 
 ### Group Access
@@ -175,13 +175,13 @@ The bot sends typing indicators while processing messages, refreshing every 8 se
 
 All phone numbers are automatically redacted in logs:
 - `+15551234567` → `+155****4567`
-- This applies to both Hermes gateway logs and the global redaction system
+- This applies to both clawg gateway logs and the global redaction system
 
 ### Note to Self (Single-Number Setup)
 
-If you run signal-cli as a **linked secondary device** on your own phone number (rather than a separate bot number), you can interact with Hermes through Signal's "Note to Self" feature.
+If you run signal-cli as a **linked secondary device** on your own phone number (rather than a separate bot number), you can interact with clawg through Signal's "Note to Self" feature.
 
-Just send a message to yourself from your phone — signal-cli picks it up and Hermes responds in the same conversation.
+Just send a message to yourself from your phone — signal-cli picks it up and clawg responds in the same conversation.
 
 **How it works:**
 - "Note to Self" messages arrive as `syncMessage.sentMessage` envelopes

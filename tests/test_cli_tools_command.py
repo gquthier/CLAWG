@@ -2,12 +2,12 @@
 
 from unittest.mock import MagicMock, patch, call
 
-from cli import HermesCLI
+from cli import ClawgCLI
 
 
 def _make_cli(enabled_toolsets=None):
-    """Build a minimal HermesCLI stub without running __init__."""
-    cli_obj = HermesCLI.__new__(HermesCLI)
+    """Build a minimal ClawgCLI stub without running __init__."""
+    cli_obj = ClawgCLI.__new__(ClawgCLI)
     cli_obj.enabled_toolsets = set(enabled_toolsets or ["web", "memory"])
     cli_obj._command_running = False
     cli_obj.console = MagicMock()
@@ -39,9 +39,9 @@ class TestToolsSlashList:
 
     def test_list_calls_backend(self, capsys):
         cli_obj = _make_cli()
-        with patch("hermes_cli.tools_config.load_config",
+        with patch("clawg_cli.tools_config.load_config",
                    return_value={"platform_toolsets": {"cli": ["web"]}}), \
-             patch("hermes_cli.tools_config.save_config"):
+             patch("clawg_cli.tools_config.save_config"):
             cli_obj._handle_tools_command("/tools list")
         out = capsys.readouterr().out
         assert "web" in out
@@ -49,7 +49,7 @@ class TestToolsSlashList:
     def test_list_does_not_modify_enabled_toolsets(self):
         """List is read-only — self.enabled_toolsets must not change."""
         cli_obj = _make_cli(["web", "memory"])
-        with patch("hermes_cli.tools_config.load_config",
+        with patch("clawg_cli.tools_config.load_config",
                    return_value={"platform_toolsets": {"cli": ["web"]}}):
             cli_obj._handle_tools_command("/tools list")
         assert cli_obj.enabled_toolsets == {"web", "memory"}
@@ -62,11 +62,11 @@ class TestToolsSlashDisableWithReset:
 
     def test_disable_confirms_then_resets_session(self):
         cli_obj = _make_cli(["web", "memory"])
-        with patch("hermes_cli.tools_config.load_config",
+        with patch("clawg_cli.tools_config.load_config",
                    return_value={"platform_toolsets": {"cli": ["web", "memory"]}}), \
-             patch("hermes_cli.tools_config.save_config"), \
-             patch("hermes_cli.tools_config._get_platform_tools", return_value={"memory"}), \
-             patch("hermes_cli.config.load_config", return_value={}), \
+             patch("clawg_cli.tools_config.save_config"), \
+             patch("clawg_cli.tools_config._get_platform_tools", return_value={"memory"}), \
+             patch("clawg_cli.config.load_config", return_value={}), \
              patch.object(cli_obj, "new_session") as mock_reset, \
              patch("builtins.input", return_value="y"):
             cli_obj._handle_tools_command("/tools disable web")
@@ -103,11 +103,11 @@ class TestToolsSlashEnableWithReset:
 
     def test_enable_confirms_then_resets_session(self):
         cli_obj = _make_cli(["memory"])
-        with patch("hermes_cli.tools_config.load_config",
+        with patch("clawg_cli.tools_config.load_config",
                    return_value={"platform_toolsets": {"cli": ["memory"]}}), \
-             patch("hermes_cli.tools_config.save_config"), \
-             patch("hermes_cli.tools_config._get_platform_tools", return_value={"memory", "web"}), \
-             patch("hermes_cli.config.load_config", return_value={}), \
+             patch("clawg_cli.tools_config.save_config"), \
+             patch("clawg_cli.tools_config._get_platform_tools", return_value={"memory", "web"}), \
+             patch("clawg_cli.config.load_config", return_value={}), \
              patch.object(cli_obj, "new_session") as mock_reset, \
              patch("builtins.input", return_value="y"):
             cli_obj._handle_tools_command("/tools enable web")

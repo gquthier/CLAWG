@@ -1,4 +1,4 @@
-"""Tests for acp_adapter.server — HermesACPAgent ACP server."""
+"""Tests for acp_adapter.server — ClawgACPAgent ACP server."""
 
 import asyncio
 import os
@@ -21,7 +21,7 @@ from acp.schema import (
     TextContentBlock,
     Usage,
 )
-from acp_adapter.server import HermesACPAgent, HERMES_VERSION
+from acp_adapter.server import ClawgACPAgent, CLAWG_VERSION
 from acp_adapter.session import SessionManager
 
 
@@ -33,8 +33,8 @@ def mock_manager():
 
 @pytest.fixture()
 def agent(mock_manager):
-    """HermesACPAgent backed by a mock session manager."""
-    return HermesACPAgent(session_manager=mock_manager)
+    """ClawgACPAgent backed by a mock session manager."""
+    return ClawgACPAgent(session_manager=mock_manager)
 
 
 # ---------------------------------------------------------------------------
@@ -54,8 +54,8 @@ class TestInitialize:
         resp = await agent.initialize(protocol_version=1)
         assert resp.agent_info is not None
         assert isinstance(resp.agent_info, Implementation)
-        assert resp.agent_info.name == "hermes-agent"
-        assert resp.agent_info.version == HERMES_VERSION
+        assert resp.agent_info.name == "clawg"
+        assert resp.agent_info.version == CLAWG_VERSION
 
     @pytest.mark.asyncio
     async def test_initialize_returns_capabilities(self, agent):
@@ -352,7 +352,7 @@ class TestSlashCommands:
     def test_version(self, agent, mock_manager):
         state = self._make_state(mock_manager)
         result = agent._handle_slash_command("/version", state)
-        assert HERMES_VERSION in result
+        assert CLAWG_VERSION in result
 
     def test_unknown_command_returns_none(self, agent, mock_manager):
         state = self._make_state(mock_manager)

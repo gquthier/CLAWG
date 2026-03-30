@@ -6,7 +6,7 @@ description: "How the ACP adapter works: lifecycle, sessions, event bridge, appr
 
 # ACP Internals
 
-The ACP adapter wraps Hermes' synchronous `AIAgent` in an async JSON-RPC stdio server.
+The ACP adapter wraps clawg' synchronous `AIAgent` in an async JSON-RPC stdio server.
 
 Key implementation files:
 
@@ -22,11 +22,11 @@ Key implementation files:
 ## Boot flow
 
 ```text
-hermes acp / hermes-acp / python -m acp_adapter
+clawg acp / clawg-acp / python -m acp_adapter
   -> acp_adapter.entry.main()
-  -> load ~/.hermes/.env
+  -> load ~/.clawg/.env
   -> configure stderr logging
-  -> construct HermesACPAgent
+  -> construct ClawgACPAgent
   -> acp.run_agent(agent)
 ```
 
@@ -34,7 +34,7 @@ Stdout is reserved for ACP JSON-RPC transport. Human-readable logs go to stderr.
 
 ## Major components
 
-### `HermesACPAgent`
+### `ClawgACPAgent`
 
 `acp_adapter/server.py` implements the ACP agent protocol.
 
@@ -92,15 +92,15 @@ asyncio.run_coroutine_threadsafe(...)
 
 Mapping:
 
-- `allow_once` -> Hermes `once`
-- `allow_always` -> Hermes `always`
-- reject options -> Hermes `deny`
+- `allow_once` -> clawg `once`
+- `allow_always` -> clawg `always`
+- reject options -> clawg `deny`
 
 Timeouts and bridge failures deny by default.
 
 ### Tool rendering helpers
 
-`acp_adapter/tools.py` maps Hermes tools to ACP tool kinds and builds editor-facing content.
+`acp_adapter/tools.py` maps clawg tools to ACP tool kinds and builds editor-facing content.
 
 Examples:
 
@@ -114,7 +114,7 @@ Examples:
 ```text
 new_session(cwd)
   -> create SessionState
-  -> create AIAgent(platform="acp", enabled_toolsets=["hermes-acp"])
+  -> create AIAgent(platform="acp", enabled_toolsets=["clawg-acp"])
   -> bind task_id/session_id to cwd override
 
 prompt(..., session_id)
@@ -142,12 +142,12 @@ prompt(..., session_id)
 
 ACP does not implement its own auth store.
 
-Instead it reuses Hermes' runtime resolver:
+Instead it reuses clawg' runtime resolver:
 
 - `acp_adapter/auth.py`
-- `hermes_cli/runtime_provider.py`
+- `clawg_cli/runtime_provider.py`
 
-So ACP advertises and uses the currently configured Hermes provider/credentials.
+So ACP advertises and uses the currently configured clawg provider/credentials.
 
 ## Working directory binding
 
@@ -177,6 +177,6 @@ ACP temporarily installs an approval callback on the terminal tool during prompt
 ## Related files
 
 - `tests/acp/` — ACP test suite
-- `toolsets.py` — `hermes-acp` toolset definition
-- `hermes_cli/main.py` — `hermes acp` CLI subcommand
-- `pyproject.toml` — `[acp]` optional dependency + `hermes-acp` script
+- `toolsets.py` — `clawg-acp` toolset definition
+- `clawg_cli/main.py` — `clawg acp` CLI subcommand
+- `pyproject.toml` — `[acp]` optional dependency + `clawg-acp` script

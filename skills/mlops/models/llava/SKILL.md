@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [transformers, torch, pillow]
 metadata:
-  hermes:
+  clawg:
     tags: [LLaVA, Vision-Language, Multimodal, Visual Question Answering, Image Chat, CLIP, Vicuna, Conversational AI, Instruction Tuning, VQA]
 
 ---

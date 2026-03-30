@@ -1,13 +1,13 @@
 ---
 title: Vision & Image Paste
-description: Paste images from your clipboard into the Hermes CLI for multimodal vision analysis.
+description: Paste images from your clipboard into the clawg CLI for multimodal vision analysis.
 sidebar_label: Vision & Image Paste
 sidebar_position: 7
 ---
 
 # Vision & Image Paste
 
-Hermes Agent supports **multimodal vision** — you can paste images from your clipboard directly into the CLI and ask the agent to analyze, describe, or work with them. Images are sent to the model as base64-encoded content blocks, so any vision-capable model can process them.
+CLAWG supports **multimodal vision** — you can paste images from your clipboard directly into the CLI and ask the agent to analyze, describe, or work with them. Images are sent to the model as base64-encoded content blocks, so any vision-capable model can process them.
 
 ## How It Works
 
@@ -19,7 +19,7 @@ Hermes Agent supports **multimodal vision** — you can paste images from your c
 
 You can attach multiple images before sending — each gets its own badge. Press `Ctrl+C` to clear all attached images.
 
-Images are saved to `~/.hermes/images/` as PNG files with timestamped filenames.
+Images are saved to `~/.clawg/images/` as PNG files with timestamped filenames.
 
 ## Paste Methods
 
@@ -33,11 +33,11 @@ How you attach an image depends on your terminal environment. Not all methods wo
 /paste
 ```
 
-Type `/paste` and press Enter. Hermes checks your clipboard for an image and attaches it. This works in every environment because it explicitly calls the clipboard backend — no terminal keybinding interception to worry about.
+Type `/paste` and press Enter. clawg checks your clipboard for an image and attaches it. This works in every environment because it explicitly calls the clipboard backend — no terminal keybinding interception to worry about.
 
 ### Ctrl+V / Cmd+V (Bracketed Paste)
 
-When you paste text that's on the clipboard alongside an image, Hermes automatically checks for an image too. This works when:
+When you paste text that's on the clipboard alongside an image, clawg automatically checks for an image too. This works when:
 - Your clipboard contains **both text and an image** (some apps put both on the clipboard when you copy)
 - Your terminal supports bracketed paste (most modern terminals do)
 
@@ -55,7 +55,7 @@ Alt key combinations pass through most terminal emulators (they're sent as ESC +
 
 ### Ctrl+V (Raw — Linux Only)
 
-On Linux desktop terminals (GNOME Terminal, Konsole, Alacritty, etc.), `Ctrl+V` is **not** the paste shortcut — `Ctrl+Shift+V` is. So `Ctrl+V` sends a raw byte to the application, and Hermes catches it to check the clipboard. This only works on Linux desktop terminals with X11 or Wayland clipboard access.
+On Linux desktop terminals (GNOME Terminal, Konsole, Alacritty, etc.), `Ctrl+V` is **not** the paste shortcut — `Ctrl+Shift+V` is. So `Ctrl+V` sends a raw byte to the application, and clawg catches it to check the clipboard. This only works on Linux desktop terminals with X11 or Wayland clipboard access.
 
 ## Platform Compatibility
 
@@ -76,7 +76,7 @@ On Linux desktop terminals (GNOME Terminal, Konsole, Alacritty, etc.), `Ctrl+V` 
 
 ### macOS
 
-**No setup required.** Hermes uses `osascript` (built into macOS) to read the clipboard. For faster performance, optionally install `pngpaste`:
+**No setup required.** clawg uses `osascript` (built into macOS) to read the clipboard. For faster performance, optionally install `pngpaste`:
 
 ```bash
 brew install pngpaste
@@ -121,12 +121,12 @@ echo $XDG_SESSION_TYPE
 
 ### WSL2
 
-**No extra setup required.** Hermes detects WSL2 automatically (via `/proc/version`) and uses `powershell.exe` to access the Windows clipboard through .NET's `System.Windows.Forms.Clipboard`. This is built into WSL2's Windows interop — `powershell.exe` is available by default.
+**No extra setup required.** clawg detects WSL2 automatically (via `/proc/version`) and uses `powershell.exe` to access the Windows clipboard through .NET's `System.Windows.Forms.Clipboard`. This is built into WSL2's Windows interop — `powershell.exe` is available by default.
 
 The clipboard data is transferred as base64-encoded PNG over stdout, so no file path conversion or temp files are needed.
 
 :::info WSLg Note
-If you're running WSLg (WSL2 with GUI support), Hermes tries the PowerShell path first, then falls back to `wl-paste`. WSLg's clipboard bridge only supports BMP format for images — Hermes auto-converts BMP to PNG using Pillow (if installed) or ImageMagick's `convert` command.
+If you're running WSLg (WSL2 with GUI support), clawg tries the PowerShell path first, then falls back to `wl-paste`. WSLg's clipboard bridge only supports BMP format for images — clawg auto-converts BMP to PNG using Pillow (if installed) or ImageMagick's `convert` command.
 :::
 
 #### Verify WSL2 clipboard access
@@ -145,7 +145,7 @@ powershell.exe -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms;
 
 ## SSH & Remote Sessions
 
-**Clipboard paste does not work over SSH.** When you SSH into a remote machine, the Hermes CLI runs on the remote host. All clipboard tools (`xclip`, `wl-paste`, `powershell.exe`, `osascript`) read the clipboard of the machine they run on — which is the remote server, not your local machine. Your local clipboard is inaccessible from the remote side.
+**Clipboard paste does not work over SSH.** When you SSH into a remote machine, the clawg CLI runs on the remote host. All clipboard tools (`xclip`, `wl-paste`, `powershell.exe`, `osascript`) read the clipboard of the machine they run on — which is the remote server, not your local machine. Your local clipboard is inaccessible from the remote side.
 
 ### Workarounds for SSH
 
@@ -155,7 +155,7 @@ powershell.exe -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms;
 
 3. **X11 forwarding** — Connect with `ssh -X` to forward X11. This lets `xclip` on the remote machine access your local X11 clipboard. Requires an X server running locally (XQuartz on macOS, built-in on Linux X11 desktops). Slow for large images.
 
-4. **Use a messaging platform** — Send images to Hermes via Telegram, Discord, Slack, or WhatsApp. These platforms handle image upload natively and are not affected by clipboard/terminal limitations.
+4. **Use a messaging platform** — Send images to clawg via Telegram, Discord, Slack, or WhatsApp. These platforms handle image upload natively and are not affected by clipboard/terminal limitations.
 
 ## Why Terminals Can't Paste Images
 
@@ -169,7 +169,7 @@ Terminals are **text-based** interfaces. When you press Ctrl+V (or Cmd+V), the t
 
 If the clipboard contains only an image (no text), the terminal has nothing to send. There is no standard terminal escape sequence for binary image data. The terminal simply does nothing.
 
-This is why Hermes uses a separate clipboard check — instead of receiving image data through the terminal paste event, it calls OS-level tools (`osascript`, `powershell.exe`, `xclip`, `wl-paste`) directly via subprocess to read the clipboard independently.
+This is why clawg uses a separate clipboard check — instead of receiving image data through the terminal paste event, it calls OS-level tools (`osascript`, `powershell.exe`, `xclip`, `wl-paste`) directly via subprocess to read the clipboard independently.
 
 ## Supported Models
 

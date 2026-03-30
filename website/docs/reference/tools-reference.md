@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 title: "Built-in Tools Reference"
-description: "Authoritative reference for Hermes built-in tools, grouped by toolset"
+description: "Authoritative reference for clawg built-in tools, grouped by toolset"
 ---
 
 # Built-in Tools Reference
 
-This page documents the built-in Hermes tool registry as it exists in code. Availability can still vary by platform, credentials, and enabled toolsets.
+This page documents the built-in clawg tool registry as it exists in code. Availability can still vary by platform, credentials, and enabled toolsets.
 
 ## `browser` toolset
 
@@ -34,7 +34,7 @@ This page documents the built-in Hermes tool registry as it exists in code. Avai
 
 | Tool | Description | Requires environment |
 |------|-------------|----------------------|
-| `execute_code` | Run a Python script that can call Hermes tools programmatically. Use this when you need 3+ tool calls with processing logic between them, need to filter/reduce large tool outputs before they enter your context, need conditional branching (… | — |
+| `execute_code` | Run a Python script that can call clawg tools programmatically. Use this when you need 3+ tool calls with processing logic between them, need to filter/reduce large tool outputs before they enter your context, need conditional branching (… | — |
 
 ## `cronjob` toolset
 
@@ -124,7 +124,7 @@ This page documents the built-in Hermes tool registry as it exists in code. Avai
 
 | Tool | Description | Requires environment |
 |------|-------------|----------------------|
-| `skill_manage` | Manage skills (create, update, delete). Skills are your procedural memory — reusable approaches for recurring task types. New skills go to ~/.hermes/skills/; existing skills can be modified wherever they live. Actions: create (full SKILL.m… | — |
+| `skill_manage` | Manage skills (create, update, delete). Skills are your procedural memory — reusable approaches for recurring task types. New skills go to ~/.clawg/skills/; existing skills can be modified wherever they live. Actions: create (full SKILL.m… | — |
 | `skill_view` | Skills allow for loading information about specific tasks and workflows, as well as scripts and templates. Load a skill's full content or access its linked files (references, templates, scripts). First call returns SKILL.md content plus a… | — |
 | `skills_list` | List available skills (name + description). Use skill_view(name) to load full content. | — |
 

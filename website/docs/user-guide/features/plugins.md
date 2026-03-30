@@ -4,23 +4,23 @@ sidebar_position: 20
 
 # Plugins
 
-Hermes has a plugin system for adding custom tools, hooks, and integrations without modifying core code.
+clawg has a plugin system for adding custom tools, hooks, and integrations without modifying core code.
 
-**→ [Build a Hermes Plugin](/docs/guides/build-a-hermes-plugin)** — step-by-step guide with a complete working example.
+**→ [Build a clawg Plugin](/docs/guides/build-a-clawg-plugin)** — step-by-step guide with a complete working example.
 
 ## Quick overview
 
-Drop a directory into `~/.hermes/plugins/` with a `plugin.yaml` and Python code:
+Drop a directory into `~/.clawg/plugins/` with a `plugin.yaml` and Python code:
 
 ```
-~/.hermes/plugins/my-plugin/
+~/.clawg/plugins/my-plugin/
 ├── plugin.yaml      # manifest
 ├── __init__.py      # register() — wires schemas to handlers
 ├── schemas.py       # tool schemas (what the LLM sees)
 └── tools.py         # tool handlers (what runs when called)
 ```
 
-Start Hermes — your tools appear alongside built-in tools. The model can call them immediately.
+Start clawg — your tools appear alongside built-in tools. The model can call them immediately.
 
 ## What plugins can do
 
@@ -29,17 +29,17 @@ Start Hermes — your tools appear alongside built-in tools. The model can call 
 | Add tools | `ctx.register_tool(name, schema, handler)` |
 | Add hooks | `ctx.register_hook("post_tool_call", callback)` |
 | Ship data files | `Path(__file__).parent / "data" / "file.yaml"` |
-| Bundle skills | Copy `skill.md` to `~/.hermes/skills/` at load time |
+| Bundle skills | Copy `skill.md` to `~/.clawg/skills/` at load time |
 | Gate on env vars | `requires_env: [API_KEY]` in plugin.yaml |
-| Distribute via pip | `[project.entry-points."hermes_agent.plugins"]` |
+| Distribute via pip | `[project.entry-points."clawg_agent.plugins"]` |
 
 ## Plugin discovery
 
 | Source | Path | Use case |
 |--------|------|----------|
-| User | `~/.hermes/plugins/` | Personal plugins |
-| Project | `.hermes/plugins/` | Project-specific plugins |
-| pip | `hermes_agent.plugins` entry_points | Distributed packages |
+| User | `~/.clawg/plugins/` | Personal plugins |
+| Project | `.clawg/plugins/` | Project-specific plugins |
+| pip | `clawg_agent.plugins` entry_points | Distributed packages |
 
 ## Available hooks
 
@@ -56,7 +56,7 @@ Start Hermes — your tools appear alongside built-in tools. The model can call 
 
 ```
 /plugins              # list loaded plugins in a session
-hermes config set display.show_cost true  # show cost in status bar
+clawg config set display.show_cost true  # show cost in status bar
 ```
 
-See the **[full guide](/docs/guides/build-a-hermes-plugin)** for handler contracts, schema format, hook behavior, error handling, and common mistakes.
+See the **[full guide](/docs/guides/build-a-clawg-plugin)** for handler contracts, schema format, hook behavior, error handling, and common mistakes.

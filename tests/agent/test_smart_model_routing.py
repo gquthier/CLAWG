@@ -42,7 +42,7 @@ def test_resolve_turn_route_falls_back_to_primary_when_route_runtime_cannot_be_r
     from agent.smart_model_routing import resolve_turn_route
 
     monkeypatch.setattr(
-        "hermes_cli.runtime_provider.resolve_runtime_provider",
+        "clawg_cli.runtime_provider.resolve_runtime_provider",
         lambda **kwargs: (_ for _ in ()).throw(RuntimeError("bad route")),
     )
     result = resolve_turn_route(

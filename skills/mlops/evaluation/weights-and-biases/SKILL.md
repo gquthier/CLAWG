@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [wandb]
 metadata:
-  hermes:
+  clawg:
     tags: [MLOps, Weights And Biases, WandB, Experiment Tracking, Hyperparameter Tuning, Model Registry, Collaboration, Real-Time Visualization, PyTorch, TensorFlow, HuggingFace]
 
 ---

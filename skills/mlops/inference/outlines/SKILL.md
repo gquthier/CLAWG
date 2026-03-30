@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [outlines, transformers, vllm, pydantic]
 metadata:
-  hermes:
+  clawg:
     tags: [Prompt Engineering, Outlines, Structured Generation, JSON Schema, Pydantic, Local Models, Grammar-Based Generation, vLLM, Transformers, Type Safety]
 
 ---

@@ -5,7 +5,7 @@ version: 0.1.0
 author: youssefea
 license: MIT
 metadata:
-  hermes:
+  clawg:
     tags: [Base, Blockchain, Crypto, Web3, RPC, DeFi, EVM, L2, Ethereum]
     related_skills: []
 ---
@@ -48,7 +48,7 @@ to ~10-30 requests/minute). For faster lookups, use `--no-prices` flag.
 RPC endpoint (default): https://mainnet.base.org
 Override: export BASE_RPC_URL=https://your-private-rpc.com
 
-Helper script path: ~/.hermes/skills/blockchain/base/scripts/base_client.py
+Helper script path: ~/.clawg/skills/blockchain/base/scripts/base_client.py
 
 ```
 python3 base_client.py wallet   <address> [--limit N] [--all] [--no-prices]
@@ -74,7 +74,7 @@ python3 --version
 export BASE_RPC_URL="https://mainnet.base.org"
 
 # Confirm connectivity
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py stats
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py stats
 ```
 
 ### 1. Wallet Portfolio
@@ -84,7 +84,7 @@ Checks ~15 well-known Base tokens (USDC, WETH, AERO, DEGEN, etc.)
 via on-chain `balanceOf` calls. Tokens sorted by value, dust filtered.
 
 ```bash
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py \
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py \
   wallet 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
 ```
 
@@ -105,7 +105,7 @@ Inspect a full transaction by its hash. Shows ETH value transferred,
 gas used, fee in ETH/USD, status, and decoded ERC-20/ERC-721 transfers.
 
 ```bash
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py \
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py \
   tx 0xabc123...your_tx_hash_here
 ```
 
@@ -118,7 +118,7 @@ Get ERC-20 token metadata: name, symbol, decimals, total supply, price,
 market cap, and contract code size.
 
 ```bash
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py \
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py \
   token 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
 ```
 
@@ -133,7 +133,7 @@ utilization, and estimated costs for ETH transfers, ERC-20 transfers,
 and swaps.
 
 ```bash
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py gas
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py gas
 ```
 
 Output: current gas price, base fee, block utilization, 10-block trend,
@@ -150,7 +150,7 @@ ERC-20/ERC-721/ERC-1155 interfaces, resolve EIP-1967 proxy
 implementation addresses.
 
 ```bash
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py \
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py \
   contract 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
 ```
 
@@ -163,7 +163,7 @@ address.
 Scan the most recent block for large ETH transfers with USD values.
 
 ```bash
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py \
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py \
   whales --min-eth 1.0
 ```
 
@@ -177,7 +177,7 @@ Live Base network health: latest block, chain ID, gas price, base fee,
 block utilization, transaction count, and ETH price.
 
 ```bash
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py stats
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py stats
 ```
 
 ### 8. Price Lookup
@@ -185,11 +185,11 @@ python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py stats
 Quick price check for any token by contract address or known symbol.
 
 ```bash
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py price ETH
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py price USDC
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py price AERO
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py price DEGEN
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py price 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py price ETH
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py price USDC
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py price AERO
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py price DEGEN
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py price 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
 ```
 
 Known symbols: ETH, WETH, USDC, cbETH, AERO, DEGEN, TOSHI, BRETT,
@@ -227,5 +227,5 @@ WELL, wstETH, rETH, cbBTC.
 
 ```bash
 # Should print Base chain ID (8453), latest block, gas price, and ETH price
-python3 ~/.hermes/skills/blockchain/base/scripts/base_client.py stats
+python3 ~/.clawg/skills/blockchain/base/scripts/base_client.py stats
 ```

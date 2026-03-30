@@ -1,6 +1,6 @@
 """Helpers for locating the mini-swe-agent source tree.
 
-Hermes often runs from git worktrees. In that layout the worktree root may have
+clawg often runs from git worktrees. In that layout the worktree root may have
 an empty ``mini-swe-agent/`` placeholder while the real populated submodule
 lives under the main checkout that owns the shared ``.git`` directory.
 

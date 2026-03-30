@@ -1,12 +1,12 @@
 ---
 sidebar_position: 5
 title: "Prompt Assembly"
-description: "How Hermes builds the system prompt, preserves cache stability, and injects ephemeral layers"
+description: "How clawg builds the system prompt, preserves cache stability, and injects ephemeral layers"
 ---
 
 # Prompt Assembly
 
-Hermes deliberately separates:
+clawg deliberately separates:
 
 - **cached system prompt state**
 - **ephemeral API-call-time additions**
@@ -28,7 +28,7 @@ Primary files:
 
 The cached system prompt is assembled in roughly this order:
 
-1. agent identity — `SOUL.md` from `HERMES_HOME` when available, otherwise falls back to `DEFAULT_AGENT_IDENTITY` in `prompt_builder.py`
+1. agent identity — `SOUL.md` from `CLAWG_HOME` when available, otherwise falls back to `DEFAULT_AGENT_IDENTITY` in `prompt_builder.py`
 2. tool-aware behavior guidance
 3. Honcho static block (when active)
 4. optional system message

@@ -26,7 +26,7 @@ _IS_WINDOWS = platform.system() == "Windows"
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 
-from hermes_cli.config import get_hermes_home
+from clawg_cli.config import get_clawg_home
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +121,7 @@ class WhatsAppAdapter(BasePlatformAdapter):
     # WhatsApp message limits
     MAX_MESSAGE_LENGTH = 65536  # WhatsApp allows longer messages
     
-    # Default bridge location relative to the hermes-agent install
+    # Default bridge location relative to the clawg install
     _DEFAULT_BRIDGE_DIR = Path(__file__).resolve().parents[2] / "scripts" / "whatsapp-bridge"
 
     def __init__(self, config: PlatformConfig):
@@ -134,7 +134,7 @@ class WhatsAppAdapter(BasePlatformAdapter):
         )
         self._session_path: Path = Path(config.extra.get(
             "session_path",
-            get_hermes_home() / "whatsapp" / "session"
+            get_clawg_home() / "whatsapp" / "session"
         ))
         self._reply_prefix: Optional[str] = config.extra.get("reply_prefix")
         self._message_queue: asyncio.Queue = asyncio.Queue()
@@ -301,7 +301,7 @@ class WhatsAppAdapter(BasePlatformAdapter):
                     # auto-reconnect later, e.g. after a code 515 restart).
                     print(f"[{self.name}] ⚠ WhatsApp not connected after 30s")
                     print(f"[{self.name}]   Bridge log: {self._bridge_log}")
-                    print(f"[{self.name}]   If session expired, re-pair: hermes whatsapp")
+                    print(f"[{self.name}]   If session expired, re-pair: clawg whatsapp")
             
             # Start message polling task
             asyncio.create_task(self._poll_messages())

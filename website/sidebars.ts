@@ -22,9 +22,9 @@ const sidebars: SidebarsConfig = {
         'guides/daily-briefing-bot',
         'guides/team-telegram-assistant',
         'guides/python-library',
-        'guides/use-mcp-with-hermes',
-        'guides/use-soul-with-hermes',
-        'guides/use-voice-mode-with-hermes',
+        'guides/use-mcp-with-clawg',
+        'guides/use-soul-with-clawg',
+        'guides/use-voice-mode-with-clawg',
       ],
     },
     {

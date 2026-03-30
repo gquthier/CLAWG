@@ -21,7 +21,7 @@ The core orchestration engine is `run_agent.py`'s `AIAgent`.
 
 ## API modes
 
-Hermes currently supports three API execution modes:
+clawg currently supports three API execution modes:
 
 | API mode | Used for |
 |----------|----------|
@@ -49,7 +49,7 @@ run_conversation()
 
 ## Interruptible API calls
 
-Hermes wraps API requests so they can be interrupted from the CLI or gateway.
+clawg wraps API requests so they can be interrupted from the CLI or gateway.
 
 This matters because:
 
@@ -59,7 +59,7 @@ This matters because:
 
 ## Tool execution modes
 
-Hermes uses two execution strategies:
+clawg uses two execution strategies:
 
 - sequential execution for single or interactive tools
 - concurrent execution for multiple non-interactive tools
@@ -81,13 +81,13 @@ These are how the CLI, gateway, and ACP integrations stream intermediate progres
 
 ## Budget and fallback behavior
 
-Hermes tracks a shared iteration budget across parent and subagents. It also injects budget pressure hints near the end of the available iteration window.
+clawg tracks a shared iteration budget across parent and subagents. It also injects budget pressure hints near the end of the available iteration window.
 
 Fallback model support allows the agent to switch providers/models when the primary route fails in supported failure paths.
 
 ## Compression and persistence
 
-Before and during long runs, Hermes may:
+Before and during long runs, clawg may:
 
 - flush memory before context loss
 - compress middle conversation turns

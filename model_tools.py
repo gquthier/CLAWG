@@ -179,7 +179,7 @@ except Exception as e:
 
 # Plugin tool discovery (user/project/pip plugins)
 try:
-    from hermes_cli.plugins import discover_plugins
+    from clawg_cli.plugins import discover_plugins
     discover_plugins()
 except Exception as e:
     logger.debug("Plugin discovery failed: %s", e)
@@ -296,7 +296,7 @@ def get_tool_definitions(
     # Always include plugin-registered tools — they bypass the toolset filter
     # because their toolsets are dynamic (created at plugin load time).
     try:
-        from hermes_cli.plugins import get_plugin_tool_names
+        from clawg_cli.plugins import get_plugin_tool_names
         plugin_tools = get_plugin_tool_names()
         if plugin_tools:
             tools_to_include.update(plugin_tools)
@@ -409,7 +409,7 @@ def handle_function_call(
             return json.dumps({"error": f"{function_name} must be handled by the agent loop"})
 
         try:
-            from hermes_cli.plugins import invoke_hook
+            from clawg_cli.plugins import invoke_hook
             invoke_hook("pre_tool_call", tool_name=function_name, args=function_args, task_id=task_id or "")
         except Exception:
             pass
@@ -435,7 +435,7 @@ def handle_function_call(
             )
 
         try:
-            from hermes_cli.plugins import invoke_hook
+            from clawg_cli.plugins import invoke_hook
             invoke_hook("post_tool_call", tool_name=function_name, args=function_args, result=result, task_id=task_id or "")
         except Exception:
             pass

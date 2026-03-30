@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 MAX_MESSAGE_LENGTH = 4000
 
 # Store directory for E2EE keys and sync state.
-_STORE_DIR = Path.home() / ".hermes" / "matrix" / "store"
+_STORE_DIR = Path.home() / ".clawg" / "matrix" / "store"
 
 # Grace period: ignore messages older than this many seconds before startup.
 _STARTUP_GRACE_SECONDS = 5
@@ -164,7 +164,7 @@ class MatrixAdapter(BasePlatformAdapter):
         elif self._password and self._user_id:
             resp = await client.login(
                 self._password,
-                device_name="Hermes Agent",
+                device_name="CLAWG",
             )
             if isinstance(resp, nio.LoginResponse):
                 logger.info("Matrix: logged in as %s", self._user_id)

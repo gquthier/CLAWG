@@ -6,7 +6,7 @@ description: "How the messaging gateway boots, authorizes users, routes sessions
 
 # Gateway Internals
 
-The messaging gateway is the long-running process that connects Hermes to external platforms.
+The messaging gateway is the long-running process that connects clawg to external platforms.
 
 Key files:
 
@@ -38,8 +38,8 @@ The gateway process is responsible for:
 The gateway has a multi-source config model:
 
 - environment variables
-- `~/.hermes/gateway.json`
-- selected bridged values from `~/.hermes/config.yaml`
+- `~/.clawg/gateway.json`
+- selected bridged values from `~/.clawg/config.yaml`
 
 ## Session routing
 

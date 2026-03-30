@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [diffusers>=0.30.0, transformers>=4.41.0, accelerate>=0.31.0, torch>=2.0.0]
 metadata:
-  hermes:
+  clawg:
     tags: [Image Generation, Stable Diffusion, Diffusers, Text-to-Image, Multimodal, Computer Vision]
 
 ---

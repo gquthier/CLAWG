@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# GitHub environment detection helper for Hermes Agent skills.
+# GitHub environment detection helper for CLAWG skills.
 #
 # Usage (via terminal tool):
 #   source skills/github/github-auth/scripts/gh-env.sh

@@ -126,7 +126,7 @@ class TestBackendSelection:
     """Test suite for _get_backend() backend selection logic.
 
     The backend is configured via config.yaml (web.backend), set by
-    ``hermes tools``.  Falls back to key-based detection for legacy/manual
+    ``clawg tools``.  Falls back to key-based detection for legacy/manual
     setups.
     """
 

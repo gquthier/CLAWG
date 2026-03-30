@@ -1,4 +1,4 @@
-# Streaming LLM Response Support for Hermes Agent
+# Streaming LLM Response Support for CLAWG
 
 ## Overview
 
@@ -62,7 +62,7 @@ streaming:
 ### Environment variables
 
 ```
-HERMES_STREAMING_ENABLED=true    # Master switch via env
+CLAWG_STREAMING_ENABLED=true    # Master switch via env
 ```
 
 ### How the flag is read
@@ -266,7 +266,7 @@ try:
 except Exception:
     pass
 # Env var override
-if os.getenv("HERMES_STREAMING_ENABLED", "").lower() in ("true", "1", "yes"):
+if os.getenv("CLAWG_STREAMING_ENABLED", "").lower() in ("true", "1", "yes"):
     _streaming_enabled = True
 ```
 
@@ -655,7 +655,7 @@ The 1.5s edit interval is conservative enough for all platforms. If we get
 | `gateway/platforms/base.py` | 2 | +check for _streamed_msg_id in response handler |
 | `cli.py` | 3 | +streaming setup, +token display, +response box integration |
 | `gateway/platforms/api_server.py` | 4 | +real SSE writer, +streaming callback wiring |
-| `hermes_cli/config.py` | 1 | +streaming config defaults |
+| `clawg_cli/config.py` | 1 | +streaming config defaults |
 | `cli-config.yaml.example` | 1 | +streaming section |
 | `tests/test_streaming.py` | 1-4 | NEW — ~380 lines of tests |
 
@@ -701,5 +701,5 @@ streaming:
 
 ```bash
 # Environment variable override
-HERMES_STREAMING_ENABLED=true
+CLAWG_STREAMING_ENABLED=true
 ```

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "Adding Tools"
-description: "How to add a new tool to Hermes Agent — schemas, handlers, registration, and toolsets"
+description: "How to add a new tool to CLAWG — schemas, handlers, registration, and toolsets"
 ---
 
 # Adding Tools
@@ -17,7 +17,7 @@ Make it a **Tool** when it requires end-to-end integration with API keys, custom
 Adding a tool touches **3 files**:
 
 1. **`tools/your_tool.py`** — handler, schema, check function, `registry.register()` call
-2. **`toolsets.py`** — add tool name to `_HERMES_CORE_TOOLS` (or a specific toolset)
+2. **`toolsets.py`** — add tool name to `_CLAWG_CORE_TOOLS` (or a specific toolset)
 3. **`model_tools.py`** — add `"tools.your_tool"` to the `_discover_tools()` list
 
 ## Step 1: Create the Tool File
@@ -111,7 +111,7 @@ In `toolsets.py`, add the tool name:
 
 ```python
 # If it should be available on all platforms (CLI + messaging):
-_HERMES_CORE_TOOLS = [
+_CLAWG_CORE_TOOLS = [
     ...
     "weather",  # <-- add here
 ]
@@ -182,7 +182,7 @@ Some tools (`todo`, `memory`, `session_search`, `delegate_task`) need access to 
 
 ## Optional: Setup Wizard Integration
 
-If your tool requires an API key, add it to `hermes_cli/config.py`:
+If your tool requires an API key, add it to `clawg_cli/config.py`:
 
 ```python
 OPTIONAL_ENV_VARS = {
@@ -203,6 +203,6 @@ OPTIONAL_ENV_VARS = {
 - [ ] Added to appropriate toolset in `toolsets.py`
 - [ ] Discovery import added to `model_tools.py`
 - [ ] Handler returns JSON strings, errors returned as `{"error": "..."}`
-- [ ] Optional: API key added to `OPTIONAL_ENV_VARS` in `hermes_cli/config.py`
+- [ ] Optional: API key added to `OPTIONAL_ENV_VARS` in `clawg_cli/config.py`
 - [ ] Optional: Added to `toolset_distributions.py` for batch processing
-- [ ] Tested with `hermes chat -q "Use the weather tool for London"`
+- [ ] Tested with `clawg chat -q "Use the weather tool for London"`

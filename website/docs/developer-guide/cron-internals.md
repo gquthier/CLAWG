@@ -1,22 +1,22 @@
 ---
 sidebar_position: 11
 title: "Cron Internals"
-description: "How Hermes stores, schedules, edits, pauses, skill-loads, and delivers cron jobs"
+description: "How clawg stores, schedules, edits, pauses, skill-loads, and delivers cron jobs"
 ---
 
 # Cron Internals
 
-Hermes cron support is implemented primarily in:
+clawg cron support is implemented primarily in:
 
 - `cron/jobs.py`
 - `cron/scheduler.py`
 - `tools/cronjob_tools.py`
 - `gateway/run.py`
-- `hermes_cli/cron.py`
+- `clawg_cli/cron.py`
 
 ## Scheduling model
 
-Hermes supports:
+clawg supports:
 
 - one-shot delays
 - intervals
@@ -35,7 +35,7 @@ The model-facing surface is a single `cronjob` tool with action-style operations
 
 ## Job storage
 
-Cron jobs are stored in Hermes-managed local state (`~/.hermes/cron/jobs.json`) with atomic write semantics.
+Cron jobs are stored in Clawg-managed local state (`~/.clawg/cron/jobs.json`) with atomic write semantics.
 
 Each job can carry:
 
@@ -63,7 +63,7 @@ In gateway mode, cron ticking is integrated into the long-running gateway loop.
 
 ## Skill-backed jobs
 
-A cron job may attach multiple skills. At runtime, Hermes loads those skills in order and then appends the job prompt as the task instruction.
+A cron job may attach multiple skills. At runtime, clawg loads those skills in order and then appends the job prompt as the task instruction.
 
 This gives scheduled jobs reusable guidance without requiring the user to paste full skill bodies into the cron prompt.
 
@@ -82,7 +82,7 @@ Cron jobs can deliver to:
 
 ## Locking
 
-Hermes uses lock-based protections so overlapping scheduler ticks do not execute the same due-job batch twice.
+clawg uses lock-based protections so overlapping scheduler ticks do not execute the same due-job batch twice.
 
 ## Related docs
 

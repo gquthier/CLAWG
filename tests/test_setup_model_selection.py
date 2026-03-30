@@ -35,15 +35,15 @@ class TestSetupProviderModelSelection:
         ("minimax", ["MiniMax-M2.5", "MiniMax-M2.5-highspeed", "MiniMax-M2.1"]),
         ("minimax-cn", ["MiniMax-M2.5", "MiniMax-M2.5-highspeed", "MiniMax-M2.1"]),
     ])
-    @patch("hermes_cli.models.fetch_api_models", return_value=[])
-    @patch("hermes_cli.config.get_env_value", return_value="fake-key")
+    @patch("clawg_cli.models.fetch_api_models", return_value=[])
+    @patch("clawg_cli.config.get_env_value", return_value="fake-key")
     def test_falls_back_to_default_models_without_crashing(
         self, mock_env, mock_fetch, provider_id, expected_defaults, mock_provider_registry
     ):
         """Previously this code path raised NameError: 'is_coding_plan'.
         Now it delegates to _setup_provider_model_selection which uses
         _DEFAULT_PROVIDER_MODELS -- no crash, correct model list."""
-        from hermes_cli.setup import _setup_provider_model_selection
+        from clawg_cli.setup import _setup_provider_model_selection
 
         captured_choices = {}
 
@@ -52,7 +52,7 @@ class TestSetupProviderModelSelection:
             # Select "Keep current" (last item)
             return len(choices) - 1
 
-        with patch("hermes_cli.auth.PROVIDER_REGISTRY", mock_provider_registry):
+        with patch("clawg_cli.auth.PROVIDER_REGISTRY", mock_provider_registry):
             _setup_provider_model_selection(
                 config={"model": {}},
                 provider_id=provider_id,
@@ -66,13 +66,13 @@ class TestSetupProviderModelSelection:
         for model in expected_defaults:
             assert model in offered, f"{model} not in choices for {provider_id}"
 
-    @patch("hermes_cli.models.fetch_api_models")
-    @patch("hermes_cli.config.get_env_value", return_value="fake-key")
+    @patch("clawg_cli.models.fetch_api_models")
+    @patch("clawg_cli.config.get_env_value", return_value="fake-key")
     def test_live_models_used_when_available(
         self, mock_env, mock_fetch, mock_provider_registry
     ):
         """When fetch_api_models returns results, those are used instead of defaults."""
-        from hermes_cli.setup import _setup_provider_model_selection
+        from clawg_cli.setup import _setup_provider_model_selection
 
         live = ["live-model-1", "live-model-2"]
         mock_fetch.return_value = live
@@ -83,7 +83,7 @@ class TestSetupProviderModelSelection:
             captured_choices["choices"] = choices
             return len(choices) - 1
 
-        with patch("hermes_cli.auth.PROVIDER_REGISTRY", mock_provider_registry):
+        with patch("clawg_cli.auth.PROVIDER_REGISTRY", mock_provider_registry):
             _setup_provider_model_selection(
                 config={"model": {}},
                 provider_id="zai",
@@ -96,13 +96,13 @@ class TestSetupProviderModelSelection:
         assert "live-model-1" in offered
         assert "live-model-2" in offered
 
-    @patch("hermes_cli.models.fetch_api_models", return_value=[])
-    @patch("hermes_cli.config.get_env_value", return_value="fake-key")
+    @patch("clawg_cli.models.fetch_api_models", return_value=[])
+    @patch("clawg_cli.config.get_env_value", return_value="fake-key")
     def test_custom_model_selection(
         self, mock_env, mock_fetch, mock_provider_registry
     ):
         """Selecting 'Custom model' lets user type a model name."""
-        from hermes_cli.setup import _setup_provider_model_selection, _DEFAULT_PROVIDER_MODELS
+        from clawg_cli.setup import _setup_provider_model_selection, _DEFAULT_PROVIDER_MODELS
 
         defaults = _DEFAULT_PROVIDER_MODELS["zai"]
         custom_model_idx = len(defaults)  # "Custom model" is right after defaults
@@ -112,7 +112,7 @@ class TestSetupProviderModelSelection:
         def fake_prompt_choice(label, choices, default):
             return custom_model_idx
 
-        with patch("hermes_cli.auth.PROVIDER_REGISTRY", mock_provider_registry):
+        with patch("clawg_cli.auth.PROVIDER_REGISTRY", mock_provider_registry):
             _setup_provider_model_selection(
                 config=config,
                 provider_id="zai",

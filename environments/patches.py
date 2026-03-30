@@ -1,5 +1,5 @@
 """
-Monkey patches for making hermes-agent tools work inside async frameworks (Atropos).
+Monkey patches for making clawg tools work inside async frameworks (Atropos).
 
 Problem:
     Some tools use asyncio.run() internally (e.g., mini-swe-agent's Modal backend,
@@ -21,7 +21,7 @@ What gets patched:
     - SwerexModalEnvironment.stop -- stops deployment on the background thread
 
 Usage:
-    Call apply_patches() once at import time (done automatically by hermes_base_env.py).
+    Call apply_patches() once at import time (done automatically by clawg_base_env.py).
     This is idempotent -- calling it multiple times is safe.
 """
 

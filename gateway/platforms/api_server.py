@@ -6,11 +6,11 @@ Exposes an HTTP server with endpoints:
 - POST /v1/responses               — OpenAI Responses API format (stateful via previous_response_id)
 - GET  /v1/responses/{response_id} — Retrieve a stored response
 - DELETE /v1/responses/{response_id} — Delete a stored response
-- GET  /v1/models                  — lists hermes-agent as an available model
+- GET  /v1/models                  — lists clawg as an available model
 - GET  /health                     — health check
 
 Any OpenAI-compatible frontend (Open WebUI, LobeChat, LibreChat,
-AnythingLLM, NextChat, ChatBox, etc.) can connect to hermes-agent
+AnythingLLM, NextChat, ChatBox, etc.) can connect to clawg
 through this adapter by pointing at http://localhost:8642/v1.
 
 Requires:
@@ -120,7 +120,7 @@ class APIServerAdapter(BasePlatformAdapter):
     OpenAI-compatible HTTP API server adapter.
 
     Runs an aiohttp web server that accepts OpenAI-format requests
-    and routes them through hermes-agent's AIAgent.
+    and routes them through clawg's AIAgent.
     """
 
     def __init__(self, config: PlatformConfig):
@@ -183,7 +183,7 @@ class APIServerAdapter(BasePlatformAdapter):
         runtime_kwargs = _resolve_runtime_agent_kwargs()
         model = _resolve_gateway_model()
 
-        max_iterations = int(os.getenv("HERMES_MAX_ITERATIONS", "90"))
+        max_iterations = int(os.getenv("CLAWG_MAX_ITERATIONS", "90"))
 
         agent = AIAgent(
             model=model,
@@ -204,10 +204,10 @@ class APIServerAdapter(BasePlatformAdapter):
 
     async def _handle_health(self, request: "web.Request") -> "web.Response":
         """GET /health — simple health check."""
-        return web.json_response({"status": "ok", "platform": "hermes-agent"})
+        return web.json_response({"status": "ok", "platform": "clawg"})
 
     async def _handle_models(self, request: "web.Request") -> "web.Response":
-        """GET /v1/models — return hermes-agent as an available model."""
+        """GET /v1/models — return clawg as an available model."""
         auth_err = self._check_auth(request)
         if auth_err:
             return auth_err
@@ -216,12 +216,12 @@ class APIServerAdapter(BasePlatformAdapter):
             "object": "list",
             "data": [
                 {
-                    "id": "hermes-agent",
+                    "id": "clawg",
                     "object": "model",
                     "created": int(time.time()),
-                    "owned_by": "hermes",
+                    "owned_by": "clawg",
                     "permission": [],
-                    "root": "hermes-agent",
+                    "root": "clawg",
                     "parent": None,
                 }
             ],
@@ -282,7 +282,7 @@ class APIServerAdapter(BasePlatformAdapter):
 
         session_id = str(uuid.uuid4())
         completion_id = f"chatcmpl-{uuid.uuid4().hex[:29]}"
-        model_name = body.get("model", "hermes-agent")
+        model_name = body.get("model", "clawg")
         created = int(time.time())
 
         if stream:
@@ -567,7 +567,7 @@ class APIServerAdapter(BasePlatformAdapter):
             "object": "response",
             "status": "completed",
             "created_at": created_at,
-            "model": body.get("model", "hermes-agent"),
+            "model": body.get("model", "clawg"),
             "output": output_items,
             "usage": {
                 "input_tokens": usage.get("input_tokens", 0),

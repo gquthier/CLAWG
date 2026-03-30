@@ -6,19 +6,19 @@ description: "Sandboxed Python execution with RPC tool access — collapse multi
 
 # Code Execution (Programmatic Tool Calling)
 
-The `execute_code` tool lets the agent write Python scripts that call Hermes tools programmatically, collapsing multi-step workflows into a single LLM turn. The script runs in a sandboxed child process on the agent host, communicating via Unix domain socket RPC.
+The `execute_code` tool lets the agent write Python scripts that call clawg tools programmatically, collapsing multi-step workflows into a single LLM turn. The script runs in a sandboxed child process on the agent host, communicating via Unix domain socket RPC.
 
 ## How It Works
 
-1. The agent writes a Python script using `from hermes_tools import ...`
-2. Hermes generates a `hermes_tools.py` stub module with RPC functions
-3. Hermes opens a Unix domain socket and starts an RPC listener thread
-4. The script runs in a child process — tool calls travel over the socket back to Hermes
+1. The agent writes a Python script using `from clawg_tools import ...`
+2. clawg generates a `clawg_tools.py` stub module with RPC functions
+3. clawg opens a Unix domain socket and starts an RPC listener thread
+4. The script runs in a child process — tool calls travel over the socket back to clawg
 5. Only the script's `print()` output is returned to the LLM; intermediate tool results never enter the context window
 
 ```python
 # The agent can write scripts like:
-from hermes_tools import web_search, web_extract
+from clawg_tools import web_search, web_extract
 
 results = web_search("Python 3.13 features", limit=5)
 for r in results["data"]["web"]:
@@ -44,7 +44,7 @@ The key benefit: intermediate tool results never enter the context window — on
 ### Data Processing Pipeline
 
 ```python
-from hermes_tools import search_files, read_file
+from clawg_tools import search_files, read_file
 import json
 
 # Find all config files and extract database settings
@@ -60,7 +60,7 @@ print(json.dumps(configs, indent=2))
 ### Multi-Step Web Research
 
 ```python
-from hermes_tools import web_search, web_extract
+from clawg_tools import web_search, web_extract
 import json
 
 # Search, extract, and summarize in one turn
@@ -82,7 +82,7 @@ print(json.dumps(summaries, indent=2))
 ### Bulk File Refactoring
 
 ```python
-from hermes_tools import search_files, read_file, patch
+from clawg_tools import search_files, read_file, patch
 
 # Find all Python files using deprecated API and fix them
 matches = search_files("old_api_call", path="src/", file_glob="*.py")
@@ -103,7 +103,7 @@ print(f"Fixed {fixed} files out of {len(matches.get('matches', []))} matches")
 ### Build and Test Pipeline
 
 ```python
-from hermes_tools import terminal, read_file
+from clawg_tools import terminal, read_file
 import json
 
 # Run tests, parse results, and report
@@ -138,7 +138,7 @@ print(json.dumps(report, indent=2))
 All limits are configurable via `config.yaml`:
 
 ```yaml
-# In ~/.hermes/config.yaml
+# In ~/.clawg/config.yaml
 code_execution:
   timeout: 300       # Max seconds per script (default: 300)
   max_tool_calls: 50 # Max tool calls per execution (default: 50)
@@ -188,7 +188,7 @@ The script runs in a temporary directory that is cleaned up after execution. The
 | Interactive/background processes | ❌ | ✅ |
 | Needs API keys in environment | ❌ | ✅ |
 
-**Rule of thumb:** Use `execute_code` when you need to call Hermes tools programmatically with logic between calls. Use `terminal` for running shell commands, builds, and processes.
+**Rule of thumb:** Use `execute_code` when you need to call clawg tools programmatically with logic between calls. Use `terminal` for running shell commands, builds, and processes.
 
 ## Platform Support
 

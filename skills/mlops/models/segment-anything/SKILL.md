@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [segment-anything, transformers>=4.30.0, torch>=1.7.0]
 metadata:
-  hermes:
+  clawg:
     tags: [Multimodal, Image Segmentation, Computer Vision, SAM, Zero-Shot]
 
 ---

@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [transformers, torch, pillow]
 metadata:
-  hermes:
+  clawg:
     tags: [Multimodal, CLIP, Vision-Language, Zero-Shot, Image Classification, OpenAI, Image Search, Cross-Modal Retrieval, Content Moderation]
 
 ---

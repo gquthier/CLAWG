@@ -1,7 +1,7 @@
 {
-  "name": "hermes-whatsapp-bridge",
+  "name": "clawg-whatsapp-bridge",
   "version": "1.0.0",
-  "description": "WhatsApp bridge for Hermes Agent using Baileys",
+  "description": "WhatsApp bridge for CLAWG using Baileys",
   "private": true,
   "type": "module",
   "scripts": {

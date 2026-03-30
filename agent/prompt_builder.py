@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 from typing import Optional
 
-from hermes_cli.paths import get_shared_skills_dir, get_second_brain_agent_dir, get_runtime_home
+from clawg_cli.paths import get_shared_skills_dir, get_second_brain_agent_dir, get_runtime_home
 from agent.second_brain import resolve_active_agent_id
 
 logger = logging.getLogger(__name__)
@@ -73,11 +73,11 @@ def _find_git_root(start: Path) -> Optional[Path]:
     return None
 
 
-_HERMES_MD_NAMES = (".clawg.md", "CLAWG.md", ".hermes.md", "HERMES.md")
+_CLAWG_MD_NAMES = (".clawg.md", "CLAWG.md", ".clawg.md", "clawg.md")
 
 
-def _find_hermes_md(cwd: Path) -> Optional[Path]:
-    """Discover the nearest ``.hermes.md`` or ``HERMES.md``.
+def _find_clawg_md(cwd: Path) -> Optional[Path]:
+    """Discover the nearest ``.clawg.md`` or ``clawg.md``.
 
     Search order: *cwd* first, then each parent directory up to (and
     including) the git repository root.  Returns the first match, or
@@ -87,7 +87,7 @@ def _find_hermes_md(cwd: Path) -> Optional[Path]:
     current = cwd.resolve()
 
     for directory in [current, *current.parents]:
-        for name in _HERMES_MD_NAMES:
+        for name in _CLAWG_MD_NAMES:
             candidate = directory / name
             if candidate.is_file():
                 return candidate
@@ -269,12 +269,12 @@ def _read_skill_conditions(skill_file: Path) -> dict:
         from tools.skills_tool import _parse_frontmatter
         raw = skill_file.read_text(encoding="utf-8")[:2000]
         frontmatter, _ = _parse_frontmatter(raw)
-        hermes = frontmatter.get("metadata", {}).get("hermes", {})
+        clawg = frontmatter.get("metadata", {}).get("clawg", {})
         return {
-            "fallback_for_toolsets": hermes.get("fallback_for_toolsets", []),
-            "requires_toolsets": hermes.get("requires_toolsets", []),
-            "fallback_for_tools": hermes.get("fallback_for_tools", []),
-            "requires_tools": hermes.get("requires_tools", []),
+            "fallback_for_toolsets": clawg.get("fallback_for_toolsets", []),
+            "requires_toolsets": clawg.get("requires_toolsets", []),
+            "fallback_for_tools": clawg.get("fallback_for_tools", []),
+            "requires_tools": clawg.get("requires_tools", []),
         }
     except Exception as e:
         logger.debug("Failed to read skill conditions from %s: %s", skill_file, e)
@@ -318,7 +318,7 @@ def build_skills_system_prompt(
 ) -> str:
     """Build a compact skill index for the system prompt.
 
-    Scans ~/.hermes/skills/ for SKILL.md files grouped by category.
+    Scans ~/.clawg/skills/ for SKILL.md files grouped by category.
     Includes per-skill descriptions from frontmatter so the model can
     match skills by meaning, not just name.
     Filters out skills incompatible with the current OS platform.
@@ -440,7 +440,7 @@ def load_soul_md(agent_id: str | None = None) -> Optional[str]:
     """
     config = {}
     try:
-        from hermes_cli.config import load_config
+        from clawg_cli.config import load_config
 
         config = load_config()
     except Exception:
@@ -465,10 +465,10 @@ def load_soul_md(agent_id: str | None = None) -> Optional[str]:
 
     # Fallback source: CLAWG_HOME/SOUL.md (legacy-compatible)
     try:
-        from hermes_cli.config import ensure_hermes_home
-        ensure_hermes_home()
+        from clawg_cli.config import ensure_clawg_home
+        ensure_clawg_home()
     except Exception as e:
-        logger.debug("Could not ensure HERMES_HOME before loading SOUL.md: %s", e)
+        logger.debug("Could not ensure CLAWG_HOME before loading SOUL.md: %s", e)
 
     soul_path = get_runtime_home() / "SOUL.md"
     if not soul_path.exists():
@@ -489,7 +489,7 @@ def build_context_files_prompt(cwd: Optional[str] = None, skip_soul: bool = Fals
     """Discover and load context files for the system prompt.
 
     Discovery: AGENTS.md (recursive), .cursorrules / .cursor/rules/*.mdc,
-    and SOUL.md from HERMES_HOME only. Each capped at 20,000 chars.
+    and SOUL.md from CLAWG_HOME only. Each capped at 20,000 chars.
 
     When *skip_soul* is True, SOUL.md is not included here (it was already
     loaded via ``load_soul_md()`` for the identity slot).
@@ -560,30 +560,30 @@ def build_context_files_prompt(cwd: Optional[str] = None, skip_soul: bool = Fals
         cursorrules_content = _truncate_content(cursorrules_content, ".cursorrules")
         sections.append(cursorrules_content)
 
-    # .clawg.md / CLAWG.md (legacy .hermes.md / HERMES.md supported)
+    # .clawg.md / CLAWG.md (legacy .clawg.md / clawg.md supported)
     # per-project agent config (walk to git root)
-    hermes_md_content = ""
-    hermes_md_path = _find_hermes_md(cwd_path)
-    if hermes_md_path:
+    clawg_md_content = ""
+    clawg_md_path = _find_clawg_md(cwd_path)
+    if clawg_md_path:
         try:
-            content = hermes_md_path.read_text(encoding="utf-8").strip()
+            content = clawg_md_path.read_text(encoding="utf-8").strip()
             if content:
                 content = _strip_yaml_frontmatter(content)
-                rel = hermes_md_path.name
+                rel = clawg_md_path.name
                 try:
-                    rel = str(hermes_md_path.relative_to(cwd_path))
+                    rel = str(clawg_md_path.relative_to(cwd_path))
                 except ValueError:
                     pass
                 content = _scan_context_content(content, rel)
-                hermes_md_content = f"## {rel}\n\n{content}"
+                clawg_md_content = f"## {rel}\n\n{content}"
         except Exception as e:
-            logger.debug("Could not read %s: %s", hermes_md_path, e)
+            logger.debug("Could not read %s: %s", clawg_md_path, e)
 
-    if hermes_md_content:
-        hermes_md_content = _truncate_content(hermes_md_content, ".clawg.md")
-        sections.append(hermes_md_content)
+    if clawg_md_content:
+        clawg_md_content = _truncate_content(clawg_md_content, ".clawg.md")
+        sections.append(clawg_md_content)
 
-    # SOUL.md from HERMES_HOME only — skip when already loaded as identity
+    # SOUL.md from CLAWG_HOME only — skip when already loaded as identity
     if not skip_soul:
         soul_content = load_soul_md()
         if soul_content:

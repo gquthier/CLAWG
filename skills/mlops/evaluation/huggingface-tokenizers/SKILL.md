@@ -6,7 +6,7 @@ author: Orchestra Research
 license: MIT
 dependencies: [tokenizers, transformers, datasets]
 metadata:
-  hermes:
+  clawg:
     tags: [Tokenization, HuggingFace, BPE, WordPiece, Unigram, Fast Tokenization, Rust, Custom Tokenizer, Alignment Tracking, Production]
 
 ---

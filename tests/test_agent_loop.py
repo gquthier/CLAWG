@@ -1,5 +1,5 @@
 """
-Tests for environments/agent_loop.py — HermesAgentLoop.
+Tests for environments/agent_loop.py — ClawgAgentLoop.
 
 Tests the multi-turn agent engine using mocked servers, without needing
 real API keys or running servers.
@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 try:
     from environments.agent_loop import (
         AgentResult,
-        HermesAgentLoop,
+        ClawgAgentLoop,
         ToolError,
         _extract_reasoning_from_message,
         resize_tool_pool,
@@ -177,7 +177,7 @@ class TestExtractReasoning:
         assert _extract_reasoning_from_message(msg) == "First"
 
 
-class TestHermesAgentLoop:
+class TestClawgAgentLoop:
     """Test the agent loop with mock servers."""
 
     @pytest.fixture
@@ -225,7 +225,7 @@ class TestHermesAgentLoop:
     async def test_simple_text_response(self, basic_tools, valid_names):
         """Model responds with text only, no tool calls."""
         server = MockServer([make_text_response("Hello! How can I help?")])
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid_names,
@@ -247,7 +247,7 @@ class TestHermesAgentLoop:
             make_tool_response("todo", {"todos": [{"id": "1", "content": "test", "status": "pending"}]}),
             make_text_response("I created a todo for you."),
         ])
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid_names,
@@ -271,7 +271,7 @@ class TestHermesAgentLoop:
             for i in range(10)
         ]
         server = MockServer(responses)
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid_names,
@@ -290,7 +290,7 @@ class TestHermesAgentLoop:
             make_tool_response("nonexistent_tool", {"arg": "val"}),
             make_text_response("OK, that didn't work."),
         ])
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid_names,
@@ -307,7 +307,7 @@ class TestHermesAgentLoop:
     async def test_empty_response(self, basic_tools, valid_names):
         """Server returns empty response."""
         server = MockServer([MockChatCompletion(choices=[])])
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid_names,
@@ -327,7 +327,7 @@ class TestHermesAgentLoop:
             async def chat_completion(self, **kwargs):
                 raise ConnectionError("Server unreachable")
 
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=FailingServer(),
             tool_schemas=basic_tools,
             valid_tool_names=valid_names,
@@ -343,7 +343,7 @@ class TestHermesAgentLoop:
     async def test_tools_passed_to_server(self, basic_tools, valid_names):
         """Verify tools are passed in the chat_completion kwargs."""
         server = MockServer([make_text_response("OK")])
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid_names,
@@ -361,7 +361,7 @@ class TestHermesAgentLoop:
         """extra_body should be forwarded to server."""
         extra = {"provider": {"ignore": ["DeepInfra"]}}
         server = MockServer([make_text_response("OK")])
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid_names,
@@ -379,7 +379,7 @@ class TestHermesAgentLoop:
         server = MockServer([make_text_response("OK")])
         server.get_state = lambda: {"nodes": [{"test": True}]}
 
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid_names,
@@ -395,7 +395,7 @@ class TestHermesAgentLoop:
     async def test_no_managed_state_without_get_state(self, basic_tools, valid_names):
         """Regular server without get_state() should return None managed_state."""
         server = MockServer([make_text_response("OK")])
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid_names,
@@ -414,7 +414,7 @@ class TestHermesAgentLoop:
             make_tool_response("memory", {"action": "add", "target": "user", "content": "test"}),
             make_text_response("Done"),
         ])
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid,
@@ -438,7 +438,7 @@ class TestHermesAgentLoop:
             make_tool_response("session_search", {"query": "test"}),
             make_text_response("Done"),
         ])
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid,
@@ -466,7 +466,7 @@ class TestHermesAgentLoop:
             ]
         )
         server = MockServer([resp])
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=server,
             tool_schemas=basic_tools,
             valid_tool_names=valid_names,

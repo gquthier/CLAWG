@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 title: "Persistent Memory"
-description: "How Hermes Agent remembers across sessions — MEMORY.md, USER.md, and session search"
+description: "How CLAWG remembers across sessions — MEMORY.md, USER.md, and session search"
 ---
 
 # Persistent Memory
 
-Hermes Agent has bounded, curated memory that persists across sessions. This lets it remember your preferences, your projects, your environment, and things it has learned.
+CLAWG has bounded, curated memory that persists across sessions. This lets it remember your preferences, your projects, your environment, and things it has learned.
 
 ## How It Works
 
@@ -17,7 +17,7 @@ Two files make up the agent's memory:
 | **MEMORY.md** | Agent's personal notes — environment facts, conventions, things learned | 2,200 chars (~800 tokens) |
 | **USER.md** | User profile — your preferences, communication style, expectations | 1,375 chars (~500 tokens) |
 
-Both are stored in `~/.hermes/memories/` and are injected into the system prompt as a frozen snapshot at session start. The agent manages its own memory via the `memory` tool — it can add, replace, or remove entries.
+Both are stored in `~/.clawg/memories/` and are injected into the system prompt as a frozen snapshot at session start. The agent manages its own memory via the `memory` tool — it can add, replace, or remove entries.
 
 :::info
 Character limits keep memory focused. When memory is full, the agent consolidates or replaces entries to make room for new information.
@@ -176,12 +176,12 @@ Memory entries are scanned for injection and exfiltration patterns before being 
 
 Beyond MEMORY.md and USER.md, the agent can search its past conversations using the `session_search` tool:
 
-- All CLI and messaging sessions are stored in SQLite (`~/.hermes/state.db`) with FTS5 full-text search
+- All CLI and messaging sessions are stored in SQLite (`~/.clawg/state.db`) with FTS5 full-text search
 - Search queries return relevant past conversations with Gemini Flash summarization
 - The agent can find things it discussed weeks ago, even if they're not in its active memory
 
 ```bash
-hermes sessions list    # Browse past sessions
+clawg sessions list    # Browse past sessions
 ```
 
 ### session_search vs memory
@@ -199,7 +199,7 @@ hermes sessions list    # Browse past sessions
 ## Configuration
 
 ```yaml
-# In ~/.hermes/config.yaml
+# In ~/.clawg/config.yaml
 memory:
   memory_enabled: true
   user_profile_enabled: true
@@ -212,7 +212,7 @@ memory:
 For deeper, AI-generated user understanding that works across sessions and platforms, you can enable [Honcho Memory](./honcho.md). Honcho runs alongside built-in memory in `hybrid` mode (the default) — `MEMORY.md` and `USER.md` stay as-is, and Honcho adds a persistent user modeling layer on top.
 
 ```bash
-hermes honcho setup
+clawg honcho setup
 ```
 
 See the [Honcho Memory](./honcho.md) docs for full configuration, tools, and CLI reference.

@@ -7,15 +7,15 @@ sidebar_position: 8
 
 # Honcho Memory
 
-[Honcho](https://honcho.dev) is an AI-native memory system that gives Hermes persistent, cross-session understanding of users. While Hermes has built-in memory (`MEMORY.md` and `USER.md`), Honcho adds a deeper layer of **user modeling** — learning preferences, goals, communication style, and context across conversations via a dual-peer architecture where both the user and the AI build representations over time.
+[Honcho](https://honcho.dev) is an AI-native memory system that gives clawg persistent, cross-session understanding of users. While clawg has built-in memory (`MEMORY.md` and `USER.md`), Honcho adds a deeper layer of **user modeling** — learning preferences, goals, communication style, and context across conversations via a dual-peer architecture where both the user and the AI build representations over time.
 
 ## Works Alongside Built-in Memory
 
-Hermes has two memory systems that can work together or be configured separately. In `hybrid` mode (the default), both run side by side — Honcho adds cross-session user modeling while local files handle agent-level notes.
+clawg has two memory systems that can work together or be configured separately. In `hybrid` mode (the default), both run side by side — Honcho adds cross-session user modeling while local files handle agent-level notes.
 
 | Feature | Built-in Memory | Honcho Memory |
 |---------|----------------|---------------|
-| Storage | Local files (`~/.hermes/memories/`) | Cloud-hosted Honcho API |
+| Storage | Local files (`~/.clawg/memories/`) | Cloud-hosted Honcho API |
 | Scope | Agent-level notes and user profile | Deep user modeling via dialectic reasoning |
 | Persistence | Across sessions on same machine | Across sessions, machines, and platforms |
 | Query | Injected into system prompt automatically | Prefetched + on-demand via tools |
@@ -30,7 +30,7 @@ Set `memoryMode` to `honcho` to use Honcho exclusively. See [Memory Modes](#memo
 ### Interactive Setup
 
 ```bash
-hermes honcho setup
+clawg honcho setup
 ```
 
 The setup wizard walks through API key, peer names, workspace, memory mode, write frequency, recall mode, and session strategy. It offers to install `honcho-ai` if missing.
@@ -55,10 +55,10 @@ Honcho reads from `~/.honcho/config.json` (shared across all Honcho-enabled appl
 {
   "apiKey": "your-honcho-api-key",
   "hosts": {
-    "hermes": {
-      "workspace": "hermes",
+    "clawg": {
+      "workspace": "clawg",
       "peerName": "your-name",
-      "aiPeer": "hermes",
+      "aiPeer": "clawg",
       "memoryMode": "hybrid",
       "writeFrequency": "async",
       "recallMode": "hybrid",
@@ -69,12 +69,12 @@ Honcho reads from `~/.honcho/config.json` (shared across all Honcho-enabled appl
 }
 ```
 
-`apiKey` lives at the root because it is a shared credential across all Honcho-enabled tools. All other settings are scoped under `hosts.hermes`. The `hermes honcho setup` wizard writes this structure automatically.
+`apiKey` lives at the root because it is a shared credential across all Honcho-enabled tools. All other settings are scoped under `hosts.clawg`. The `clawg honcho setup` wizard writes this structure automatically.
 
 Or set the API key as an environment variable:
 
 ```bash
-hermes config set HONCHO_API_KEY your-key
+clawg config set HONCHO_API_KEY your-key
 ```
 
 :::info
@@ -85,7 +85,7 @@ When an API key is present (either in `~/.honcho/config.json` or as `HONCHO_API_
 
 ### Global Config (`~/.honcho/config.json`)
 
-Settings are scoped to `hosts.hermes` and fall back to root-level globals when the host field is absent. Root-level keys are managed by the user or the honcho CLI -- Hermes only writes to its own host block (except `apiKey`, which is a shared credential at root).
+Settings are scoped to `hosts.clawg` and fall back to root-level globals when the host field is absent. Root-level keys are managed by the user or the honcho CLI -- clawg only writes to its own host block (except `apiKey`, which is a shared credential at root).
 
 **Root-level (shared)**
 
@@ -94,13 +94,13 @@ Settings are scoped to `hosts.hermes` and fall back to root-level globals when t
 | `apiKey` | — | Honcho API key (required, shared across all hosts) |
 | `sessions` | `{}` | Manual session name overrides per directory (shared) |
 
-**Host-level (`hosts.hermes`)**
+**Host-level (`hosts.clawg`)**
 
 | Field | Default | Description |
 |-------|---------|-------------|
-| `workspace` | `"hermes"` | Workspace identifier |
+| `workspace` | `"clawg"` | Workspace identifier |
 | `peerName` | *(derived)* | Your identity name for user modeling |
-| `aiPeer` | `"hermes"` | AI assistant identity name |
+| `aiPeer` | `"clawg"` | AI assistant identity name |
 | `environment` | `"production"` | Honcho environment |
 | `enabled` | *(auto)* | Auto-enables when API key is present |
 | `saveMessages` | `true` | Whether to sync messages to Honcho |
@@ -114,7 +114,7 @@ Settings are scoped to `hosts.hermes` and fall back to root-level globals when t
 | `dialecticMaxChars` | `600` | Char cap on dialectic results injected into system prompt |
 | `linkedHosts` | `[]` | Other host keys whose workspaces to cross-reference |
 
-All host-level fields fall back to the equivalent root-level key if not set under `hosts.hermes`. Existing configs with settings at root level continue to work.
+All host-level fields fall back to the equivalent root-level key if not set under `hosts.clawg`. Existing configs with settings at root level continue to work.
 
 ### Memory Modes
 
@@ -129,7 +129,7 @@ Memory mode can be set globally or per-peer (user, agent1, agent2, etc):
 {
   "memoryMode": {
     "default": "hybrid",
-    "hermes": "honcho"
+    "clawg": "honcho"
   }
 }
 ```
@@ -175,9 +175,9 @@ Multiple Honcho-enabled tools share `~/.honcho/config.json`. Each tool writes on
   "apiKey": "your-key",
   "peerName": "eri",
   "hosts": {
-    "hermes": {
+    "clawg": {
       "workspace": "my-workspace",
-      "aiPeer": "hermes-assistant",
+      "aiPeer": "clawg-assistant",
       "memoryMode": "honcho",
       "linkedHosts": ["claude-code"],
       "contextTokens": 2000,
@@ -193,7 +193,7 @@ Multiple Honcho-enabled tools share `~/.honcho/config.json`. Each tool writes on
 
 Resolution: `hosts.<tool>` field > root-level field > default. In this example, both tools share the root `apiKey` and `peerName`, but each has its own `aiPeer` and workspace settings.
 
-### Hermes Config (`~/.hermes/config.yaml`)
+### clawg Config (`~/.clawg/config.yaml`)
 
 Intentionally minimal — most configuration comes from `~/.honcho/config.json`:
 
@@ -309,27 +309,27 @@ Parameters:
 ## CLI Commands
 
 ```
-hermes honcho setup                        # Interactive setup wizard
-hermes honcho status                       # Show config and connection status
-hermes honcho sessions                     # List directory → session name mappings
-hermes honcho map <name>                   # Map current directory to a session name
-hermes honcho peer                         # Show peer names and dialectic settings
-hermes honcho peer --user NAME             # Set user peer name
-hermes honcho peer --ai NAME               # Set AI peer name
-hermes honcho peer --reasoning LEVEL       # Set dialectic reasoning level
-hermes honcho mode                         # Show current memory mode
-hermes honcho mode [hybrid|honcho|local]   # Set memory mode
-hermes honcho tokens                       # Show token budget settings
-hermes honcho tokens --context N           # Set context token cap
-hermes honcho tokens --dialectic N         # Set dialectic char cap
-hermes honcho identity                     # Show AI peer identity
-hermes honcho identity <file>              # Seed AI peer identity from file (SOUL.md, etc.)
-hermes honcho migrate                      # Migration guide: OpenClaw → Hermes + Honcho
+clawg honcho setup                        # Interactive setup wizard
+clawg honcho status                       # Show config and connection status
+clawg honcho sessions                     # List directory → session name mappings
+clawg honcho map <name>                   # Map current directory to a session name
+clawg honcho peer                         # Show peer names and dialectic settings
+clawg honcho peer --user NAME             # Set user peer name
+clawg honcho peer --ai NAME               # Set AI peer name
+clawg honcho peer --reasoning LEVEL       # Set dialectic reasoning level
+clawg honcho mode                         # Show current memory mode
+clawg honcho mode [hybrid|honcho|local]   # Set memory mode
+clawg honcho tokens                       # Show token budget settings
+clawg honcho tokens --context N           # Set context token cap
+clawg honcho tokens --dialectic N         # Set dialectic char cap
+clawg honcho identity                     # Show AI peer identity
+clawg honcho identity <file>              # Seed AI peer identity from file (SOUL.md, etc.)
+clawg honcho migrate                      # Migration guide: OpenClaw → clawg + Honcho
 ```
 
 ### Doctor Integration
 
-`hermes doctor` includes a Honcho section that validates config, API key, and connection status.
+`clawg doctor` includes a Honcho section that validates config, API key, and connection status.
 
 ## Migration
 
@@ -343,7 +343,7 @@ When Honcho activates on an instance with existing local history, migration runs
 ### From OpenClaw
 
 ```bash
-hermes honcho migrate
+clawg honcho migrate
 ```
 
 Walks through converting an OpenClaw native Honcho setup to the shared `~/.honcho/config.json` format.
@@ -353,13 +353,13 @@ Walks through converting an OpenClaw native Honcho setup to the shared `~/.honch
 Honcho can build a representation of the AI assistant over time (via `observe_me=True`). You can also seed the AI peer explicitly:
 
 ```bash
-hermes honcho identity ~/.hermes/SOUL.md
+clawg honcho identity ~/.clawg/SOUL.md
 ```
 
 This uploads the file content through Honcho's observation pipeline. The AI peer representation is then injected into the system prompt alongside the user's, giving the agent awareness of its own accumulated identity.
 
 ```bash
-hermes honcho identity --show
+clawg honcho identity --show
 ```
 
 Shows the current AI peer representation from Honcho.

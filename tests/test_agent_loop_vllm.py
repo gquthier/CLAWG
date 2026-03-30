@@ -1,4 +1,4 @@
-"""Integration tests for HermesAgentLoop with a local vLLM server.
+"""Integration tests for ClawgAgentLoop with a local vLLM server.
 
 Tests the full Phase 2 flow: ManagedServer + tool calling with a real
 vLLM backend, producing actual token IDs and logprobs for RL training.
@@ -35,7 +35,7 @@ if str(_repo_root) not in sys.path:
     sys.path.insert(0, str(_repo_root))
 
 try:
-    from environments.agent_loop import AgentResult, HermesAgentLoop
+    from environments.agent_loop import AgentResult, ClawgAgentLoop
 except ImportError:
     pytest.skip("atroposlib not installed", allow_module_level=True)
 
@@ -88,7 +88,7 @@ def _make_server_manager():
         server_type="vllm",
         health_check=False,
     )
-    sm = ServerManager([config], tool_parser="hermes")
+    sm = ServerManager([config], tool_parser="clawg")
     sm.servers[0].server_healthy = True
     return sm
 
@@ -171,7 +171,7 @@ async def test_vllm_single_tool_call():
     tokenizer = _get_tokenizer()
 
     async with sm.managed_server(tokenizer=tokenizer) as managed:
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=managed,
             tool_schemas=[WEATHER_TOOL],
             valid_tool_names={"get_weather"},
@@ -213,7 +213,7 @@ async def test_vllm_multi_tool_calls():
     tokenizer = _get_tokenizer()
 
     async with sm.managed_server(tokenizer=tokenizer) as managed:
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=managed,
             tool_schemas=[WEATHER_TOOL, CALC_TOOL],
             valid_tool_names={"get_weather", "calculate"},
@@ -251,7 +251,7 @@ async def test_vllm_managed_server_produces_nodes():
     tokenizer = _get_tokenizer()
 
     async with sm.managed_server(tokenizer=tokenizer) as managed:
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=managed,
             tool_schemas=[WEATHER_TOOL],
             valid_tool_names={"get_weather"},
@@ -291,7 +291,7 @@ async def test_vllm_no_tools_direct_response():
     tokenizer = _get_tokenizer()
 
     async with sm.managed_server(tokenizer=tokenizer) as managed:
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=managed,
             tool_schemas=[WEATHER_TOOL],
             valid_tool_names={"get_weather"},
@@ -325,7 +325,7 @@ async def test_vllm_thinking_content_extracted():
         tokenizer=tokenizer,
         preserve_think_blocks=True,
     ) as managed:
-        agent = HermesAgentLoop(
+        agent = ClawgAgentLoop(
             server=managed,
             tool_schemas=[CALC_TOOL],
             valid_tool_names={"calculate"},

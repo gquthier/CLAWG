@@ -1,17 +1,17 @@
 ---
 sidebar_position: 2
 title: "Configuration"
-description: "Configure Hermes Agent — config.yaml, providers, models, API keys, and more"
+description: "Configure CLAWG — config.yaml, providers, models, API keys, and more"
 ---
 
 # Configuration
 
-All settings are stored in the `~/.hermes/` directory for easy access.
+All settings are stored in the `~/.clawg/` directory for easy access.
 
 ## Directory Structure
 
 ```text
-~/.hermes/
+~/.clawg/
 ├── config.yaml     # Settings (model, terminal, TTS, compression, etc.)
 ├── .env            # API keys and secrets
 ├── auth.json       # OAuth provider credentials (Nous Portal, etc.)
@@ -26,29 +26,29 @@ All settings are stored in the `~/.hermes/` directory for easy access.
 ## Managing Configuration
 
 ```bash
-hermes config              # View current configuration
-hermes config edit         # Open config.yaml in your editor
-hermes config set KEY VAL  # Set a specific value
-hermes config check        # Check for missing options (after updates)
-hermes config migrate      # Interactively add missing options
+clawg config              # View current configuration
+clawg config edit         # Open config.yaml in your editor
+clawg config set KEY VAL  # Set a specific value
+clawg config check        # Check for missing options (after updates)
+clawg config migrate      # Interactively add missing options
 
 # Examples:
-hermes config set model anthropic/claude-opus-4
-hermes config set terminal.backend docker
-hermes config set OPENROUTER_API_KEY sk-or-...  # Saves to .env
+clawg config set model anthropic/claude-opus-4
+clawg config set terminal.backend docker
+clawg config set OPENROUTER_API_KEY sk-or-...  # Saves to .env
 ```
 
 :::tip
-The `hermes config set` command automatically routes values to the right file — API keys are saved to `.env`, everything else to `config.yaml`.
+The `clawg config set` command automatically routes values to the right file — API keys are saved to `.env`, everything else to `config.yaml`.
 :::
 
 ## Configuration Precedence
 
 Settings are resolved in this order (highest priority first):
 
-1. **CLI arguments** — e.g., `hermes chat --model anthropic/claude-sonnet-4` (per-invocation override)
-2. **`~/.hermes/config.yaml`** — the primary config file for all non-secret settings
-3. **`~/.hermes/.env`** — fallback for env vars; **required** for secrets (API keys, tokens, passwords)
+1. **CLI arguments** — e.g., `clawg chat --model anthropic/claude-sonnet-4` (per-invocation override)
+2. **`~/.clawg/config.yaml`** — the primary config file for all non-secret settings
+3. **`~/.clawg/.env`** — fallback for env vars; **required** for secrets (API keys, tokens, passwords)
 4. **Built-in defaults** — hardcoded safe defaults when nothing else is set
 
 :::info Rule of Thumb
@@ -57,29 +57,29 @@ Secrets (API keys, bot tokens, passwords) go in `.env`. Everything else (model, 
 
 ## Inference Providers
 
-You need at least one way to connect to an LLM. Use `hermes model` to switch providers and models interactively, or configure directly:
+You need at least one way to connect to an LLM. Use `clawg model` to switch providers and models interactively, or configure directly:
 
 | Provider | Setup |
 |----------|-------|
-| **Nous Portal** | `hermes model` (OAuth, subscription-based) |
-| **OpenAI Codex** | `hermes model` (ChatGPT OAuth, uses Codex models) |
-| **GitHub Copilot** | `hermes model` (OAuth device code flow, `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `gh auth token`) |
-| **GitHub Copilot ACP** | `hermes model` (spawns local `copilot --acp --stdio`) |
-| **Anthropic** | `hermes model` (Claude Pro/Max via Claude Code auth, Anthropic API key, or manual setup-token) |
-| **OpenRouter** | `OPENROUTER_API_KEY` in `~/.hermes/.env` |
-| **AI Gateway** | `AI_GATEWAY_API_KEY` in `~/.hermes/.env` (provider: `ai-gateway`) |
-| **z.ai / GLM** | `GLM_API_KEY` in `~/.hermes/.env` (provider: `zai`) |
-| **Kimi / Moonshot** | `KIMI_API_KEY` in `~/.hermes/.env` (provider: `kimi-coding`) |
-| **MiniMax** | `MINIMAX_API_KEY` in `~/.hermes/.env` (provider: `minimax`) |
-| **MiniMax China** | `MINIMAX_CN_API_KEY` in `~/.hermes/.env` (provider: `minimax-cn`) |
-| **Alibaba Cloud** | `DASHSCOPE_API_KEY` in `~/.hermes/.env` (provider: `alibaba`, aliases: `dashscope`, `qwen`) |
-| **Kilo Code** | `KILOCODE_API_KEY` in `~/.hermes/.env` (provider: `kilocode`) |
-| **OpenCode Zen** | `OPENCODE_ZEN_API_KEY` in `~/.hermes/.env` (provider: `opencode-zen`) |
-| **OpenCode Go** | `OPENCODE_GO_API_KEY` in `~/.hermes/.env` (provider: `opencode-go`) |
-| **Custom Endpoint** | `hermes model` (saved in `config.yaml`) or `OPENAI_BASE_URL` + `OPENAI_API_KEY` in `~/.hermes/.env` |
+| **Nous Portal** | `clawg model` (OAuth, subscription-based) |
+| **OpenAI Codex** | `clawg model` (ChatGPT OAuth, uses Codex models) |
+| **GitHub Copilot** | `clawg model` (OAuth device code flow, `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `gh auth token`) |
+| **GitHub Copilot ACP** | `clawg model` (spawns local `copilot --acp --stdio`) |
+| **Anthropic** | `clawg model` (Claude Pro/Max via Claude Code auth, Anthropic API key, or manual setup-token) |
+| **OpenRouter** | `OPENROUTER_API_KEY` in `~/.clawg/.env` |
+| **AI Gateway** | `AI_GATEWAY_API_KEY` in `~/.clawg/.env` (provider: `ai-gateway`) |
+| **z.ai / GLM** | `GLM_API_KEY` in `~/.clawg/.env` (provider: `zai`) |
+| **Kimi / Moonshot** | `KIMI_API_KEY` in `~/.clawg/.env` (provider: `kimi-coding`) |
+| **MiniMax** | `MINIMAX_API_KEY` in `~/.clawg/.env` (provider: `minimax`) |
+| **MiniMax China** | `MINIMAX_CN_API_KEY` in `~/.clawg/.env` (provider: `minimax-cn`) |
+| **Alibaba Cloud** | `DASHSCOPE_API_KEY` in `~/.clawg/.env` (provider: `alibaba`, aliases: `dashscope`, `qwen`) |
+| **Kilo Code** | `KILOCODE_API_KEY` in `~/.clawg/.env` (provider: `kilocode`) |
+| **OpenCode Zen** | `OPENCODE_ZEN_API_KEY` in `~/.clawg/.env` (provider: `opencode-zen`) |
+| **OpenCode Go** | `OPENCODE_GO_API_KEY` in `~/.clawg/.env` (provider: `opencode-go`) |
+| **Custom Endpoint** | `clawg model` (saved in `config.yaml`) or `OPENAI_BASE_URL` + `OPENAI_API_KEY` in `~/.clawg/.env` |
 
 :::info Codex Note
-The OpenAI Codex provider authenticates via device code (open a URL, enter a code). Hermes stores the resulting credentials in its own auth store under `~/.hermes/auth.json` and can import existing Codex CLI credentials from `~/.codex/auth.json` when present. No Codex CLI installation is required.
+The OpenAI Codex provider authenticates via device code (open a URL, enter a code). clawg stores the resulting credentials in its own auth store under `~/.clawg/auth.json` and can import existing Codex CLI credentials from `~/.codex/auth.json` when present. No Codex CLI installation is required.
 :::
 
 :::warning
@@ -93,21 +93,21 @@ Use Claude models directly through the Anthropic API — no OpenRouter proxy nee
 ```bash
 # With an API key (pay-per-token)
 export ANTHROPIC_API_KEY=***
-hermes chat --provider anthropic --model claude-sonnet-4-6
+clawg chat --provider anthropic --model claude-sonnet-4-6
 
-# Preferred: authenticate through `hermes model`
-# Hermes will use Claude Code's credential store directly when available
-hermes model
+# Preferred: authenticate through `clawg model`
+# clawg will use Claude Code's credential store directly when available
+clawg model
 
 # Manual override with a setup-token (fallback / legacy)
 export ANTHROPIC_TOKEN=***  # setup-token or manual OAuth token
-hermes chat --provider anthropic
+clawg chat --provider anthropic
 
 # Auto-detect Claude Code credentials (if you already use Claude Code)
-hermes chat --provider anthropic  # reads Claude Code credential files automatically
+clawg chat --provider anthropic  # reads Claude Code credential files automatically
 ```
 
-When you choose Anthropic OAuth through `hermes model`, Hermes prefers Claude Code's own credential store over copying the token into `~/.hermes/.env`. That keeps refreshable Claude credentials refreshable.
+When you choose Anthropic OAuth through `clawg model`, clawg prefers Claude Code's own credential store over copying the token into `~/.clawg/.env`. That keeps refreshable Claude credentials refreshable.
 
 Or set it permanently:
 ```yaml
@@ -122,12 +122,12 @@ model:
 
 ### GitHub Copilot
 
-Hermes supports GitHub Copilot as a first-class provider with two modes:
+clawg supports GitHub Copilot as a first-class provider with two modes:
 
 **`copilot` — Direct Copilot API** (recommended). Uses your GitHub Copilot subscription to access GPT-5.x, Claude, Gemini, and other models through the Copilot API.
 
 ```bash
-hermes chat --provider copilot --model gpt-5.4
+clawg chat --provider copilot --model gpt-5.4
 ```
 
 **Authentication options** (checked in this order):
@@ -137,18 +137,18 @@ hermes chat --provider copilot --model gpt-5.4
 3. `GITHUB_TOKEN` environment variable
 4. `gh auth token` CLI fallback
 
-If no token is found, `hermes model` offers an **OAuth device code login** — the same flow used by the Copilot CLI and opencode.
+If no token is found, `clawg model` offers an **OAuth device code login** — the same flow used by the Copilot CLI and opencode.
 
 :::warning Token types
 The Copilot API does **not** support classic Personal Access Tokens (`ghp_*`). Supported token types:
 
 | Type | Prefix | How to get |
 |------|--------|------------|
-| OAuth token | `gho_` | `hermes model` → GitHub Copilot → Login with GitHub |
+| OAuth token | `gho_` | `clawg model` → GitHub Copilot → Login with GitHub |
 | Fine-grained PAT | `github_pat_` | GitHub Settings → Developer settings → Fine-grained tokens (needs **Copilot Requests** permission) |
 | GitHub App token | `ghu_` | Via GitHub App installation |
 
-If your `gh auth token` returns a `ghp_*` token, use `hermes model` to authenticate via OAuth instead.
+If your `gh auth token` returns a `ghp_*` token, use `clawg model` to authenticate via OAuth instead.
 :::
 
 **API routing**: GPT-5+ models (except `gpt-5-mini`) automatically use the Responses API. All other models (GPT-4o, Claude, Gemini, etc.) use Chat Completions. Models are auto-detected from the live Copilot catalog.
@@ -156,7 +156,7 @@ If your `gh auth token` returns a `ghp_*` token, use `hermes model` to authentic
 **`copilot-acp` — Copilot ACP agent backend**. Spawns the local Copilot CLI as a subprocess:
 
 ```bash
-hermes chat --provider copilot-acp --model copilot-acp
+clawg chat --provider copilot-acp --model copilot-acp
 # Requires the GitHub Copilot CLI in PATH and an existing `copilot login` session
 ```
 
@@ -170,8 +170,8 @@ model:
 | Environment variable | Description |
 |---------------------|-------------|
 | `COPILOT_GITHUB_TOKEN` | GitHub token for Copilot API (first priority) |
-| `HERMES_COPILOT_ACP_COMMAND` | Override the Copilot CLI binary path (default: `copilot`) |
-| `HERMES_COPILOT_ACP_ARGS` | Override ACP args (default: `--acp --stdio`) |
+| `CLAWG_COPILOT_ACP_COMMAND` | Override the Copilot CLI binary path (default: `copilot`) |
+| `CLAWG_COPILOT_ACP_ARGS` | Override ACP args (default: `--acp --stdio`) |
 
 ### First-Class Chinese AI Providers
 
@@ -179,24 +179,24 @@ These providers have built-in support with dedicated provider IDs. Set the API k
 
 ```bash
 # z.ai / ZhipuAI GLM
-hermes chat --provider zai --model glm-4-plus
-# Requires: GLM_API_KEY in ~/.hermes/.env
+clawg chat --provider zai --model glm-4-plus
+# Requires: GLM_API_KEY in ~/.clawg/.env
 
 # Kimi / Moonshot AI
-hermes chat --provider kimi-coding --model moonshot-v1-auto
-# Requires: KIMI_API_KEY in ~/.hermes/.env
+clawg chat --provider kimi-coding --model moonshot-v1-auto
+# Requires: KIMI_API_KEY in ~/.clawg/.env
 
 # MiniMax (global endpoint)
-hermes chat --provider minimax --model MiniMax-M2.7
-# Requires: MINIMAX_API_KEY in ~/.hermes/.env
+clawg chat --provider minimax --model MiniMax-M2.7
+# Requires: MINIMAX_API_KEY in ~/.clawg/.env
 
 # MiniMax (China endpoint)
-hermes chat --provider minimax-cn --model MiniMax-M2.7
-# Requires: MINIMAX_CN_API_KEY in ~/.hermes/.env
+clawg chat --provider minimax-cn --model MiniMax-M2.7
+# Requires: MINIMAX_CN_API_KEY in ~/.clawg/.env
 
 # Alibaba Cloud / DashScope (Qwen models)
-hermes chat --provider alibaba --model qwen-plus
-# Requires: DASHSCOPE_API_KEY in ~/.hermes/.env
+clawg chat --provider alibaba --model qwen-plus
+# Requires: DASHSCOPE_API_KEY in ~/.clawg/.env
 ```
 
 Or set the provider permanently in `config.yaml`:
@@ -210,7 +210,7 @@ Base URLs can be overridden with `GLM_BASE_URL`, `KIMI_BASE_URL`, `MINIMAX_BASE_
 
 ## Custom & Self-Hosted LLM Providers
 
-Hermes Agent works with **any OpenAI-compatible API endpoint**. If a server implements `/v1/chat/completions`, you can point Hermes at it. This means you can use local models, GPU inference servers, multi-provider routers, or any third-party API.
+CLAWG works with **any OpenAI-compatible API endpoint**. If a server implements `/v1/chat/completions`, you can point clawg at it. This means you can use local models, GPU inference servers, multi-provider routers, or any third-party API.
 
 ### General Setup
 
@@ -218,20 +218,20 @@ Two ways to configure a custom endpoint:
 
 **Interactive (recommended):**
 ```bash
-hermes model
+clawg model
 # Select "Custom endpoint (self-hosted / VLLM / etc.)"
 # Enter: API base URL, API key, Model name
 ```
 
 **Manual (`.env` file):**
 ```bash
-# Add to ~/.hermes/.env
+# Add to ~/.clawg/.env
 OPENAI_BASE_URL=http://localhost:8000/v1
 OPENAI_API_KEY=***
 LLM_MODEL=your-model-name
 ```
 
-`hermes model` and the manual `.env` approach end up in the same runtime path. If you save a custom endpoint through `hermes model`, Hermes persists the provider + base URL in `config.yaml` so later sessions keep using that endpoint even if `OPENAI_BASE_URL` is not exported in your current shell.
+`clawg model` and the manual `.env` approach end up in the same runtime path. If you save a custom endpoint through `clawg model`, clawg persists the provider + base URL in `config.yaml` so later sessions keep using that endpoint even if `OPENAI_BASE_URL` is not exported in your current shell.
 
 Everything below follows this same pattern — just change the URL, key, and model name.
 
@@ -246,7 +246,7 @@ Everything below follows this same pattern — just change the URL, key, and mod
 ollama pull llama3.1:70b
 ollama serve   # Starts on port 11434
 
-# Configure Hermes
+# Configure clawg
 OPENAI_BASE_URL=http://localhost:11434/v1
 OPENAI_API_KEY=ollama           # Any non-empty string
 LLM_MODEL=llama3.1:70b
@@ -271,13 +271,13 @@ vllm serve meta-llama/Llama-3.1-70B-Instruct \
   --port 8000 \
   --tensor-parallel-size 2    # Multi-GPU
 
-# Configure Hermes
+# Configure clawg
 OPENAI_BASE_URL=http://localhost:8000/v1
 OPENAI_API_KEY=dummy
 LLM_MODEL=meta-llama/Llama-3.1-70B-Instruct
 ```
 
-vLLM supports tool calling, structured output, and multi-modal models. Use `--enable-auto-tool-choice` and `--tool-call-parser hermes` for Hermes-format tool calling with NousResearch models.
+vLLM supports tool calling, structured output, and multi-modal models. Use `--enable-auto-tool-choice` and `--tool-call-parser clawg` for Clawg-format tool calling with NousResearch models.
 
 ---
 
@@ -293,7 +293,7 @@ python -m sglang.launch_server \
   --port 8000 \
   --tp 2
 
-# Configure Hermes
+# Configure clawg
 OPENAI_BASE_URL=http://localhost:8000/v1
 OPENAI_API_KEY=dummy
 LLM_MODEL=meta-llama/Llama-3.1-70B-Instruct
@@ -312,7 +312,7 @@ cmake -B build && cmake --build build --config Release
   -m models/llama-3.1-8b-instruct-Q4_K_M.gguf \
   --port 8080 --host 0.0.0.0
 
-# Configure Hermes
+# Configure clawg
 OPENAI_BASE_URL=http://localhost:8080/v1
 OPENAI_API_KEY=dummy
 LLM_MODEL=llama-3.1-8b-instruct
@@ -336,7 +336,7 @@ litellm --model anthropic/claude-sonnet-4 --port 4000
 # Or with a config file for multiple models:
 litellm --config litellm_config.yaml --port 4000
 
-# Configure Hermes
+# Configure clawg
 OPENAI_BASE_URL=http://localhost:4000/v1
 OPENAI_API_KEY=sk-your-litellm-key
 LLM_MODEL=anthropic/claude-sonnet-4
@@ -367,7 +367,7 @@ router_settings:
 # Install and start
 npx @blockrun/clawrouter    # Starts on port 8402
 
-# Configure Hermes
+# Configure clawg
 OPENAI_BASE_URL=http://localhost:8402/v1
 OPENAI_API_KEY=dummy
 LLM_MODEL=blockrun/auto     # or: blockrun/eco, blockrun/premium, blockrun/agentic
@@ -416,7 +416,7 @@ LLM_MODEL=meta-llama/Llama-3.1-70B-Instruct-Turbo
 
 ### Context Length Detection
 
-Hermes uses a multi-source resolution chain to detect the correct context window for your model and provider:
+clawg uses a multi-source resolution chain to detect the correct context window for your model and provider:
 
 1. **Config override** — `model.context_length` in config.yaml (highest priority)
 2. **Custom provider per-model** — `custom_providers[].models.<id>.context_length`
@@ -452,7 +452,7 @@ custom_providers:
         context_length: 65536
 ```
 
-`hermes model` will prompt for context length when configuring a custom endpoint. Leave it blank for auto-detection.
+`clawg model` will prompt for context length when configuring a custom endpoint. Leave it blank for auto-detection.
 
 :::tip When to set this manually
 - You're using Ollama with a custom `num_ctx` that's lower than the model's maximum
@@ -477,7 +477,7 @@ custom_providers:
 | **Chinese AI models** | z.ai (GLM), Kimi/Moonshot, or MiniMax (first-class providers) |
 
 :::tip
-You can switch between providers at any time with `hermes model` — no restart required. Your conversation history, memory, and skills carry over regardless of which provider you use.
+You can switch between providers at any time with `clawg model` — no restart required. Your conversation history, memory, and skills carry over regardless of which provider you use.
 :::
 
 ## Optional API Keys
@@ -494,7 +494,7 @@ You can switch between providers at any time with `hermes model` — no restart 
 
 ### Self-Hosting Firecrawl
 
-By default, Hermes uses the [Firecrawl cloud API](https://firecrawl.dev/) for web search and scraping. If you prefer to run Firecrawl locally, you can point Hermes at a self-hosted instance instead. See Firecrawl's [SELF_HOST.md](https://github.com/firecrawl/firecrawl/blob/main/SELF_HOST.md) for complete setup instructions.
+By default, clawg uses the [Firecrawl cloud API](https://firecrawl.dev/) for web search and scraping. If you prefer to run Firecrawl locally, you can point clawg at a self-hosted instance instead. See Firecrawl's [SELF_HOST.md](https://github.com/firecrawl/firecrawl/blob/main/SELF_HOST.md) for complete setup instructions.
 
 **What you get:** No API key required, no rate limits, no per-page costs, full data sovereignty.
 
@@ -510,16 +510,16 @@ By default, Hermes uses the [Firecrawl cloud API](https://firecrawl.dev/) for we
    docker compose up -d
    ```
 
-2. Point Hermes at your instance (no API key needed):
+2. Point clawg at your instance (no API key needed):
    ```bash
-   hermes config set FIRECRAWL_API_URL http://localhost:3002
+   clawg config set FIRECRAWL_API_URL http://localhost:3002
    ```
 
 You can also set both `FIRECRAWL_API_KEY` and `FIRECRAWL_API_URL` if your self-hosted instance has authentication enabled.
 
 ## OpenRouter Provider Routing
 
-When using OpenRouter, you can control how requests are routed across providers. Add a `provider_routing` section to `~/.hermes/config.yaml`:
+When using OpenRouter, you can control how requests are routed across providers. Add a `provider_routing` section to `~/.clawg/config.yaml`:
 
 ```yaml
 provider_routing:
@@ -535,7 +535,7 @@ provider_routing:
 
 ## Fallback Model
 
-Configure a backup provider:model that Hermes switches to automatically when your primary model fails (rate limits, server errors, auth failures):
+Configure a backup provider:model that clawg switches to automatically when your primary model fails (rate limits, server errors, auth failures):
 
 ```yaml
 fallback_model:
@@ -555,7 +555,7 @@ Fallback is configured exclusively through `config.yaml` — there are no enviro
 
 ## Smart Model Routing
 
-Optional cheap-vs-strong routing lets Hermes keep your main model for complex work while sending very short/simple turns to a cheaper model.
+Optional cheap-vs-strong routing lets clawg keep your main model for complex work while sending very short/simple turns to a cheaper model.
 
 ```yaml
 smart_model_routing:
@@ -570,9 +570,9 @@ smart_model_routing:
 ```
 
 How it works:
-- If a turn is short, single-line, and does not look code/tool/debug heavy, Hermes may route it to `cheap_model`
-- If the turn looks complex, Hermes stays on your primary model/provider
-- If the cheap route cannot be resolved cleanly, Hermes falls back to the primary model automatically
+- If a turn is short, single-line, and does not look code/tool/debug heavy, clawg may route it to `cheap_model`
+- If the turn looks complex, clawg stays on your primary model/provider
+- If the cheap route cannot be resolved cleanly, clawg falls back to the primary model automatically
 
 This is intentionally conservative. It is meant for quick, low-stakes turns like:
 - short factual questions
@@ -624,13 +624,13 @@ If terminal commands fail immediately or the terminal tool is reported as disabl
 
 - **Docker backend**
   - Ensure Docker Desktop (or the Docker daemon) is installed and running.
-  - Hermes needs to be able to find the `docker` CLI. It checks your `$PATH` first and also probes common Docker Desktop install locations on macOS. Run:
+  - clawg needs to be able to find the `docker` CLI. It checks your `$PATH` first and also probes common Docker Desktop install locations on macOS. Run:
     ```bash
     docker version
     ```
     If this fails, fix your Docker installation or switch back to the local backend:
     ```bash
-    hermes config set terminal.backend local
+    clawg config set terminal.backend local
     ```
 
 - **SSH backend**
@@ -640,11 +640,11 @@ If terminal commands fail immediately or the terminal tool is reported as disabl
     export TERMINAL_SSH_HOST=my-server.example.com
     export TERMINAL_SSH_USER=ubuntu
     ```
-  - If either value is missing, Hermes will log a clear error and refuse to use the SSH backend.
+  - If either value is missing, clawg will log a clear error and refuse to use the SSH backend.
 
 - **Modal backend**
   - You need either a `MODAL_TOKEN_ID` environment variable or a `~/.modal.toml` config file.
-  - If neither is present, the backend check fails and Hermes will report that the Modal backend is not available.
+  - If neither is present, the backend check fails and clawg will report that the Modal backend is not available.
 
 When in doubt, set `terminal.backend` back to `local` and verify that commands run there first.
 
@@ -680,7 +680,7 @@ terminal:
     - "NPM_TOKEN"
 ```
 
-Hermes resolves each listed variable from your current shell first, then falls back to `~/.hermes/.env` if it was saved with `hermes config set`.
+clawg resolves each listed variable from your current shell first, then falls back to `~/.clawg/.env` if it was saved with `clawg config set`.
 
 :::warning
 Anything listed in `docker_forward_env` becomes visible to commands run inside the container. Only forward credentials you are comfortable exposing to the terminal session.
@@ -688,7 +688,7 @@ Anything listed in `docker_forward_env` becomes visible to commands run inside t
 
 ### Optional: Mount the Launch Directory into `/workspace`
 
-Docker sandboxes stay isolated by default. Hermes does **not** pass your current host working directory into the container unless you explicitly opt in.
+Docker sandboxes stay isolated by default. clawg does **not** pass your current host working directory into the container unless you explicitly opt in.
 
 Enable it in `config.yaml`:
 
@@ -699,7 +699,7 @@ terminal:
 ```
 
 When enabled:
-- if you launch Hermes from `~/projects/my-app`, that host directory is bind-mounted to `/workspace`
+- if you launch clawg from `~/projects/my-app`, that host directory is bind-mounted to `/workspace`
 - the Docker backend starts in `/workspace`
 - file tools and terminal commands both see the same mounted project
 
@@ -707,7 +707,7 @@ When disabled, `/workspace` stays sandbox-owned unless you explicitly mount some
 
 Security tradeoff:
 - `false` preserves the sandbox boundary
-- `true` gives the sandbox direct access to the directory you launched Hermes from
+- `true` gives the sandbox direct access to the directory you launched clawg from
 
 Use the opt-in only when you intentionally want the container to work on live host files.
 
@@ -725,7 +725,7 @@ terminal:
 To disable:
 
 ```bash
-hermes config set terminal.persistent_shell false
+clawg config set terminal.persistent_shell false
 ```
 
 **What persists across commands:**
@@ -768,7 +768,7 @@ memory:
 Enable isolated git worktrees for running multiple agents in parallel on the same repo:
 
 ```yaml
-worktree: true    # Always create a worktree (same as hermes -w)
+worktree: true    # Always create a worktree (same as clawg -w)
 # worktree: false # Default — only when -w flag is passed
 ```
 
@@ -785,7 +785,7 @@ node_modules/
 
 ## Context Compression
 
-Hermes automatically compresses long conversations to stay within your model's context window. The compression summarizer is a separate LLM call — you can point it at any provider or endpoint.
+clawg automatically compresses long conversations to stay within your model's context window. The compression summarizer is a separate LLM call — you can point it at any provider or endpoint.
 
 All compression settings live in `config.yaml` (no environment variables).
 
@@ -881,11 +881,11 @@ Context pressure is automatic — no configuration needed. It fires purely as a 
 
 ## Auxiliary Models
 
-Hermes uses lightweight "auxiliary" models for side tasks like image analysis, web page summarization, and browser screenshot analysis. By default, these use **Gemini Flash** via auto-detection — you don't need to configure anything.
+clawg uses lightweight "auxiliary" models for side tasks like image analysis, web page summarization, and browser screenshot analysis. By default, these use **Gemini Flash** via auto-detection — you don't need to configure anything.
 
 ### The universal config pattern
 
-Every model slot in Hermes — auxiliary tasks, compression, fallback — uses the same three knobs:
+Every model slot in clawg — auxiliary tasks, compression, fallback — uses the same three knobs:
 
 | Key | What it does | Default |
 |-----|-------------|---------|
@@ -893,7 +893,7 @@ Every model slot in Hermes — auxiliary tasks, compression, fallback — uses t
 | `model` | Which model to request | provider's default |
 | `base_url` | Custom OpenAI-compatible endpoint (overrides provider) | not set |
 
-When `base_url` is set, Hermes ignores the provider and calls that endpoint directly (using `api_key` or `OPENAI_API_KEY` for auth). When only `provider` is set, Hermes uses that provider's built-in auth and base URL.
+When `base_url` is set, clawg ignores the provider and calls that endpoint directly (using `api_key` or `OPENAI_API_KEY` for auth). When only `provider` is set, clawg uses that provider's built-in auth and base URL.
 
 Available providers: `auto`, `openrouter`, `nous`, `codex`, `copilot`, `anthropic`, `main`, `zai`, `kimi-coding`, `minimax`, and any provider registered in the [provider registry](/docs/reference/environment-variables).
 
@@ -937,7 +937,7 @@ auxiliary:
     model: "openai/gpt-4o"
 ```
 
-Or via environment variable (in `~/.hermes/.env`):
+Or via environment variable (in `~/.clawg/.env`):
 
 ```bash
 AUXILIARY_VISION_MODEL=openai/gpt-4o
@@ -949,9 +949,9 @@ AUXILIARY_VISION_MODEL=openai/gpt-4o
 |----------|-------------|-------------|
 | `"auto"` | Best available (default). Vision tries OpenRouter → Nous → Codex. | — |
 | `"openrouter"` | Force OpenRouter — routes to any model (Gemini, GPT-4o, Claude, etc.) | `OPENROUTER_API_KEY` |
-| `"nous"` | Force Nous Portal | `hermes login` |
-| `"codex"` | Force Codex OAuth (ChatGPT account). Supports vision (gpt-5.3-codex). | `hermes model` → Codex |
-| `"main"` | Use your active custom/main endpoint. This can come from `OPENAI_BASE_URL` + `OPENAI_API_KEY` or from a custom endpoint saved via `hermes model` / `config.yaml`. Works with OpenAI, local models, or any OpenAI-compatible API. | Custom endpoint credentials + base URL |
+| `"nous"` | Force Nous Portal | `clawg login` |
+| `"codex"` | Force Codex OAuth (ChatGPT account). Supports vision (gpt-5.3-codex). | `clawg model` → Codex |
+| `"main"` | Use your active custom/main endpoint. This can come from `OPENAI_BASE_URL` + `OPENAI_API_KEY` or from a custom endpoint saved via `clawg model` / `config.yaml`. Works with OpenAI, local models, or any OpenAI-compatible API. | Custom endpoint credentials + base URL |
 
 ### Common Setups
 
@@ -964,11 +964,11 @@ auxiliary:
     model: "qwen2.5-vl"
 ```
 
-`base_url` takes precedence over `provider`, so this is the most explicit way to route an auxiliary task to a specific endpoint. For direct endpoint overrides, Hermes uses the configured `api_key` or falls back to `OPENAI_API_KEY`; it does not reuse `OPENROUTER_API_KEY` for that custom endpoint.
+`base_url` takes precedence over `provider`, so this is the most explicit way to route an auxiliary task to a specific endpoint. For direct endpoint overrides, clawg uses the configured `api_key` or falls back to `OPENAI_API_KEY`; it does not reuse `OPENROUTER_API_KEY` for that custom endpoint.
 
 **Using OpenAI API key for vision:**
 ```yaml
-# In ~/.hermes/.env:
+# In ~/.clawg/.env:
 # OPENAI_BASE_URL=https://api.openai.com/v1
 # OPENAI_API_KEY=sk-...
 
@@ -1002,7 +1002,7 @@ auxiliary:
     model: "my-local-model"
 ```
 
-`provider: "main"` follows the same custom endpoint Hermes uses for normal chat. That endpoint can be set directly with `OPENAI_BASE_URL`, or saved once through `hermes model` and persisted in `config.yaml`.
+`provider: "main"` follows the same custom endpoint clawg uses for normal chat. That endpoint can be set directly with `OPENAI_BASE_URL`, or saved once through `clawg model` and persisted in `config.yaml`.
 
 :::tip
 If you use Codex OAuth as your main model provider, vision works automatically — no extra configuration needed. Codex is included in the auto-detection chain for vision.
@@ -1030,7 +1030,7 @@ Auxiliary models can also be configured via environment variables. However, `con
 Compression and fallback model settings are config.yaml-only.
 
 :::tip
-Run `hermes config` to see your current auxiliary model settings. Overrides only show up when they differ from the defaults.
+Run `clawg config` to see your current auxiliary model settings. Overrides only show up when they differ from the defaults.
 :::
 
 ## Reasoning Effort
@@ -1152,7 +1152,7 @@ Provider behavior:
 - `groq` uses Groq's Whisper-compatible endpoint and reads `GROQ_API_KEY`.
 - `openai` uses the OpenAI speech API and reads `VOICE_TOOLS_OPENAI_KEY`.
 
-If the requested provider is unavailable, Hermes falls back automatically in this order: `local` → `groq` → `openai`.
+If the requested provider is unavailable, clawg falls back automatically in this order: `local` → `groq` → `openai`.
 
 Groq and OpenAI model overrides are environment-driven:
 
@@ -1203,7 +1203,7 @@ streaming:
 When enabled, the bot sends a message on the first token, then progressively edits it as more tokens arrive. Platforms that don't support message editing (Signal, Email) gracefully skip streaming and deliver the final response normally.
 
 :::note
-Streaming is disabled by default. Enable it in `~/.hermes/config.yaml` to try the streaming UX.
+Streaming is disabled by default. Enable it in `~/.clawg/config.yaml` to try the streaming UX.
 :::
 
 ## Group Chat Session Isolation
@@ -1215,15 +1215,15 @@ group_sessions_per_user: true  # true = per-user isolation in groups/channels, f
 ```
 
 - `true` is the default and recommended setting. In Discord channels, Telegram groups, Slack channels, and similar shared contexts, each sender gets their own session when the platform provides a user ID.
-- `false` reverts to the old shared-room behavior. That can be useful if you explicitly want Hermes to treat a channel like one collaborative conversation, but it also means users share context, token costs, and interrupt state.
-- Direct messages are unaffected. Hermes still keys DMs by chat/DM ID as usual.
+- `false` reverts to the old shared-room behavior. That can be useful if you explicitly want clawg to treat a channel like one collaborative conversation, but it also means users share context, token costs, and interrupt state.
+- Direct messages are unaffected. clawg still keys DMs by chat/DM ID as usual.
 - Threads stay isolated from their parent channel either way; with `true`, each participant also gets their own session inside the thread.
 
 For the behavior details and examples, see [Sessions](/docs/user-guide/sessions) and the [Discord guide](/docs/user-guide/messaging/discord).
 
 ## Unauthorized DM Behavior
 
-Control what Hermes does when an unknown user sends a direct message:
+Control what clawg does when an unknown user sends a direct message:
 
 ```yaml
 unauthorized_dm_behavior: pair
@@ -1232,7 +1232,7 @@ whatsapp:
   unauthorized_dm_behavior: ignore
 ```
 
-- `pair` is the default. Hermes denies access, but replies with a one-time pairing code in DMs.
+- `pair` is the default. clawg denies access, but replies with a one-time pairing code in DMs.
 - `ignore` silently drops unauthorized DMs.
 - Platform sections override the global default, so you can keep pairing enabled broadly while making one platform quieter.
 
@@ -1244,13 +1244,13 @@ Define custom commands that run shell commands without invoking the LLM — zero
 quick_commands:
   status:
     type: exec
-    command: systemctl status hermes-agent
+    command: systemctl status clawg
   disk:
     type: exec
     command: df -h /
   update:
     type: exec
-    command: cd ~/.hermes/hermes-agent && git pull && pip install -e .
+    command: cd ~/.clawg/clawg && git pull && pip install -e .
   gpu:
     type: exec
     command: nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader
@@ -1292,7 +1292,7 @@ Configure browser automation behavior:
 ```yaml
 browser:
   inactivity_timeout: 120        # Seconds before auto-closing idle sessions
-  record_sessions: false         # Auto-record browser sessions as WebM videos to ~/.hermes/browser_recordings/
+  record_sessions: false         # Auto-record browser sessions as WebM videos to ~/.clawg/browser_recordings/
 ```
 
 The browser toolset supports multiple providers. See the [Browser feature page](/docs/user-guide/features/browser) for details on Browserbase, Browser Use, and local Chrome CDP setup.
@@ -1309,7 +1309,7 @@ website_blocklist:
     - "admin.example.com"
     - "*.local"
   shared_files:                # Load additional rules from external files
-    - "/etc/hermes/blocked-sites.txt"
+    - "/etc/clawg/blocked-sites.txt"
 ```
 
 When enabled, any URL matching a blocked domain pattern is rejected before the web or browser tool executes. This applies to `web_search`, `web_extract`, `browser_navigate`, and any tool that accesses URLs.
@@ -1325,7 +1325,7 @@ The policy is cached for 30 seconds, so config changes take effect quickly witho
 
 ## Smart Approvals
 
-Control how Hermes handles potentially dangerous commands:
+Control how clawg handles potentially dangerous commands:
 
 ```yaml
 approval_mode: ask   # ask | smart | off
@@ -1335,7 +1335,7 @@ approval_mode: ask   # ask | smart | off
 |------|----------|
 | `ask` (default) | Prompt the user before executing any flagged command. In the CLI, shows an interactive approval dialog. In messaging, queues a pending approval request. |
 | `smart` | Use an auxiliary LLM to assess whether a flagged command is actually dangerous. Low-risk commands are auto-approved with session-level persistence. Genuinely risky commands are escalated to the user. |
-| `off` | Skip all approval checks. Equivalent to `HERMES_YOLO_MODE=true`. **Use with caution.** |
+| `off` | Skip all approval checks. Equivalent to `CLAWG_YOLO_MODE=true`. **Use with caution.** |
 
 Smart mode is particularly useful for reducing approval fatigue — it lets the agent work more autonomously on safe operations while still catching genuinely destructive commands.
 
@@ -1349,7 +1349,7 @@ Automatic filesystem snapshots before destructive file operations. See the [Chec
 
 ```yaml
 checkpoints:
-  enabled: false                 # Enable automatic checkpoints (also: hermes --checkpoints)
+  enabled: false                 # Enable automatic checkpoints (also: clawg --checkpoints)
   max_snapshots: 50              # Max checkpoints to keep per directory
 ```
 
@@ -1373,7 +1373,7 @@ delegation:
 
 **Subagent provider:model override:** By default, subagents inherit the parent agent's provider and model. Set `delegation.provider` and `delegation.model` to route subagents to a different provider:model pair — e.g., use a cheap/fast model for narrowly-scoped subtasks while your primary agent runs an expensive reasoning model.
 
-**Direct endpoint override:** If you want the obvious custom-endpoint path, set `delegation.base_url`, `delegation.api_key`, and `delegation.model`. That sends subagents directly to that OpenAI-compatible endpoint and takes precedence over `delegation.provider`. If `delegation.api_key` is omitted, Hermes falls back to `OPENAI_API_KEY` only.
+**Direct endpoint override:** If you want the obvious custom-endpoint path, set `delegation.base_url`, `delegation.api_key`, and `delegation.model`. That sends subagents directly to that OpenAI-compatible endpoint and takes precedence over `delegation.provider`. If `delegation.api_key` is omitted, clawg falls back to `OPENAI_API_KEY` only.
 
 The delegation provider uses the same credential resolution as CLI/gateway startup. All configured providers are supported: `openrouter`, `nous`, `copilot`, `zai`, `kimi-coding`, `minimax`, `minimax-cn`. When a provider is set, the system automatically resolves the correct base URL, API key, and API mode — no manual credential wiring needed.
 
@@ -1390,19 +1390,19 @@ clarify:
 
 ## Context Files (SOUL.md, AGENTS.md)
 
-Hermes uses two different context scopes:
+clawg uses two different context scopes:
 
 | File | Purpose | Scope |
 |------|---------|-------|
-| `SOUL.md` | **Primary agent identity** — defines who the agent is (slot #1 in the system prompt) | `~/.hermes/SOUL.md` or `$HERMES_HOME/SOUL.md` |
+| `SOUL.md` | **Primary agent identity** — defines who the agent is (slot #1 in the system prompt) | `~/.clawg/SOUL.md` or `$CLAWG_HOME/SOUL.md` |
 | `AGENTS.md` | Project-specific instructions, coding conventions | Working directory / project tree |
 | `.cursorrules` | Cursor IDE rules (also detected) | Working directory |
 | `.cursor/rules/*.mdc` | Cursor rule files (also detected) | Working directory |
 
 - **SOUL.md** is the agent's primary identity. It occupies slot #1 in the system prompt, completely replacing the built-in default identity. Edit it to fully customize who the agent is.
-- If SOUL.md is missing, empty, or cannot be loaded, Hermes falls back to a built-in default identity.
+- If SOUL.md is missing, empty, or cannot be loaded, clawg falls back to a built-in default identity.
 - **AGENTS.md** is hierarchical: if subdirectories also have AGENTS.md, all are combined.
-- Hermes automatically seeds a default `SOUL.md` if one does not already exist.
+- clawg automatically seeds a default `SOUL.md` if one does not already exist.
 - All loaded context files are capped at 20,000 characters with smart truncation.
 
 See also:
@@ -1413,13 +1413,13 @@ See also:
 
 | Context | Default |
 |---------|---------|
-| **CLI (`hermes`)** | Current directory where you run the command |
+| **CLI (`clawg`)** | Current directory where you run the command |
 | **Messaging gateway** | Home directory `~` (override with `MESSAGING_CWD`) |
 | **Docker / Singularity / Modal / SSH** | User's home directory inside the container or remote machine |
 
 Override the working directory:
 ```bash
-# In ~/.hermes/.env or ~/.hermes/config.yaml:
+# In ~/.clawg/.env or ~/.clawg/config.yaml:
 MESSAGING_CWD=/home/myuser/projects    # Gateway sessions
 TERMINAL_CWD=/workspace                # All terminal sessions
 ```

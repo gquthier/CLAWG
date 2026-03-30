@@ -28,7 +28,7 @@ from typing import List, Dict, Any, Set, Optional
 
 # Shared tool list for CLI and all messaging platform toolsets.
 # Edit this once to update all platforms simultaneously.
-_HERMES_CORE_TOOLS = [
+_CLAWG_CORE_TOOLS = [
     # Web
     "web_search", "web_extract",
     # Terminal + process management
@@ -224,14 +224,14 @@ TOOLSETS = {
     },
     
     # ==========================================================================
-    # Full Hermes toolsets (CLI + messaging platforms)
+    # Full clawg toolsets (CLI + messaging platforms)
     #
     # All platforms share the same core tools. Messaging platforms add
     # All platforms share the same core tools (including send_message,
     # which is gated on gateway running via its check_fn).
     # ==========================================================================
 
-    "hermes-acp": {
+    "clawg-acp": {
         "description": "Editor integration (VS Code, Zed, JetBrains) — coding-focused tools without messaging, audio, or clarify UI",
         "tools": [
             "web_search", "web_extract",
@@ -250,122 +250,122 @@ TOOLSETS = {
         "includes": []
     },
     
-    "hermes-cli": {
+    "clawg-cli": {
         "description": "Full interactive CLI toolset - all default tools plus cronjob management",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _CLAWG_CORE_TOOLS,
         "includes": []
     },
     
-    "hermes-telegram": {
+    "clawg-telegram": {
         "description": "Telegram bot toolset - full access for personal use (terminal has safety checks)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _CLAWG_CORE_TOOLS,
         "includes": []
     },
     
-    "hermes-discord": {
+    "clawg-discord": {
         "description": "Discord bot toolset - full access (terminal has safety checks via dangerous command approval)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _CLAWG_CORE_TOOLS,
         "includes": []
     },
     
-    "hermes-whatsapp": {
+    "clawg-whatsapp": {
         "description": "WhatsApp bot toolset - similar to Telegram (personal messaging, more trusted)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _CLAWG_CORE_TOOLS,
         "includes": []
     },
     
-    "hermes-slack": {
+    "clawg-slack": {
         "description": "Slack bot toolset - full access for workspace use (terminal has safety checks)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _CLAWG_CORE_TOOLS,
         "includes": []
     },
     
-    "hermes-signal": {
+    "clawg-signal": {
         "description": "Signal bot toolset - encrypted messaging platform (full access)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _CLAWG_CORE_TOOLS,
         "includes": []
     },
 
-    "hermes-homeassistant": {
+    "clawg-homeassistant": {
         "description": "Home Assistant bot toolset - smart home event monitoring and control",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _CLAWG_CORE_TOOLS,
         "includes": []
     },
 
-    "hermes-email": {
-        "description": "Email bot toolset - interact with Hermes via email (IMAP/SMTP)",
-        "tools": _HERMES_CORE_TOOLS,
+    "clawg-email": {
+        "description": "Email bot toolset - interact with clawg via email (IMAP/SMTP)",
+        "tools": _CLAWG_CORE_TOOLS,
         "includes": []
     },
 
-    "hermes-sms": {
-        "description": "SMS bot toolset - interact with Hermes via SMS (Twilio)",
-        "tools": _HERMES_CORE_TOOLS,
+    "clawg-sms": {
+        "description": "SMS bot toolset - interact with clawg via SMS (Twilio)",
+        "tools": _CLAWG_CORE_TOOLS,
         "includes": []
     },
 
-    "hermes-gateway": {
+    "clawg-gateway": {
         "description": "Gateway toolset - union of all messaging platform tools",
         "tools": [],
-        "includes": ["hermes-telegram", "hermes-discord", "hermes-whatsapp", "hermes-slack", "hermes-signal", "hermes-homeassistant", "hermes-email", "hermes-sms"]
+        "includes": ["clawg-telegram", "clawg-discord", "clawg-whatsapp", "clawg-slack", "clawg-signal", "clawg-homeassistant", "clawg-email", "clawg-sms"]
     },
 
-    # CLAWG aliases (preferred names) — point to existing Hermes toolsets for
+    # CLAWG aliases (preferred names) — point to existing clawg toolsets for
     # full backward compatibility while the internal package names migrate.
     "clawg-acp": {
         "description": "CLAWG ACP toolset alias",
         "tools": [],
-        "includes": ["hermes-acp"],
+        "includes": ["clawg-acp"],
     },
     "clawg-cli": {
         "description": "CLAWG CLI toolset alias",
         "tools": [],
-        "includes": ["hermes-cli"],
+        "includes": ["clawg-cli"],
     },
     "clawg-gateway": {
         "description": "CLAWG gateway toolset alias",
         "tools": [],
-        "includes": ["hermes-gateway"],
+        "includes": ["clawg-gateway"],
     },
     "clawg-telegram": {
         "description": "CLAWG Telegram toolset alias",
         "tools": [],
-        "includes": ["hermes-telegram"],
+        "includes": ["clawg-telegram"],
     },
     "clawg-discord": {
         "description": "CLAWG Discord toolset alias",
         "tools": [],
-        "includes": ["hermes-discord"],
+        "includes": ["clawg-discord"],
     },
     "clawg-whatsapp": {
         "description": "CLAWG WhatsApp toolset alias",
         "tools": [],
-        "includes": ["hermes-whatsapp"],
+        "includes": ["clawg-whatsapp"],
     },
     "clawg-slack": {
         "description": "CLAWG Slack toolset alias",
         "tools": [],
-        "includes": ["hermes-slack"],
+        "includes": ["clawg-slack"],
     },
     "clawg-signal": {
         "description": "CLAWG Signal toolset alias",
         "tools": [],
-        "includes": ["hermes-signal"],
+        "includes": ["clawg-signal"],
     },
     "clawg-homeassistant": {
         "description": "CLAWG Home Assistant toolset alias",
         "tools": [],
-        "includes": ["hermes-homeassistant"],
+        "includes": ["clawg-homeassistant"],
     },
     "clawg-email": {
         "description": "CLAWG email toolset alias",
         "tools": [],
-        "includes": ["hermes-email"],
+        "includes": ["clawg-email"],
     },
     "clawg-sms": {
         "description": "CLAWG SMS toolset alias",
         "tools": [],
-        "includes": ["hermes-sms"],
+        "includes": ["clawg-sms"],
     },
 }
 

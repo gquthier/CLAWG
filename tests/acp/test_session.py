@@ -5,7 +5,7 @@ import pytest
 from unittest.mock import MagicMock
 
 from acp_adapter.session import SessionManager, SessionState
-from hermes_state import SessionDB
+from clawg_state import SessionDB
 
 
 def _mock_agent():

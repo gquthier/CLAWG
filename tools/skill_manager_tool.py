@@ -4,7 +4,7 @@ Skill Manager Tool -- Agent-Managed Skill Creation & Editing
 
 Allows the agent to create, update, and delete skills, turning successful
 approaches into reusable procedural knowledge. New skills are created in
-~/.hermes/skills/. Existing skills (bundled, hub-installed, or user-created)
+~/.clawg/skills/. Existing skills (bundled, hub-installed, or user-created)
 can be modified or deleted wherever they live.
 
 Skills are the agent's procedural memory: they capture *how to do a specific
@@ -20,7 +20,7 @@ Actions:
   remove_file-- Remove a supporting file from a user skill
 
 Directory layout for user skills:
-    ~/.hermes/skills/
+    ~/.clawg/skills/
     ├── my-skill/
     │   ├── SKILL.md
     │   ├── references/
@@ -41,7 +41,7 @@ import tempfile
 from pathlib import Path
 from typing import Dict, Any, Optional
 
-from hermes_cli.paths import get_shared_skills_dir
+from clawg_cli.paths import get_shared_skills_dir
 
 logger = logging.getLogger(__name__)
 
@@ -155,7 +155,7 @@ def _resolve_skill_dir(name: str, category: str = None) -> Path:
 
 def _find_skill(name: str) -> Optional[Dict[str, Any]]:
     """
-    Find a skill by name in ~/.hermes/skills/.
+    Find a skill by name in ~/.clawg/skills/.
     Returns {"path": Path} or None.
     """
     if not SKILLS_DIR.exists():
@@ -553,7 +553,7 @@ SKILL_MANAGE_SCHEMA = {
     "description": (
         "Manage skills (create, update, delete). Skills are your procedural "
         "memory — reusable approaches for recurring task types. "
-        "New skills go to ~/.hermes/skills/; existing skills can be modified wherever they live.\n\n"
+        "New skills go to ~/.clawg/skills/; existing skills can be modified wherever they live.\n\n"
         "Actions: create (full SKILL.md + optional category), "
         "patch (old_string/new_string — preferred for fixes), "
         "edit (full SKILL.md rewrite — major overhauls only), "

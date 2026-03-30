@@ -8,7 +8,7 @@ Unlike TerminalBench2 (which evaluates per-task coding ability with binary pass/
 
 ```bash
 # Install yc-bench (optional dependency)
-pip install "hermes-agent[yc-bench]"
+pip install "clawg[yc-bench]"
 
 # Or install from source
 git clone https://github.com/collinear-ai/yc-bench
@@ -42,14 +42,14 @@ bash environments/benchmarks/yc_bench/run_eval.sh \
 ### Architecture
 
 ```
-HermesAgentLoop (our agent)
+ClawgAgentLoop (our agent)
   -> terminal tool -> subprocess("yc-bench company status") -> JSON output
   -> terminal tool -> subprocess("yc-bench task accept --task-id X") -> JSON
   -> terminal tool -> subprocess("yc-bench sim resume") -> JSON (advance time)
   -> ... (100-500 turns per run)
 ```
 
-The environment initialises the simulation via `yc-bench sim init` (NOT `yc-bench run`, which would start yc-bench's own built-in agent loop). Our `HermesAgentLoop` then drives all interaction through CLI commands.
+The environment initialises the simulation via `yc-bench sim init` (NOT `yc-bench run`, which would start yc-bench's own built-in agent loop). Our `ClawgAgentLoop` then drives all interaction through CLI commands.
 
 ### Simulation Mechanics
 
