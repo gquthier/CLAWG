@@ -2,12 +2,12 @@
 name: google-workspace
 description: Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration via Python. Uses OAuth2 with automatic token refresh. No external binaries needed — runs entirely with Google's Python client libraries in the clawg venv.
 version: 1.0.0
-author: Nous Research
+author: CLAWG
 license: MIT
 metadata:
   clawg:
     tags: [Google, Gmail, Calendar, Drive, Sheets, Docs, Contacts, Email, OAuth]
-    homepage: https://github.com/NousResearch/clawg
+    homepage: https://github.com/gquthier/CLAWG
     related_skills: [himalaya]
 ---
 
