@@ -410,6 +410,23 @@ Agents should propose creating a project dashboard when:
 - The project has recurring tasks, cron jobs, or scheduled deliverables
 
 Use the `obsidian-dashboard` skill (in `skills/note-taking/obsidian-dashboard/`) to create dashboards.
+
+### Encrypted Secret Storage (Vault Keystore)
+
+API keys, tokens, and secrets are stored **encrypted** in `secrets/keystore.enc`.
+The plaintext catalog at `secrets/catalog.md` lists key names and descriptions (never values).
+
+**As an agent, you MUST:**
+1. When a user provides an API key → call `vault_keystore_save` to store it securely
+2. When you need a key for a service → call `vault_keystore_get` to retrieve it
+3. When unsure what keys exist → call `vault_keystore_list` to see the catalog
+4. **NEVER** display, log, or echo back the actual secret value in chat
+
+**Auto-detection:** If the user pastes something that looks like an API key (sk-..., ghp_..., xoxb-..., or NAME=value), offer to save it securely.
+
+Available tools: `vault_keystore_save`, `vault_keystore_get`, `vault_keystore_list`, `vault_keystore_delete`
+
+See `api.md` for full architecture details.
 """,
         root / "philosophy.md": "# Philosophy\n\nProject principles, coding standards, and decision rules.\n",
         root / "api.md": """# API
@@ -528,6 +545,22 @@ You can create interactive HTML dashboards for long-term projects. These are sav
 Use the `obsidian-dashboard` skill, or generate an HTML file in `dashboard/` following the project dashboard template.
 
 A dashboard should include: project overview, milestone tracker, task status, metrics/KPIs, and a timeline of key events.
+
+## Secret Management
+
+You have access to the **encrypted vault keystore** for API keys and secrets.
+
+**Tools available:**
+- `vault_keystore_save(name, value, service, description)` — Encrypt and store a key
+- `vault_keystore_get(name)` — Decrypt and retrieve a key (also injects into environment)
+- `vault_keystore_list()` — List stored keys (names and descriptions, never values)
+- `vault_keystore_delete(name)` — Remove a key
+
+**Mandatory behaviors:**
+1. When the user sends an API key or token → **immediately save it** with `vault_keystore_save`
+2. When you need a key for any service → **retrieve it** with `vault_keystore_get`
+3. **NEVER display secret values** in your responses — confirm with "key configured" only
+4. If you detect a key pattern in a message (sk-..., ghp_..., xoxb-...) → offer to save it
 """,
     }
 
