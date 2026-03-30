@@ -347,137 +347,46 @@ def bootstrap_second_brain(root: Path, agent_id: str = "default", force: bool = 
         root / "user.md": "# User\n\nCore user profile and stable preferences shared across agents.\n",
         root / "environment.md": """# Environment
 
-Machine, repo, paths, and runtime conventions.
+This is an Obsidian vault — the shared source of truth for all CLAWG agents.
 
-## Obsidian Second Brain
+## Vault Paths
 
-This vault is the shared source of truth for all CLAWG agents. It is an Obsidian vault.
+| Path | Contains |
+|------|----------|
+| `user.md` | User profile and preferences |
+| `environment.md` | This file |
+| `philosophy.md` | Principles and decision rules |
+| `api.md` | API endpoints + keystore architecture |
+| `agents/<id>/` | Per-agent identity, soul, AGENTS, overlays |
+| `skills/` | Shared skills (read with `skills_list` / `skill_view`) |
+| `subagent/` | Specialist agent profiles |
+| `tools/` | Tool docs and contracts |
+| `learning/` | Durable lessons (write with `vault_save_learning`) |
+| `Projects/` | Project notes (write with `vault_save_project_note`) |
+| `Large Memory/` | MEMORY.md + USER.md (managed by `memory` tool) |
+| `secrets/` | Encrypted keystore (`vault_keystore_*` tools) |
+| `dashboard/` | HTML dashboards — `command-center.html`, `project-template.html` |
 
-### Vault Structure
+## Key Rules
 
-```
-vault/
-├── user.md              — User profile, preferences, constraints
-├── environment.md       — This file. Machine topology, paths, conventions
-├── philosophy.md        — Principles, non-negotiables, decision framework
-├── api.md               — API schemas and auth expectations
-├── agents/<id>/         — Per-agent profiles (identity, soul, AGENTS, overlays)
-├── skills/              — Reusable execution playbooks (shared across agents)
-├── subagent/            — Specialist agent definitions
-├── tools/               — Global tool docs and contracts
-├── learning/            — Durable lessons and postmortems
-├── Projects/            — Ephemeral project notes
-├── Large Memory/        — Large documents, reference material
-└── dashboard/           — HTML dashboards (Command Center + per-project)
-```
-
-### How to Use This Vault
-
-- **Read** any file for context: skills, agent profiles, project notes, learnings
-- **Write** new learnings, project notes, and updates to keep the vault current
-- **Create dashboards** in `dashboard/` for long-term projects (see skill: obsidian-dashboard)
-- All agents share this vault — changes are immediately visible to every agent
-
-### Dashboard System
-
-The `dashboard/` folder contains interactive HTML dashboards viewable in Obsidian.
-
-- **Command Center** (`dashboard/command-center.html`): Global overview of all agents, skills, crons, tasks, and projects with 3D visualization
-- **Project Dashboards** (`dashboard/<project-name>.html`): Per-project tracking dashboards
-
-**Obsidian Plugin Required**: Install **Custom Frames** or **HTML Reader** in Obsidian to view dashboards.
-Recommended: `obsidian-custom-frames` by Ellpeck — turns HTML files into panes.
-
-To embed a dashboard in a note:
-```markdown
-```embedhtml
-path: dashboard/my-project.html
-height: 800
-`` `
-```
-
-Or use an iframe:
-```html
-<iframe src="dashboard/my-project.html" width="100%" height="800" style="border:none;"></iframe>
-```
-
-### When to Propose a Dashboard
-
-Agents should propose creating a project dashboard when:
-- A project spans more than 2 weeks of active work
-- There are multiple agents collaborating on the same project
-- The user needs visibility into progress, milestones, or metrics
-- The project has recurring tasks, cron jobs, or scheduled deliverables
-
-Use the `obsidian-dashboard` skill (in `skills/note-taking/obsidian-dashboard/`) to create dashboards.
-
-### Encrypted Secret Storage (Vault Keystore)
-
-API keys, tokens, and secrets are stored **encrypted** in `secrets/keystore.enc`.
-The plaintext catalog at `secrets/catalog.md` lists key names and descriptions (never values).
-
-**As an agent, you MUST:**
-1. When a user provides an API key → call `vault_keystore_save` to store it securely
-2. When you need a key for a service → call `vault_keystore_get` to retrieve it
-3. When unsure what keys exist → call `vault_keystore_list` to see the catalog
-4. **NEVER** display, log, or echo back the actual secret value in chat
-
-**Auto-detection:** If the user pastes something that looks like an API key (sk-..., ghp_..., xoxb-..., or NAME=value), offer to save it securely.
-
-Available tools: `vault_keystore_save`, `vault_keystore_get`, `vault_keystore_list`, `vault_keystore_delete`
-
-See `api.md` for full architecture details.
+- User sends an API key → `vault_keystore_save` immediately. NEVER echo the value.
+- Need a key → `vault_keystore_get`. Check `vault_keystore_list` first.
+- Learn something durable → `vault_save_learning`.
+- Long-term project (2+ weeks) → propose a dashboard via `obsidian-dashboard` skill.
+- All changes are shared across agents instantly.
 """,
         root / "philosophy.md": "# Philosophy\n\nProject principles, coding standards, and decision rules.\n",
         root / "api.md": """# API
 
-Global endpoints, credentials mapping, and integration notes.
+Endpoints, credentials, and integration notes.
 
-## Vault Keystore (Encrypted Secret Storage)
+## Keystore
 
-All API keys and secrets are stored encrypted in `secrets/keystore.enc`.
-A plaintext catalog of key names (no values) is at `secrets/catalog.md`.
+Encrypted secrets in `secrets/keystore.enc`. Catalog (names only) at `secrets/catalog.md`.
+Master key: `~/.clawg/.keystore-key` (auto-generated). Also exports to `~/.clawg/.env`.
 
-### How It Works
-
-1. **User provides a key** → agent calls `vault_keystore_save` → key is encrypted and stored
-2. **Agent needs a key** → calls `vault_keystore_get` → key is decrypted and loaded into environment
-3. **Backward compatible** → keys are also exported to `~/.clawg/.env` for tools using `os.getenv()`
-
-### Architecture
-
-```
-~/.clawg/.keystore-key        ← Master encryption key (auto-generated, never leaves machine)
-vault/secrets/keystore.enc    ← Encrypted JSON blob (all secrets)
-vault/secrets/catalog.md      ← Plaintext index (names + descriptions, NO values)
-~/.clawg/.env                 ← Backward-compat plaintext export
-```
-
-### Agent Tools
-
-| Tool | Purpose |
-|------|---------|
-| `vault_keystore_save` | Store a new key (encrypts + exports to .env) |
-| `vault_keystore_get` | Retrieve a key (decrypts + injects into environment) |
-| `vault_keystore_list` | List all keys (names only, no values) |
-| `vault_keystore_delete` | Remove a key |
-
-### Auto-Detection
-
-When a user pastes an API key in a message, agents should detect common patterns
-(sk-..., ghp_..., xoxb-...) and offer to save them securely.
-
-### Security
-
-- Encryption: Fernet (AES-128-CBC) if `cryptography` is installed, PBKDF2+XOR fallback otherwise
-- Master key: 32 random bytes, stored chmod 0600 in `~/.clawg/.keystore-key`
-- Keystore file: chmod 0600
-- Values are NEVER logged, displayed, or sent in chat messages
-- Catalog.md contains only names and descriptions for discoverability
-
-## Configured Services
-
-Check `secrets/catalog.md` for the current list of stored keys.
+Tools: `vault_keystore_save`, `vault_keystore_get`, `vault_keystore_list`, `vault_keystore_delete`
+Rule: NEVER display secret values. Detect key patterns (sk-..., ghp_..., xoxb-...) and offer to save.
 """,
         root / "dashboard" / "README.md": """# Dashboards
 
@@ -520,47 +429,10 @@ Or duplicate `project-template.html`, rename it, and edit the configuration sect
         root / "agents" / aid / "user.md": "# User Overlay\n\nAgent-specific user preferences.\n",
         root / "agents" / aid / "environment.md": """# Environment Overlay
 
-Agent-specific workspace assumptions.
+Full vault access. See master `environment.md` for paths.
 
-## Second Brain Access
-
-You have full read/write access to this Obsidian vault. Key capabilities:
-
-1. **Read context**: Load any file from the vault for background knowledge
-2. **Write learnings**: Save durable lessons to `learning/` after notable sessions
-3. **Update project notes**: Keep `Projects/` current with latest status
-4. **Create dashboards**: Use the `obsidian-dashboard` skill to build HTML dashboards in `dashboard/`
-
-## Dashboard Capability
-
-You can create interactive HTML dashboards for long-term projects. These are saved to `dashboard/<project>.html` and viewable in Obsidian.
-
-**When to propose a dashboard:**
-- Project has been active for 2+ weeks
-- Multiple milestones or phases to track
-- User would benefit from visual progress tracking
-- Project has metrics, KPIs, or recurring deliverables
-
-**How to create one:**
-Use the `obsidian-dashboard` skill, or generate an HTML file in `dashboard/` following the project dashboard template.
-
-A dashboard should include: project overview, milestone tracker, task status, metrics/KPIs, and a timeline of key events.
-
-## Secret Management
-
-You have access to the **encrypted vault keystore** for API keys and secrets.
-
-**Tools available:**
-- `vault_keystore_save(name, value, service, description)` — Encrypt and store a key
-- `vault_keystore_get(name)` — Decrypt and retrieve a key (also injects into environment)
-- `vault_keystore_list()` — List stored keys (names and descriptions, never values)
-- `vault_keystore_delete(name)` — Remove a key
-
-**Mandatory behaviors:**
-1. When the user sends an API key or token → **immediately save it** with `vault_keystore_save`
-2. When you need a key for any service → **retrieve it** with `vault_keystore_get`
-3. **NEVER display secret values** in your responses — confirm with "key configured" only
-4. If you detect a key pattern in a message (sk-..., ghp_..., xoxb-...) → offer to save it
+Vault tools: `vault_keystore_*`, `vault_save_learning`, `vault_save_project_note`, `memory`, `skills_list`
+Dashboard skill: `obsidian-dashboard` — propose for projects active 2+ weeks.
 """,
     }
 
