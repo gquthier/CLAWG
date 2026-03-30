@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLAWG | Autonomous AI Agents with a Portable Brain</title>
+    <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Architects+Daughter&family=JetBrains+Mono:wght@400;700&display=swap"
@@ -98,11 +99,21 @@
 
         .ascii-art {
             font-family: 'JetBrains Mono', monospace;
-            font-size: clamp(6px, 1.1vw, 14px);
-            line-height: 1.2;
+            font-size: clamp(4.5px, 0.85vw, 11px);
+            line-height: 1.15;
             color: #a29bfe;
             white-space: pre;
             text-align: center;
+            overflow: hidden;
+        }
+
+        .ascii-mini {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 5px;
+            line-height: 1.1;
+            color: #a29bfe;
+            white-space: pre;
+            letter-spacing: 0.5px;
         }
 
         .curl-block {
@@ -168,9 +179,9 @@
     <!-- ═══ NAV ═══ -->
     <nav class="border-b border-white/5 py-6 px-8 sticky top-0 bg-dark/80 backdrop-blur-md z-50">
         <div class="max-w-5xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <div class="w-8 h-8 bg-brand rounded-sm flex items-center justify-center text-dark font-bold text-xl">C</div>
-                <span class="font-bold tracking-tighter text-xl">CLAWG <span class="text-brand/50 font-light">v1.0</span></span>
+            <div class="flex items-center gap-3">
+                <img src="favicon.png" alt="CLAWG" class="w-7 h-7 rounded-sm">
+                <span class="font-bold tracking-tight text-white text-sm">CLAWG</span>
             </div>
             <div class="hidden md:flex gap-10 text-sm font-medium tracking-wide">
                 <a href="#brain" class="nav-link uppercase">Brain</a>
@@ -194,21 +205,18 @@
 
             <!-- ASCII Art Logo -->
             <div class="ascii-art mb-8 fade-up">
-  ███████╗███╗   ███╗ █████╗ ██████╗ ████████╗
-  ██╔════╝████╗ ████║██╔══██╗██╔══██╗╚══██╔══╝
-  ███████╗██╔████╔██║███████║██████╔╝   ██║
-  ╚════██║██║╚██╔╝██║██╔══██║██╔══██╗   ██║
-  ███████║██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
-  ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
-   ██████╗██╗      █████╗ ██╗    ██╗ ██████╗
-  ██╔════╝██║     ██╔══██╗██║    ██║██╔════╝
-  ██║     ██║     ███████║██║ █╗ ██║██║  ███╗
-  ██║     ██║     ██╔══██║██║███╗██║██║   ██║
-  ╚██████╗███████╗██║  ██║╚███╔███╔╝╚██████╔╝
-   ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝  ╚═════╝</div>
+███████╗███╗   ███╗ █████╗ ██████╗ ████████╗     ██████╗██╗      █████╗ ██╗    ██╗ ██████╗
+██╔════╝████╗ ████║██╔══██╗██╔══██╗╚══██╔══╝    ██╔════╝██║     ██╔══██╗██║    ██║██╔════╝
+███████╗██╔████╔██║███████║██████╔╝   ██║       ██║     ██║     ███████║██║ █╗ ██║██║  ███╗
+╚════██║██║╚██╔╝██║██╔══██║██╔══██╗   ██║       ██║     ██║     ██╔══██║██║███╗██║██║   ██║
+███████║██║ ╚═╝ ██║██║  ██║██║  ██║   ██║       ╚██████╗███████╗██║  ██║╚███╔███╔╝╚██████╔╝
+╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝        ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝  ╚═════╝</div>
 
-            <p class="text-xl md:text-2xl text-gray-400 font-light mb-12 max-w-2xl fade-up delay-1">
+            <p class="text-xl md:text-2xl text-gray-400 font-light mb-4 max-w-2xl fade-up delay-1">
                 Autonomous open-source AI agents with a <span class="text-white border-b border-brand/50">portable brain</span>.
+            </p>
+            <p class="text-sm text-gray-500 font-mono mb-12 fade-up delay-2">
+                Powered by the <a href="https://github.com/gquthier/CLAWG" class="text-brand/70 hover:text-brand transition-colors">Hermes Agent</a> auto-evolving framework. Your agent and its brain grow automatically the more you use it.
             </p>
 
             <!-- CTA: curl command -->
@@ -226,17 +234,58 @@
             </div>
         </section>
 
-        <!-- ═══ PROBLEM ═══ -->
+        <!-- ═══ CLONE YOUR BRAIN ═══ -->
         <section class="py-24 border-t border-white/5 text-center">
-            <p class="handwritten text-lg mb-6 opacity-60">// the problem with AI agents today</p>
+            <p class="handwritten text-lg mb-6 opacity-60">// the second brain concept</p>
             <h2 class="text-4xl md:text-5xl font-bold tracking-tighter mb-8 leading-tight">
-                Your AI agents <span class="text-gray-500 line-through">forget everything</span><br/>
-                between every session.
+                Clone your brain.<br/>
+                <span class="text-brand">Give it to your AI agent.</span>
             </h2>
-            <p class="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
-                Every new session starts from zero. No memory. No context. No skills.
-                Your agent doesn't know who you are, what you've built, or what it learned yesterday.
-                <span class="text-white font-medium">What if your agents had a brain?</span>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed mb-12">
+                Your Second Brain is an Obsidian vault — a folder of markdown files that contains
+                everything you know: your preferences, your principles, your skills, your projects.
+                CLAWG agents read from it at every session. They know who you are, how you work,
+                and what you've built. <span class="text-white font-medium">Your brain becomes their brain.</span>
+            </p>
+
+            <!-- Portable Brain Diagram -->
+            <div class="relative w-full max-w-4xl mx-auto py-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    <!-- Your Brain -->
+                    <div class="sketch-border p-6 bg-dark float-anim">
+                        <div class="font-mono text-xs text-brand mb-3">[[Your_Brain]]</div>
+                        <div class="text-left text-sm space-y-1 text-gray-400">
+                            <div>user.md <span class="text-gray-600">— who you are</span></div>
+                            <div>philosophy.md <span class="text-gray-600">— your rules</span></div>
+                            <div>skills/ <span class="text-gray-600">— what you can do</span></div>
+                            <div>learning/ <span class="text-gray-600">— what you learned</span></div>
+                        </div>
+                    </div>
+                    <!-- Connection -->
+                    <div class="flex flex-col items-center justify-center gap-2">
+                        <span class="handwritten text-lg">Portable everywhere</span>
+                        <svg width="100" height="40" viewBox="0 0 100 40" fill="none">
+                            <path d="M0 20 C 20 0, 80 40, 100 20" stroke="currentColor" stroke-width="2" stroke-dasharray="5 5" />
+                        </svg>
+                        <div class="text-xs text-gray-600 font-mono">Claude Code · CLI · Telegram · Discord</div>
+                    </div>
+                    <!-- Agent -->
+                    <div class="sketch-border p-6 bg-brand/5">
+                        <div class="font-mono text-xs text-gray-400 mb-3">[[AI_Agent]]</div>
+                        <div class="text-left text-sm space-y-1">
+                            <div class="text-white font-medium">Knows your identity</div>
+                            <div class="text-white font-medium">Follows your principles</div>
+                            <div class="text-white font-medium">Uses your skills</div>
+                            <div class="text-white font-medium">Remembers everything</div>
+                        </div>
+                        <div class="absolute -bottom-6 right-0 handwritten text-sm text-brand/80">Your brain, their brain.</div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-gray-500 text-sm max-w-xl mx-auto mt-12">
+                Use the same brain across all your development environments — Claude Code, CLI, Telegram, Discord, Slack.
+                Edit it in Obsidian. Sync it anywhere. Your agent always starts where you left off.
             </p>
         </section>
 
@@ -442,7 +491,13 @@
     <footer class="py-20 border-t border-white/5">
         <div class="max-w-5xl mx-auto px-8 md:px-12 lg:px-16 flex flex-col md:flex-row justify-between gap-12">
             <div>
-                <div class="font-bold text-2xl mb-4">CLAWG</div>
+                <div class="ascii-art mb-4" style="font-size:clamp(3px,0.5vw,6px);text-align:left;">
+███████╗███╗   ███╗ █████╗ ██████╗ ████████╗     ██████╗██╗      █████╗ ██╗    ██╗ ██████╗
+██╔════╝████╗ ████║██╔══██╗██╔══██╗╚══██╔══╝    ██╔════╝██║     ██╔══██╗██║    ██║██╔════╝
+███████╗██╔████╔██║███████║██████╔╝   ██║       ██║     ██║     ███████║██║ █╗ ██║██║  ███╗
+╚════██║██║╚██╔╝██║██╔══██║██╔══██╗   ██║       ██║     ██║     ██╔══██║██║███╗██║██║   ██║
+███████║██║ ╚═╝ ██║██║  ██║██║  ██║   ██║       ╚██████╗███████╗██║  ██║╚███╔███╔╝╚██████╔╝
+╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝        ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝  ╚═════╝</div>
                 <p class="text-gray-500 max-w-xs text-sm leading-relaxed">
                     Autonomous open-source AI agents with a portable brain.
                 </p>
