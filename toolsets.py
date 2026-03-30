@@ -64,6 +64,8 @@ _CLAWG_CORE_TOOLS = [
     "honcho_context", "honcho_profile", "honcho_search", "honcho_conclude",
     # Home Assistant smart home control (gated on HASS_TOKEN via check_fn)
     "ha_list_entities", "ha_get_state", "ha_list_services", "ha_call_service",
+    # Encrypted vault keystore (API keys, tokens, secrets)
+    "vault_keystore_save", "vault_keystore_get", "vault_keystore_list", "vault_keystore_delete",
 ]
 
 

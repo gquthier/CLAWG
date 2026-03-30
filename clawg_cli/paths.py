@@ -334,6 +334,7 @@ def bootstrap_second_brain(root: Path, agent_id: str = "default", force: bool = 
         root / "tools",
         root / "agents" / aid,
         root / "dashboard",
+        root / "secrets",
     ]
 
     for d in dirs_to_create:
@@ -411,7 +412,56 @@ Agents should propose creating a project dashboard when:
 Use the `obsidian-dashboard` skill (in `skills/note-taking/obsidian-dashboard/`) to create dashboards.
 """,
         root / "philosophy.md": "# Philosophy\n\nProject principles, coding standards, and decision rules.\n",
-        root / "api.md": "# API\n\nGlobal endpoints, credentials mapping, and integration notes.\n",
+        root / "api.md": """# API
+
+Global endpoints, credentials mapping, and integration notes.
+
+## Vault Keystore (Encrypted Secret Storage)
+
+All API keys and secrets are stored encrypted in `secrets/keystore.enc`.
+A plaintext catalog of key names (no values) is at `secrets/catalog.md`.
+
+### How It Works
+
+1. **User provides a key** → agent calls `vault_keystore_save` → key is encrypted and stored
+2. **Agent needs a key** → calls `vault_keystore_get` → key is decrypted and loaded into environment
+3. **Backward compatible** → keys are also exported to `~/.clawg/.env` for tools using `os.getenv()`
+
+### Architecture
+
+```
+~/.clawg/.keystore-key        ← Master encryption key (auto-generated, never leaves machine)
+vault/secrets/keystore.enc    ← Encrypted JSON blob (all secrets)
+vault/secrets/catalog.md      ← Plaintext index (names + descriptions, NO values)
+~/.clawg/.env                 ← Backward-compat plaintext export
+```
+
+### Agent Tools
+
+| Tool | Purpose |
+|------|---------|
+| `vault_keystore_save` | Store a new key (encrypts + exports to .env) |
+| `vault_keystore_get` | Retrieve a key (decrypts + injects into environment) |
+| `vault_keystore_list` | List all keys (names only, no values) |
+| `vault_keystore_delete` | Remove a key |
+
+### Auto-Detection
+
+When a user pastes an API key in a message, agents should detect common patterns
+(sk-..., ghp_..., xoxb-...) and offer to save them securely.
+
+### Security
+
+- Encryption: Fernet (AES-128-CBC) if `cryptography` is installed, PBKDF2+XOR fallback otherwise
+- Master key: 32 random bytes, stored chmod 0600 in `~/.clawg/.keystore-key`
+- Keystore file: chmod 0600
+- Values are NEVER logged, displayed, or sent in chat messages
+- Catalog.md contains only names and descriptions for discoverability
+
+## Configured Services
+
+Check `secrets/catalog.md` for the current list of stored keys.
+""",
         root / "dashboard" / "README.md": """# Dashboards
 
 Interactive HTML dashboards for CLAWG projects.
