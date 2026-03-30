@@ -333,6 +333,7 @@ def bootstrap_second_brain(root: Path, agent_id: str = "default", force: bool = 
         root / "subagent",
         root / "tools",
         root / "agents" / aid,
+        root / "dashboard",
     ]
 
     for d in dirs_to_create:
@@ -360,5 +361,14 @@ def bootstrap_second_brain(root: Path, agent_id: str = "default", force: bool = 
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8")
             created_files.append(path)
+
+    # Copy Command Center dashboard if available
+    dashboard_src = Path(__file__).resolve().parent.parent / "dashboard" / "command-center.html"
+    dashboard_dst = root / "dashboard" / "command-center.html"
+    if dashboard_src.exists() and (force or not dashboard_dst.exists()):
+        import shutil
+        dashboard_dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(dashboard_src, dashboard_dst)
+        created_files.append(dashboard_dst)
 
     return {"dirs": created_dirs, "files": created_files}

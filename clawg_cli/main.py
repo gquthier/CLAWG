@@ -3397,6 +3397,36 @@ For more help on a command:
     doctor_parser.set_defaults(func=cmd_doctor)
     
     # =========================================================================
+    # dashboard command
+    # =========================================================================
+    dashboard_parser = subparsers.add_parser(
+        "dashboard",
+        help="Launch the CLAWG Command Center dashboard",
+        description="Open the interactive dashboard with 3D agent visualization, task/cron management, and project overview"
+    )
+    dashboard_parser.add_argument(
+        "--port",
+        type=int,
+        default=9777,
+        help="Port to serve dashboard on (default: 9777)"
+    )
+    dashboard_parser.add_argument(
+        "--no-open",
+        action="store_true",
+        help="Don't auto-open browser"
+    )
+
+    def cmd_dashboard(args):
+        from dashboard.server import main as dashboard_main
+        import sys
+        sys.argv = ["dashboard-server", f"--port={args.port}"]
+        if args.no_open:
+            sys.argv.append("--no-open")
+        dashboard_main()
+
+    dashboard_parser.set_defaults(func=cmd_dashboard)
+
+    # =========================================================================
     # config command
     # =========================================================================
     config_parser = subparsers.add_parser(

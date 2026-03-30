@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLAWG Command Center</title>
+<script src="https://unpkg.com/3d-force-graph@1"></script>
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   CLAWG Command Center — CSS
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: #1a1a2e;
+  --bg-card-hover: #1f1f35;
+  --bg-input: #16162a;
+  --border: #2a2a4a;
+  --border-active: #6c5ce7;
+  --accent: #6c5ce7;
+  --accent-glow: rgba(108, 92, 231, 0.3);
+  --accent-2: #a29bfe;
+  --accent-green: #00e676;
+  --accent-red: #ff5252;
+  --accent-orange: #ffab40;
+  --accent-cyan: #18ffff;
+  --text-primary: #e8e8f0;
+  --text-secondary: #8888aa;
+  --text-muted: #555577;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --transition: 0.2s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* ─── Layout ─── */
+.app {
+  display: grid;
+  grid-template-rows: 56px 1fr;
+  grid-template-columns: 260px 1fr 320px;
+  grid-template-areas:
+    "header header header"
+    "sidebar main panel";
+  height: 100vh;
+}
+
+/* ─── Header ─── */
+.header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.header-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.stat-value.green { color: var(--accent-green); }
+.stat-value.purple { color: var(--accent); }
+.stat-value.cyan { color: var(--accent-cyan); }
+.stat-value.orange { color: var(--accent-orange); }
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ─── Sidebar ─── */
+.sidebar {
+  grid-area: sidebar;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-section {
+  padding: 12px 16px 8px;
+}
+
+.sidebar-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.nav-list {
+  list-style: none;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--transition);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.nav-item:hover { background: var(--bg-card); color: var(--text-primary); }
+.nav-item.active { background: var(--accent-glow); color: var(--accent-2); border: 1px solid var(--border-active); }
+
+.nav-icon {
+  width: 18px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--bg-card);
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.agent-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 8px 12px;
+}
+
+.agent-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--transition);
+  margin-bottom: 2px;
+}
+
+.agent-card:hover { background: var(--bg-card); }
+.agent-card.selected { background: var(--accent-glow); border: 1px solid var(--border-active); }
+
+.agent-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.agent-dot.active { background: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); }
+.agent-dot.idle { background: var(--text-muted); }
+.agent-dot.error { background: var(--accent-red); box-shadow: 0 0 6px var(--accent-red); }
+
+.agent-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.agent-name {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agent-division {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ─── Main Content ─── */
+.main {
+  grid-area: main;
+  position: relative;
+  overflow: hidden;
+}
+
+.view {
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+
+.view.active { display: flex; }
+
+/* 3D Graph View */
+.graph-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+#graph-3d {
+  width: 100%;
+  height: 100%;
+}
+
+.graph-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.graph-legend {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  z-index: 10;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Table Views */
+.table-view {
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.table-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.search-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 14px;
+  color: var(--text-primary);
+  font-size: 13px;
+  width: 240px;
+  outline: none;
+  transition: border var(--transition);
+}
+
+.search-input:focus { border-color: var(--accent); }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+}
+
+.data-table td {
+  padding: 10px 14px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(42, 42, 74, 0.3);
+}
+
+.data-table tr:hover td { background: var(--bg-card); }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.badge-active { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); }
+.badge-idle { background: rgba(136, 136, 170, 0.15); color: var(--text-secondary); }
+.badge-error { background: rgba(255, 82, 82, 0.15); color: var(--accent-red); }
+.badge-pending { background: rgba(255, 171, 64, 0.15); color: var(--accent-orange); }
+.badge-running { background: rgba(108, 92, 231, 0.15); color: var(--accent); }
+.badge-done { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); }
+.badge-disabled { background: rgba(85, 85, 119, 0.15); color: var(--text-muted); }
+
+/* ─── Right Panel ─── */
+.panel {
+  grid-area: panel;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-tab {
+  flex: 1;
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition);
+}
+
+.panel-tab:hover { color: var(--text-secondary); }
+.panel-tab.active { color: var(--accent-2); border-bottom-color: var(--accent); }
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.panel-section {
+  display: none;
+}
+
+.panel-section.active { display: block; }
+
+/* Detail Cards */
+.detail-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.detail-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.detail-value {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(42, 42, 74, 0.3);
+}
+
+.detail-row:last-child { border-bottom: none; }
+
+/* Activity Feed */
+.activity-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(42, 42, 74, 0.3);
+}
+
+.activity-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.activity-icon.cron { background: rgba(108, 92, 231, 0.2); color: var(--accent); }
+.activity-icon.task { background: rgba(0, 230, 118, 0.2); color: var(--accent-green); }
+.activity-icon.agent { background: rgba(24, 255, 255, 0.2); color: var(--accent-cyan); }
+.activity-icon.error { background: rgba(255, 82, 82, 0.2); color: var(--accent-red); }
+
+.activity-text {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.activity-time {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Buttons */
+.btn {
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transition: all var(--transition);
+}
+
+.btn:hover { background: var(--bg-card-hover); border-color: var(--accent); }
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover { background: #7c6cf7; }
+
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+
+/* Model Selector */
+.model-selector {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  outline: none;
+  width: 100%;
+}
+
+.model-selector:focus { border-color: var(--accent); }
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ─── Pulse Animation ─── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.pulse { animation: pulse 2s ease-in-out infinite; }
+
+/* ─── Responsive ─── */
+@media (max-width: 1200px) {
+  .app {
+    grid-template-columns: 220px 1fr 280px;
+  }
+}
+
+/* ─── Connection Status ─── */
+.conn-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.conn-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.conn-dot.connected { background: var(--accent-green); }
+.conn-dot.disconnected { background: var(--accent-red); }
+.conn-dot.loading { background: var(--accent-orange); animation: pulse 1s infinite; }
+
+/* ─── Empty State ─── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.empty-state-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ═══ HEADER ═══ -->
+  <header class="header">
+    <div class="header-left">
+      <div>
+        <div class="logo">CLAWG</div>
+        <div class="logo-sub">Command Center</div>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="stat">
+        <div class="stat-value green" id="stat-agents">0</div>
+        <div class="stat-label">Agents</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value purple" id="stat-skills">0</div>
+        <div class="stat-label">Skills</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value cyan" id="stat-crons">0</div>
+        <div class="stat-label">Crons</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value orange" id="stat-tasks">0</div>
+        <div class="stat-label">Tasks</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="conn-status">
+        <div class="conn-dot" id="conn-dot"></div>
+        <span id="conn-label">Connecting...</span>
+      </div>
+      <button class="btn btn-sm" onclick="refreshAll()">Refresh</button>
+    </div>
+  </header>
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Views</div>
+      <ul class="nav-list">
+        <li class="nav-item active" data-view="graph" onclick="switchView('graph', this)">
+          <span class="nav-icon">&#11042;</span> 3D Graph
+        </li>
+        <li class="nav-item" data-view="agents" onclick="switchView('agents', this)">
+          <span class="nav-icon">&#9673;</span> Agents
+          <span class="nav-badge" id="nav-agents-count">0</span>
+        </li>
+        <li class="nav-item" data-view="tasks" onclick="switchView('tasks', this)">
+          <span class="nav-icon">&#9745;</span> Tasks
+          <span class="nav-badge" id="nav-tasks-count">0</span>
+        </li>
+        <li class="nav-item" data-view="crons" onclick="switchView('crons', this)">
+          <span class="nav-icon">&#8986;</span> Crons
+          <span class="nav-badge" id="nav-crons-count">0</span>
+        </li>
+        <li class="nav-item" data-view="projects" onclick="switchView('projects', this)">
+          <span class="nav-icon">&#9733;</span> Projects
+          <span class="nav-badge" id="nav-projects-count">0</span>
+        </li>
+        <li class="nav-item" data-view="skills" onclick="switchView('skills', this)">
+          <span class="nav-icon">&#9889;</span> Skills
+          <span class="nav-badge" id="nav-skills-count">0</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Active Agents</div>
+    </div>
+    <div class="agent-list" id="agent-sidebar-list">
+      <!-- Populated by JS -->
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main class="main">
+    <!-- 3D Graph View -->
+    <div class="view active" id="view-graph">
+      <div class="graph-container">
+        <div id="graph-3d"></div>
+        <div class="graph-legend">
+          <div style="font-size:12px;font-weight:700;margin-bottom:8px;">Node Types</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#6c5ce7"></div> Division</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#00e676"></div> Agent</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#18ffff"></div> Skill</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ffab40"></div> Project</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ff5252"></div> Cron Job</div>
+        </div>
+        <div class="graph-controls">
+          <button class="btn btn-sm" onclick="resetCamera()">Reset Camera</button>
+          <button class="btn btn-sm" onclick="toggleLabels()">Toggle Labels</button>
+          <button class="btn btn-sm" onclick="toggleForce()">Pause Physics</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agents Table View -->
+    <div class="view" id="view-agents">
+      <div class="table-view">
+        <div class="table-header">
+          <h2>Agents</h2>
+          <input class="search-input" placeholder="Search agents..." oninput="filterTable('agents-table', this.value)">
+        </div>
+        <table class="data-table" id="agents-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Name</th>
+              <th>Division</th>
+              <th>Model</th>
+              <th>Sessions</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="agents-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tasks Table View -->
+    <div class="view" id="view-tasks">
+      <div class="table-view">
+        <div class="table-header">
+          <h2>Tasks</h2>
+          <div style="display:flex;gap:8px;">
+            <input class="search-input" placeholder="Search tasks..." oninput="filterTable('tasks-table', this.value)">
+            <button class="btn btn-primary btn-sm" onclick="showAddTask()">+ Add Task</button>
+          </div>
+        </div>
+        <table class="data-table" id="tasks-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Task</th>
+              <th>Agent</th>
+              <th>Priority</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tasks-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Crons Table View -->
+    <div class="view" id="view-crons">
+      <div class="table-view">
+        <div class="table-header">
+          <h2>Cron Jobs</h2>
+          <div style="display:flex;gap:8px;">
+            <input class="search-input" placeholder="Search crons..." oninput="filterTable('crons-table', this.value)">
+            <button class="btn btn-primary btn-sm" onclick="showAddCron()">+ New Cron</button>
+          </div>
+        </div>
+        <table class="data-table" id="crons-table">
+          <thead>
+            <tr>
+              <th>Enabled</th>
+              <th>Name</th>
+              <th>Schedule</th>
+              <th>Agent</th>
+              <th>Last Run</th>
+              <th>Next Run</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="crons-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Projects View -->
+    <div class="view" id="view-projects">
+      <div class="table-view">
+        <div class="table-header">
+          <h2>Projects</h2>
+          <input class="search-input" placeholder="Search projects..." oninput="filterTable('projects-table', this.value)">
+        </div>
+        <table class="data-table" id="projects-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Path</th>
+              <th>Last Modified</th>
+              <th>Files</th>
+            </tr>
+          </thead>
+          <tbody id="projects-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Skills View -->
+    <div class="view" id="view-skills">
+      <div class="table-view">
+        <div class="table-header">
+          <h2>Skills</h2>
+          <input class="search-input" placeholder="Search skills..." oninput="filterTable('skills-table', this.value)">
+        </div>
+        <table class="data-table" id="skills-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Version</th>
+            </tr>
+          </thead>
+          <tbody id="skills-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══ RIGHT PANEL ═══ -->
+  <aside class="panel">
+    <div class="panel-tabs">
+      <div class="panel-tab active" data-panel="details" onclick="switchPanel('details', this)">Details</div>
+      <div class="panel-tab" data-panel="activity" onclick="switchPanel('activity', this)">Activity</div>
+      <div class="panel-tab" data-panel="config" onclick="switchPanel('config', this)">Config</div>
+    </div>
+
+    <div class="panel-content">
+      <!-- Details Panel -->
+      <div class="panel-section active" id="panel-details">
+        <div class="detail-card">
+          <div class="detail-label">Selected Node</div>
+          <div class="detail-value" id="detail-name">Select an item to view details</div>
+        </div>
+        <div id="detail-dynamic"></div>
+      </div>
+
+      <!-- Activity Panel -->
+      <div class="panel-section" id="panel-activity">
+        <div style="font-size:12px;font-weight:700;margin-bottom:12px;">Recent Activity</div>
+        <div id="activity-feed">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Config Panel -->
+      <div class="panel-section" id="panel-config">
+        <div class="detail-card">
+          <div class="detail-label">Default Model</div>
+          <select class="model-selector" id="config-model" onchange="updateConfig('model', this.value)">
+            <option value="anthropic/claude-opus-4.6">Claude Opus 4.6</option>
+            <option value="anthropic/claude-sonnet-4.6">Claude Sonnet 4.6</option>
+            <option value="anthropic/claude-haiku-4.5">Claude Haiku 4.5</option>
+            <option value="google/gemini-2.5-pro">Gemini 2.5 Pro</option>
+            <option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>
+            <option value="openai/gpt-5.4">GPT-5.4</option>
+            <option value="deepseek/deepseek-r2">DeepSeek R2</option>
+          </select>
+        </div>
+
+        <div class="detail-card">
+          <div class="detail-label">Second Brain Path</div>
+          <div class="detail-value" id="config-vault-path" style="font-size:11px;word-break:break-all;">—</div>
+        </div>
+
+        <div class="detail-card">
+          <div class="detail-label">API Endpoint</div>
+          <div class="detail-value" id="config-api-url" style="font-size:11px;">—</div>
+        </div>
+
+        <div class="detail-card">
+          <div class="detail-label">Theme</div>
+          <select class="model-selector" id="config-skin" onchange="updateConfig('skin', this.value)">
+            <option value="default">Default (Purple)</option>
+            <option value="ares">Ares (Crimson)</option>
+            <option value="mono">Mono (Grayscale)</option>
+            <option value="slate">Slate (Blue)</option>
+          </select>
+        </div>
+
+        <div class="detail-card">
+          <div class="detail-label">Graph Settings</div>
+          <div class="detail-row">
+            <span style="font-size:12px;">Show Labels</span>
+            <input type="checkbox" id="config-labels" checked onchange="toggleLabels()">
+          </div>
+          <div class="detail-row">
+            <span style="font-size:12px;">Physics Enabled</span>
+            <input type="checkbox" id="config-physics" checked onchange="toggleForce()">
+          </div>
+          <div class="detail-row">
+            <span style="font-size:12px;">Auto-Refresh (30s)</span>
+            <input type="checkbox" id="config-autorefresh" checked onchange="toggleAutoRefresh()">
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   CLAWG Command Center — JavaScript Engine
+   ═══════════════════════════════════════════════════════════ */
+
+// ─── State ───
+const STATE = {
+  agents: [],
+  skills: [],
+  crons: [],
+  tasks: [],
+  projects: [],
+  divisions: [],
+  config: {},
+  connected: false,
+  graphInstance: null,
+  showLabels: true,
+  physicsRunning: true,
+  autoRefresh: true,
+  refreshInterval: null,
+  selectedNode: null,
+  apiBase: 'http://localhost:9777',
+};
+
+// ─── Division Colors ───
+const DIVISION_COLORS = {
+  engineering: '#6c5ce7',
+  design: '#fd79a8',
+  marketing: '#00b894',
+  'paid-media': '#e17055',
+  sales: '#0984e3',
+  product: '#fdcb6e',
+  'project-management': '#a29bfe',
+  testing: '#55efc4',
+  support: '#fab1a0',
+  'spatial-computing': '#18ffff',
+  specialized: '#ff7675',
+  academic: '#dfe6e9',
+  'game-development': '#ffeaa7',
+  strategy: '#74b9ff',
+};
+
+const NODE_COLORS = {
+  division: '#6c5ce7',
+  agent: '#00e676',
+  skill: '#18ffff',
+  project: '#ffab40',
+  cron: '#ff5252',
+  core: '#a29bfe',
+};
+
+// ─── API Layer ───
+async function apiCall(endpoint) {
+  try {
+    const resp = await fetch(`${STATE.apiBase}${endpoint}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return await resp.json();
+  } catch (err) {
+    console.warn(`API call failed: ${endpoint}`, err.message);
+    return null;
+  }
+}
+
+async function checkConnection() {
+  const dot = document.getElementById('conn-dot');
+  const label = document.getElementById('conn-label');
+  try {
+    const data = await apiCall('/api/status');
+    if (data) {
+      STATE.connected = true;
+      dot.className = 'conn-dot connected';
+      label.textContent = 'Connected';
+      return true;
+    }
+  } catch (e) { /* ignore */ }
+  STATE.connected = false;
+  dot.className = 'conn-dot disconnected';
+  label.textContent = 'Offline — using demo data';
+  return false;
+}
+
+// ─── Demo Data Generator ───
+function generateDemoData() {
+  const divisions = [
+    'engineering', 'design', 'marketing', 'paid-media', 'sales',
+    'product', 'project-management', 'testing', 'support',
+    'spatial-computing', 'specialized', 'academic', 'game-development', 'strategy'
+  ];
+
+  const agentNames = {
+    engineering: ['frontend-developer', 'backend-architect', 'devops-automator', 'ai-engineer', 'code-reviewer', 'data-engineer', 'security-auditor', 'fullstack-dev'],
+    design: ['ui-designer', 'ux-researcher', 'brand-strategist', 'motion-designer'],
+    marketing: ['growth-hacker', 'seo-specialist', 'content-writer', 'social-media-manager', 'email-marketer'],
+    'paid-media': ['ppc-specialist', 'programmatic-buyer', 'tracking-engineer'],
+    sales: ['outbound-rep', 'deal-closer', 'pipeline-manager'],
+    product: ['sprint-planner', 'feedback-analyst', 'research-lead'],
+    'project-management': ['orchestrator', 'ops-manager', 'experiment-lead'],
+    testing: ['qa-engineer', 'perf-tester', 'accessibility-auditor'],
+    support: ['customer-success', 'analytics-lead', 'finance-ops'],
+    'spatial-computing': ['xr-developer', 'visionos-dev', 'webxr-engineer'],
+    specialized: ['multi-agent-orchestrator', 'compliance-officer', 'zk-researcher'],
+    academic: ['research-analyst', 'paper-writer', 'peer-reviewer'],
+    'game-development': ['game-designer', 'mechanics-dev', 'engine-architect'],
+    strategy: ['business-strategist', 'competitive-analyst', 'market-researcher'],
+  };
+
+  const agents = [];
+  const statuses = ['active', 'idle', 'idle', 'idle', 'idle', 'error'];
+  const models = ['anthropic/claude-opus-4.6', 'anthropic/claude-sonnet-4.6', 'anthropic/claude-haiku-4.5', 'google/gemini-2.5-flash'];
+
+  for (const div of divisions) {
+    const names = agentNames[div] || ['agent-1', 'agent-2'];
+    for (const name of names) {
+      agents.push({
+        id: `${div}/${name}`,
+        name: name,
+        division: div,
+        status: statuses[Math.floor(Math.random() * statuses.length)],
+        model: models[Math.floor(Math.random() * models.length)],
+        sessions: Math.floor(Math.random() * 50),
+        lastActive: new Date(Date.now() - Math.random() * 86400000 * 7).toISOString(),
+      });
+    }
+  }
+
+  const skillCategories = ['apple', 'research', 'software-development', 'creative', 'email', 'github', 'media', 'mcp', 'note-taking', 'productivity', 'social-media', 'smart-home'];
+  const skills = [];
+  const skillNames = [
+    'parallel-cli-research', 'code-review', 'tdd-guide', 'obsidian-sync',
+    'apple-reminders', 'apple-notes', 'github-pr', 'github-issues',
+    'duckduckgo-search', 'ml-paper-writer', 'image-generation',
+    'email-sender', 'telegram-bot', 'home-assistant', 'podcast-transcriber',
+    'social-post-scheduler', 'seo-audit', 'data-pipeline', 'api-tester',
+    'diagram-builder', 'voice-transcription', 'polymarket-tracker',
+  ];
+
+  for (const name of skillNames) {
+    skills.push({
+      id: name,
+      name: name,
+      category: skillCategories[Math.floor(Math.random() * skillCategories.length)],
+      description: `Skill for ${name.replace(/-/g, ' ')} operations`,
+      version: `${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 10)}.0`,
+    });
+  }
+
+  const crons = [
+    { id: 'cron-1', name: 'Daily Standup Summary', cron: '0 9 * * *', agent_id: 'engineering/orchestrator', enabled: true, last_run: new Date(Date.now() - 3600000).toISOString(), next_run: new Date(Date.now() + 72000000).toISOString(), task: 'Generate daily standup summary' },
+    { id: 'cron-2', name: 'SEO Report', cron: '0 8 * * 1', agent_id: 'marketing/seo-specialist', enabled: true, last_run: new Date(Date.now() - 86400000 * 3).toISOString(), next_run: new Date(Date.now() + 86400000 * 4).toISOString(), task: 'Generate weekly SEO metrics' },
+    { id: 'cron-3', name: 'Security Scan', cron: '0 2 * * *', agent_id: 'engineering/security-auditor', enabled: true, last_run: new Date(Date.now() - 7200000).toISOString(), next_run: new Date(Date.now() + 64800000).toISOString(), task: 'Run nightly security audit' },
+    { id: 'cron-4', name: 'Inbox Triage', cron: '*/30 * * * *', agent_id: 'support/customer-success', enabled: false, last_run: null, next_run: null, task: 'Triage incoming support emails' },
+    { id: 'cron-5', name: 'Competitor Watch', cron: '0 6 * * 1,4', agent_id: 'strategy/competitive-analyst', enabled: true, last_run: new Date(Date.now() - 86400000).toISOString(), next_run: new Date(Date.now() + 86400000 * 2).toISOString(), task: 'Monitor competitor changes' },
+  ];
+
+  const tasks = [
+    { id: 't-1', name: 'Refactor auth middleware', agent: 'engineering/backend-architect', status: 'running', priority: 'high', created: new Date(Date.now() - 3600000).toISOString() },
+    { id: 't-2', name: 'Design new landing page', agent: 'design/ui-designer', status: 'pending', priority: 'medium', created: new Date(Date.now() - 7200000).toISOString() },
+    { id: 't-3', name: 'Write blog post on AI agents', agent: 'marketing/content-writer', status: 'done', priority: 'low', created: new Date(Date.now() - 86400000).toISOString() },
+    { id: 't-4', name: 'Fix Telegram gateway timeout', agent: 'engineering/devops-automator', status: 'running', priority: 'critical', created: new Date(Date.now() - 1800000).toISOString() },
+    { id: 't-5', name: 'Accessibility audit for dashboard', agent: 'testing/accessibility-auditor', status: 'pending', priority: 'medium', created: new Date(Date.now() - 14400000).toISOString() },
+    { id: 't-6', name: 'Update pricing model', agent: 'strategy/business-strategist', status: 'pending', priority: 'high', created: new Date(Date.now() - 10800000).toISOString() },
+  ];
+
+  const projects = [
+    { name: 'CLAWG Core', path: '~/Desktop/CLAWG', lastModified: new Date().toISOString(), files: 247 },
+    { name: 'Landing Page', path: '~/Desktop/CLAWG/landingpage', lastModified: new Date(Date.now() - 3600000).toISOString(), files: 12 },
+    { name: 'Documentation', path: '~/Desktop/CLAWG/website', lastModified: new Date(Date.now() - 86400000).toISOString(), files: 34 },
+    { name: 'Gateway', path: '~/Desktop/CLAWG/gateway', lastModified: new Date(Date.now() - 7200000).toISOString(), files: 48 },
+  ];
+
+  return { agents, skills, crons, tasks, projects, divisions, config: { model: 'anthropic/claude-opus-4.6', vault_path: '~/Second Brain', skin: 'default' } };
+}
+
+// ─── Data Loading ───
+async function loadData() {
+  const connected = await checkConnection();
+
+  if (connected) {
+    const [agents, skills, crons, tasks, projects, config] = await Promise.all([
+      apiCall('/api/agents'),
+      apiCall('/api/skills'),
+      apiCall('/api/crons'),
+      apiCall('/api/tasks'),
+      apiCall('/api/projects'),
+      apiCall('/api/config'),
+    ]);
+    if (agents) STATE.agents = agents;
+    if (skills) STATE.skills = skills;
+    if (crons) STATE.crons = crons;
+    if (tasks) STATE.tasks = tasks;
+    if (projects) STATE.projects = projects;
+    if (config) STATE.config = config;
+  } else {
+    const demo = generateDemoData();
+    STATE.agents = demo.agents;
+    STATE.skills = demo.skills;
+    STATE.crons = demo.crons;
+    STATE.tasks = demo.tasks;
+    STATE.projects = demo.projects;
+    STATE.config = demo.config;
+  }
+
+  // Extract divisions
+  STATE.divisions = [...new Set(STATE.agents.map(a => a.division))];
+}
+
+// ─── UI Rendering ───
+function updateStats() {
+  document.getElementById('stat-agents').textContent = STATE.agents.length;
+  document.getElementById('stat-skills').textContent = STATE.skills.length;
+  document.getElementById('stat-crons').textContent = STATE.crons.filter(c => c.enabled).length;
+  document.getElementById('stat-tasks').textContent = STATE.tasks.filter(t => t.status !== 'done').length;
+
+  document.getElementById('nav-agents-count').textContent = STATE.agents.length;
+  document.getElementById('nav-skills-count').textContent = STATE.skills.length;
+  document.getElementById('nav-crons-count').textContent = STATE.crons.length;
+  document.getElementById('nav-tasks-count').textContent = STATE.tasks.length;
+  document.getElementById('nav-projects-count').textContent = STATE.projects.length;
+}
+
+function renderAgentSidebar() {
+  const container = document.getElementById('agent-sidebar-list');
+  const activeAgents = STATE.agents.filter(a => a.status === 'active');
+  const idleAgents = STATE.agents.filter(a => a.status !== 'active').slice(0, 10);
+
+  container.innerHTML = [...activeAgents, ...idleAgents].map(a => `
+    <div class="agent-card" onclick="selectAgent('${a.id}')">
+      <div class="agent-dot ${a.status}"></div>
+      <div class="agent-info">
+        <div class="agent-name">${a.name}</div>
+        <div class="agent-division">${a.division}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAgentsTable() {
+  const tbody = document.getElementById('agents-tbody');
+  tbody.innerHTML = STATE.agents.map(a => `
+    <tr onclick="selectAgent('${a.id}')" style="cursor:pointer">
+      <td><span class="badge badge-${a.status}">${a.status}</span></td>
+      <td style="font-weight:600">${a.name}</td>
+      <td><span style="color:${DIVISION_COLORS[a.division] || '#888'}">${a.division}</span></td>
+      <td style="font-family:var(--font-mono);font-size:11px">${a.model}</td>
+      <td style="font-family:var(--font-mono)">${a.sessions}</td>
+      <td><button class="btn btn-sm" onclick="event.stopPropagation();launchAgent('${a.id}')">Launch</button></td>
+    </tr>
+  `).join('');
+}
+
+function renderTasksTable() {
+  const tbody = document.getElementById('tasks-tbody');
+  const statusMap = { running: 'badge-running', pending: 'badge-pending', done: 'badge-done' };
+  tbody.innerHTML = STATE.tasks.map(t => `
+    <tr>
+      <td><span class="badge ${statusMap[t.status] || 'badge-idle'}">${t.status}</span></td>
+      <td style="font-weight:600">${t.name}</td>
+      <td style="font-family:var(--font-mono);font-size:11px">${t.agent}</td>
+      <td><span class="badge badge-${t.priority === 'critical' ? 'error' : t.priority === 'high' ? 'pending' : 'idle'}">${t.priority}</span></td>
+      <td style="font-family:var(--font-mono);font-size:11px">${formatTime(t.created)}</td>
+      <td>
+        <button class="btn btn-sm" onclick="toggleTaskStatus('${t.id}')">Toggle</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderCronsTable() {
+  const tbody = document.getElementById('crons-tbody');
+  tbody.innerHTML = STATE.crons.map(c => `
+    <tr>
+      <td><span class="badge ${c.enabled ? 'badge-active' : 'badge-disabled'}">${c.enabled ? 'ON' : 'OFF'}</span></td>
+      <td style="font-weight:600">${c.name}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${c.cron}</td>
+      <td style="font-family:var(--font-mono);font-size:11px">${c.agent_id}</td>
+      <td style="font-family:var(--font-mono);font-size:11px">${c.last_run ? formatTime(c.last_run) : '—'}</td>
+      <td style="font-family:var(--font-mono);font-size:11px">${c.next_run ? formatTime(c.next_run) : '—'}</td>
+      <td>
+        <button class="btn btn-sm" onclick="toggleCron('${c.id}')">${c.enabled ? 'Disable' : 'Enable'}</button>
+        <button class="btn btn-sm" onclick="runCron('${c.id}')">Run</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderProjectsTable() {
+  const tbody = document.getElementById('projects-tbody');
+  tbody.innerHTML = STATE.projects.map(p => `
+    <tr>
+      <td style="font-weight:600">${p.name}</td>
+      <td style="font-family:var(--font-mono);font-size:11px">${p.path}</td>
+      <td style="font-family:var(--font-mono);font-size:11px">${formatTime(p.lastModified)}</td>
+      <td style="font-family:var(--font-mono)">${p.files}</td>
+    </tr>
+  `).join('');
+}
+
+function renderSkillsTable() {
+  const tbody = document.getElementById('skills-tbody');
+  tbody.innerHTML = STATE.skills.map(s => `
+    <tr>
+      <td style="font-weight:600">${s.name}</td>
+      <td><span style="color:var(--accent-2)">${s.category}</span></td>
+      <td style="color:var(--text-secondary)">${s.description}</td>
+      <td style="font-family:var(--font-mono)">${s.version}</td>
+    </tr>
+  `).join('');
+}
+
+function renderActivityFeed() {
+  const feed = document.getElementById('activity-feed');
+  const activities = [
+    { type: 'agent', text: 'frontend-developer started session', time: '2m ago' },
+    { type: 'cron', text: 'Security Scan completed successfully', time: '15m ago' },
+    { type: 'task', text: 'Auth middleware refactor — 60% complete', time: '32m ago' },
+    { type: 'agent', text: 'content-writer finished blog post draft', time: '1h ago' },
+    { type: 'error', text: 'Telegram gateway timeout — retrying', time: '1h ago' },
+    { type: 'cron', text: 'Daily Standup Summary delivered', time: '3h ago' },
+    { type: 'task', text: 'Landing page design — assigned to ui-designer', time: '4h ago' },
+    { type: 'agent', text: 'devops-automator deployed v0.3.1', time: '5h ago' },
+  ];
+
+  feed.innerHTML = activities.map(a => `
+    <div class="activity-item">
+      <div class="activity-icon ${a.type}">${a.type === 'agent' ? '&#9673;' : a.type === 'cron' ? '&#8986;' : a.type === 'task' ? '&#9745;' : '&#9888;'}</div>
+      <div>
+        <div class="activity-text">${a.text}</div>
+        <div class="activity-time">${a.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── 3D Graph ───
+function buildGraphData() {
+  const nodes = [];
+  const links = [];
+
+  // Core node
+  nodes.push({ id: 'clawg-core', name: 'CLAWG', group: 'core', val: 30 });
+
+  // Division nodes
+  for (const div of STATE.divisions) {
+    nodes.push({ id: `div-${div}`, name: div, group: 'division', val: 15 });
+    links.push({ source: 'clawg-core', target: `div-${div}` });
+  }
+
+  // Agent nodes
+  for (const agent of STATE.agents) {
+    nodes.push({
+      id: `agent-${agent.id}`,
+      name: agent.name,
+      group: 'agent',
+      val: 5 + (agent.status === 'active' ? 5 : 0),
+      data: agent,
+    });
+    links.push({ source: `div-${agent.division}`, target: `agent-${agent.id}` });
+  }
+
+  // Skill nodes (clustered by category)
+  const skillCategories = [...new Set(STATE.skills.map(s => s.category))];
+  for (const cat of skillCategories) {
+    nodes.push({ id: `skillcat-${cat}`, name: cat, group: 'skill', val: 8 });
+    links.push({ source: 'clawg-core', target: `skillcat-${cat}` });
+  }
+  for (const skill of STATE.skills) {
+    nodes.push({ id: `skill-${skill.id}`, name: skill.name, group: 'skill', val: 3, data: skill });
+    links.push({ source: `skillcat-${skill.category}`, target: `skill-${skill.id}` });
+  }
+
+  // Project nodes
+  for (const proj of STATE.projects) {
+    nodes.push({ id: `proj-${proj.name}`, name: proj.name, group: 'project', val: 10, data: proj });
+    links.push({ source: 'clawg-core', target: `proj-${proj.name}` });
+  }
+
+  // Cron nodes
+  for (const cron of STATE.crons) {
+    nodes.push({ id: `cron-${cron.id}`, name: cron.name, group: 'cron', val: 6, data: cron });
+    // Link crons to their agents
+    const agentNode = nodes.find(n => n.id === `agent-${cron.agent_id}`);
+    if (agentNode) {
+      links.push({ source: `cron-${cron.id}`, target: agentNode.id });
+    } else {
+      links.push({ source: 'clawg-core', target: `cron-${cron.id}` });
+    }
+  }
+
+  return { nodes, links };
+}
+
+function initGraph() {
+  const container = document.getElementById('graph-3d');
+  const graphData = buildGraphData();
+
+  const graph = ForceGraph3D()(container)
+    .graphData(graphData)
+    .backgroundColor('#0a0a0f')
+    .nodeColor(node => NODE_COLORS[node.group] || '#888')
+    .nodeVal(node => node.val)
+    .nodeLabel(node => STATE.showLabels ? node.name : '')
+    .nodeOpacity(0.9)
+    .linkColor(() => 'rgba(108, 92, 231, 0.15)')
+    .linkWidth(0.5)
+    .linkOpacity(0.4)
+    .onNodeClick(node => selectGraphNode(node))
+    .onNodeHover(node => {
+      container.style.cursor = node ? 'pointer' : 'default';
+    })
+    .nodeThreeObject(node => {
+      if (node.group === 'core') {
+        const geo = new THREE.IcosahedronGeometry(6, 1);
+        const mat = new THREE.MeshPhongMaterial({
+          color: NODE_COLORS.core,
+          emissive: NODE_COLORS.core,
+          emissiveIntensity: 0.4,
+          transparent: true,
+          opacity: 0.9,
+        });
+        return new THREE.Mesh(geo, mat);
+      }
+      if (node.group === 'division') {
+        const geo = new THREE.OctahedronGeometry(4, 0);
+        const mat = new THREE.MeshPhongMaterial({
+          color: DIVISION_COLORS[node.name] || NODE_COLORS.division,
+          emissive: DIVISION_COLORS[node.name] || NODE_COLORS.division,
+          emissiveIntensity: 0.3,
+          transparent: true,
+          opacity: 0.85,
+        });
+        return new THREE.Mesh(geo, mat);
+      }
+      return false; // default sphere
+    })
+    .d3Force('charge').strength(-30);
+
+  graph.d3Force('link').distance(link => {
+    const source = typeof link.source === 'object' ? link.source : graphData.nodes.find(n => n.id === link.source);
+    if (source && source.group === 'core') return 120;
+    if (source && source.group === 'division') return 60;
+    return 30;
+  });
+
+  STATE.graphInstance = graph;
+
+  // Auto-rotate slowly
+  let angle = 0;
+  function rotate() {
+    if (STATE.graphInstance && STATE.physicsRunning) {
+      angle += 0.001;
+      STATE.graphInstance.cameraPosition({
+        x: 300 * Math.sin(angle),
+        z: 300 * Math.cos(angle),
+      });
+    }
+    requestAnimationFrame(rotate);
+  }
+  // Disable auto-rotate for now (can be toggled)
+  // rotate();
+}
+
+function selectGraphNode(node) {
+  STATE.selectedNode = node;
+  const nameEl = document.getElementById('detail-name');
+  const dynEl = document.getElementById('detail-dynamic');
+
+  nameEl.textContent = node.name;
+
+  let html = '';
+  if (node.group === 'agent' && node.data) {
+    const a = node.data;
+    html = `
+      <div class="detail-card">
+        <div class="detail-label">Division</div>
+        <div class="detail-value" style="color:${DIVISION_COLORS[a.division] || '#888'}">${a.division}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-label">Status</div>
+        <div class="detail-value"><span class="badge badge-${a.status}">${a.status}</span></div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-label">Model</div>
+        <select class="model-selector" onchange="updateAgentModel('${a.id}', this.value)">
+          <option ${a.model === 'anthropic/claude-opus-4.6' ? 'selected' : ''}>anthropic/claude-opus-4.6</option>
+          <option ${a.model === 'anthropic/claude-sonnet-4.6' ? 'selected' : ''}>anthropic/claude-sonnet-4.6</option>
+          <option ${a.model === 'anthropic/claude-haiku-4.5' ? 'selected' : ''}>anthropic/claude-haiku-4.5</option>
+          <option ${a.model === 'google/gemini-2.5-flash' ? 'selected' : ''}>google/gemini-2.5-flash</option>
+        </select>
+      </div>
+      <div class="detail-card">
+        <div class="detail-label">Sessions</div>
+        <div class="detail-value">${a.sessions}</div>
+      </div>
+      <div class="detail-card">
+        <button class="btn btn-primary" style="width:100%" onclick="launchAgent('${a.id}')">Launch Agent</button>
+      </div>
+    `;
+  } else if (node.group === 'cron' && node.data) {
+    const c = node.data;
+    html = `
+      <div class="detail-card">
+        <div class="detail-label">Schedule</div>
+        <div class="detail-value">${c.cron}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-label">Agent</div>
+        <div class="detail-value">${c.agent_id}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-label">Task</div>
+        <div class="detail-value" style="font-family:var(--font-sans)">${c.task}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-label">Status</div>
+        <div class="detail-value"><span class="badge ${c.enabled ? 'badge-active' : 'badge-disabled'}">${c.enabled ? 'Enabled' : 'Disabled'}</span></div>
+      </div>
+    `;
+  } else if (node.group === 'skill' && node.data) {
+    const s = node.data;
+    html = `
+      <div class="detail-card">
+        <div class="detail-label">Category</div>
+        <div class="detail-value">${s.category}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-label">Description</div>
+        <div class="detail-value" style="font-family:var(--font-sans)">${s.description}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-label">Version</div>
+        <div class="detail-value">${s.version}</div>
+      </div>
+    `;
+  } else if (node.group === 'project' && node.data) {
+    const p = node.data;
+    html = `
+      <div class="detail-card">
+        <div class="detail-label">Path</div>
+        <div class="detail-value" style="font-size:11px;word-break:break-all">${p.path}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-label">Files</div>
+        <div class="detail-value">${p.files}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-label">Last Modified</div>
+        <div class="detail-value">${formatTime(p.lastModified)}</div>
+      </div>
+    `;
+  } else if (node.group === 'division') {
+    const divAgents = STATE.agents.filter(a => a.division === node.name);
+    html = `
+      <div class="detail-card">
+        <div class="detail-label">Agents in Division</div>
+        <div class="detail-value">${divAgents.length}</div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-label">Active</div>
+        <div class="detail-value" style="color:var(--accent-green)">${divAgents.filter(a => a.status === 'active').length}</div>
+      </div>
+      ${divAgents.slice(0, 8).map(a => `
+        <div class="detail-row">
+          <span style="font-size:12px">${a.name}</span>
+          <span class="badge badge-${a.status}" style="font-size:10px">${a.status}</span>
+        </div>
+      `).join('')}
+    `;
+  } else {
+    html = `<div class="detail-card"><div class="detail-label">Type</div><div class="detail-value">${node.group}</div></div>`;
+  }
+
+  dynEl.innerHTML = html;
+
+  // Switch to details panel
+  switchPanel('details', document.querySelector('[data-panel="details"]'));
+}
+
+// ─── View/Panel Switching ───
+function switchView(viewName, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`view-${viewName}`).classList.add('active');
+  if (el) el.classList.add('active');
+
+  if (viewName === 'graph' && STATE.graphInstance) {
+    STATE.graphInstance.width(document.querySelector('.main').clientWidth);
+    STATE.graphInstance.height(document.querySelector('.main').clientHeight);
+  }
+}
+
+function switchPanel(panelName, el) {
+  document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`panel-${panelName}`).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// ─── Actions ───
+function selectAgent(agentId) {
+  const agent = STATE.agents.find(a => a.id === agentId);
+  if (!agent) return;
+
+  // Find graph node and select it
+  const graphNode = { id: `agent-${agentId}`, name: agent.name, group: 'agent', data: agent };
+  selectGraphNode(graphNode);
+
+  // Highlight in sidebar
+  document.querySelectorAll('.agent-card').forEach(c => c.classList.remove('selected'));
+  event?.target?.closest?.('.agent-card')?.classList.add('selected');
+}
+
+function launchAgent(agentId) {
+  if (STATE.connected) {
+    apiCall(`/api/agents/${encodeURIComponent(agentId)}/launch`);
+  }
+  alert(`Launching agent: ${agentId}\n\nRun in terminal:\n  clawg --agent-id ${agentId}`);
+}
+
+function toggleCron(cronId) {
+  const cron = STATE.crons.find(c => c.id === cronId);
+  if (cron) {
+    cron.enabled = !cron.enabled;
+    if (STATE.connected) apiCall(`/api/crons/${cronId}/toggle`);
+    renderCronsTable();
+  }
+}
+
+function runCron(cronId) {
+  if (STATE.connected) apiCall(`/api/crons/${cronId}/run`);
+  alert(`Running cron job: ${cronId}\n\nRun in terminal:\n  clawg cron run ${cronId}`);
+}
+
+function toggleTaskStatus(taskId) {
+  const task = STATE.tasks.find(t => t.id === taskId);
+  if (task) {
+    const cycle = { pending: 'running', running: 'done', done: 'pending' };
+    task.status = cycle[task.status] || 'pending';
+    renderTasksTable();
+  }
+}
+
+function showAddTask() {
+  alert('Add Task:\n\nRun in terminal:\n  clawg\n  /todo add "Your task description"');
+}
+
+function showAddCron() {
+  alert('Add Cron Job:\n\nRun in terminal:\n  clawg cron add');
+}
+
+function updateAgentModel(agentId, model) {
+  const agent = STATE.agents.find(a => a.id === agentId);
+  if (agent) agent.model = model;
+  if (STATE.connected) apiCall(`/api/agents/${encodeURIComponent(agentId)}/model?model=${encodeURIComponent(model)}`);
+}
+
+function updateConfig(key, value) {
+  STATE.config[key] = value;
+  if (STATE.connected) apiCall(`/api/config?${key}=${encodeURIComponent(value)}`);
+}
+
+// ─── Graph Controls ───
+function resetCamera() {
+  if (STATE.graphInstance) {
+    STATE.graphInstance.cameraPosition({ x: 0, y: 0, z: 400 }, { x: 0, y: 0, z: 0 }, 1000);
+  }
+}
+
+function toggleLabels() {
+  STATE.showLabels = !STATE.showLabels;
+  if (STATE.graphInstance) {
+    STATE.graphInstance.nodeLabel(node => STATE.showLabels ? node.name : '');
+  }
+}
+
+function toggleForce() {
+  STATE.physicsRunning = !STATE.physicsRunning;
+  if (STATE.graphInstance) {
+    if (STATE.physicsRunning) {
+      STATE.graphInstance.d3ReheatSimulation();
+    } else {
+      STATE.graphInstance.cooldownTime(0);
+      setTimeout(() => STATE.graphInstance.cooldownTime(15000), 100);
+    }
+  }
+}
+
+function toggleAutoRefresh() {
+  STATE.autoRefresh = !STATE.autoRefresh;
+  if (STATE.autoRefresh) {
+    STATE.refreshInterval = setInterval(refreshAll, 30000);
+  } else if (STATE.refreshInterval) {
+    clearInterval(STATE.refreshInterval);
+  }
+}
+
+// ─── Table Filter ───
+function filterTable(tableId, query) {
+  const table = document.getElementById(tableId);
+  const rows = table.querySelectorAll('tbody tr');
+  const q = query.toLowerCase();
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// ─── Utilities ───
+function formatTime(isoString) {
+  if (!isoString) return '—';
+  const d = new Date(isoString);
+  const now = new Date();
+  const diff = now - d;
+
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+  return `${Math.floor(diff / 86400000)}d ago`;
+}
+
+// ─── Refresh ───
+async function refreshAll() {
+  await loadData();
+  updateStats();
+  renderAgentSidebar();
+  renderAgentsTable();
+  renderTasksTable();
+  renderCronsTable();
+  renderProjectsTable();
+  renderSkillsTable();
+  renderActivityFeed();
+
+  // Update config panel
+  if (STATE.config.vault_path) {
+    document.getElementById('config-vault-path').textContent = STATE.config.vault_path;
+  }
+  document.getElementById('config-api-url').textContent = STATE.apiBase;
+}
+
+// ─── Init ───
+async function init() {
+  await refreshAll();
+  initGraph();
+
+  // Auto-refresh
+  STATE.refreshInterval = setInterval(refreshAll, 30000);
+
+  // Resize handler
+  window.addEventListener('resize', () => {
+    if (STATE.graphInstance) {
+      STATE.graphInstance.width(document.querySelector('.main').clientWidth);
+      STATE.graphInstance.height(document.querySelector('.main').clientHeight);
+    }
+  });
+}
+
+init();
+</script>
+</body>
+</html>
