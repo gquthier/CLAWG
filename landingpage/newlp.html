@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLAWG | Autonomous AI Agents with a Portable Brain</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Architects+Daughter&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        sketch: ['Architects Daughter', 'cursive'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: '#a29bfe',
+                        'brand-deep': '#6c5ce7',
+                        'brand-glow': 'rgba(108, 92, 231, 0.3)',
+                        dark: '#0a0a0a',
+                        card: '#141414',
+                        surface: '#1a1a2e',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a0a;
+            background-image: radial-gradient(#1a1a1a 1px, transparent 1px);
+            background-size: 32px 32px;
+            color: #efefef;
+        }
+
+        .sketch-border {
+            border: 2px solid #efefef;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .sketch-border::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: -4px;
+            bottom: -4px;
+            border: 2px solid rgba(162, 155, 254, 0.3);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .handwritten {
+            font-family: 'Architects Daughter', cursive;
+            color: #a29bfe;
+        }
+
+        .terminal-window {
+            background: #000;
+            border: 1px solid #333;
+            box-shadow: 10px 10px 0px #1a1a1a;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .float-anim { animation: float 4s ease-in-out infinite; }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover { color: #a29bfe; }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #a29bfe;
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after { width: 100%; }
+
+        .ascii-art {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(6px, 1.1vw, 14px);
+            line-height: 1.2;
+            color: #a29bfe;
+            white-space: pre;
+            text-align: center;
+        }
+
+        .curl-block {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .curl-block:hover { border-color: #a29bfe; }
+
+        .curl-block .copied {
+            display: none;
+            position: absolute;
+            top: -32px;
+            right: 12px;
+            background: #a29bfe;
+            color: #0a0a0a;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .curl-block.show-copied .copied { display: block; }
+
+        .metric-card {
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.02);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #a29bfe;
+        }
+
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-up {
+            opacity: 0;
+            animation: fade-up 0.6s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+
+<body class="selection:bg-brand selection:text-dark">
+
+    <!-- ═══ NAV ═══ -->
+    <nav class="border-b border-white/5 py-6 px-8 sticky top-0 bg-dark/80 backdrop-blur-md z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 bg-brand rounded-sm flex items-center justify-center text-dark font-bold text-xl">C</div>
+                <span class="font-bold tracking-tighter text-xl">CLAWG <span class="text-brand/50 font-light">v1.0</span></span>
+            </div>
+            <div class="hidden md:flex gap-10 text-sm font-medium tracking-wide">
+                <a href="#brain" class="nav-link uppercase">Brain</a>
+                <a href="#features" class="nav-link uppercase">Features</a>
+                <a href="#install" class="nav-link uppercase">Install</a>
+                <a href="https://github.com/gquthier/CLAWG" class="nav-link uppercase" target="_blank">GitHub</a>
+            </div>
+            <a href="#install" class="sketch-border px-5 py-2 text-sm font-bold hover:bg-white hover:text-black transition-all no-underline">
+                DEPLOY_AGENT
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-8 md:px-12 lg:px-16">
+
+        <!-- ═══ HERO ═══ -->
+        <section class="py-24 md:py-32 flex flex-col items-center text-center relative">
+            <div class="absolute -top-10 left-10 handwritten opacity-40 rotate-[-15deg] hidden lg:block">
+                // Non-custodial AI Intelligence
+            </div>
+
+            <!-- ASCII Art Logo -->
+            <div class="ascii-art mb-8 fade-up">
+  ███████╗███╗   ███╗ █████╗ ██████╗ ████████╗
+  ██╔════╝████╗ ████║██╔══██╗██╔══██╗╚══██╔══╝
+  ███████╗██╔████╔██║███████║██████╔╝   ██║
+  ╚════██║██║╚██╔╝██║██╔══██║██╔══██╗   ██║
+  ███████║██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+  ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+   ██████╗██╗      █████╗ ██╗    ██╗ ██████╗
+  ██╔════╝██║     ██╔══██╗██║    ██║██╔════╝
+  ██║     ██║     ███████║██║ █╗ ██║██║  ███╗
+  ██║     ██║     ██╔══██║██║███╗██║██║   ██║
+  ╚██████╗███████╗██║  ██║╚███╔███╔╝╚██████╔╝
+   ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝  ╚═════╝</div>
+
+            <p class="text-xl md:text-2xl text-gray-400 font-light mb-12 max-w-2xl fade-up delay-1">
+                Autonomous open-source AI agents with a <span class="text-white border-b border-brand/50">portable brain</span>.
+            </p>
+
+            <!-- CTA: curl command -->
+            <div class="w-full max-w-2xl fade-up delay-2">
+                <div class="curl-block px-6 py-4 flex items-center justify-between gap-4" id="curl-cta" onclick="copyCurl(this)">
+                    <code class="font-mono text-sm md:text-base text-green-400 truncate">curl -fsSL https://raw.githubusercontent.com/gquthier/CLAWG/main/scripts/install.sh | bash</code>
+                    <button class="text-gray-500 hover:text-brand transition-colors flex-shrink-0 text-sm font-mono">COPY</button>
+                    <div class="copied">Copied!</div>
+                </div>
+                <div class="flex gap-4 justify-center mt-6">
+                    <a href="https://github.com/gquthier/CLAWG" target="_blank" class="text-sm text-gray-500 hover:text-white transition-colors font-mono">View on GitHub →</a>
+                    <span class="text-gray-700">|</span>
+                    <a href="https://www.gquthier.com" target="_blank" class="text-sm text-gray-500 hover:text-white transition-colors font-mono">www.gquthier.com</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ PROBLEM ═══ -->
+        <section class="py-24 border-t border-white/5 text-center">
+            <p class="handwritten text-lg mb-6 opacity-60">// the problem with AI agents today</p>
+            <h2 class="text-4xl md:text-5xl font-bold tracking-tighter mb-8 leading-tight">
+                Your AI agents <span class="text-gray-500 line-through">forget everything</span><br/>
+                between every session.
+            </h2>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
+                Every new session starts from zero. No memory. No context. No skills.
+                Your agent doesn't know who you are, what you've built, or what it learned yesterday.
+                <span class="text-white font-medium">What if your agents had a brain?</span>
+            </p>
+        </section>
+
+        <!-- ═══ HOW IT WORKS ═══ -->
+        <section class="py-24 border-t border-white/5" id="brain">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <span class="text-brand font-mono text-xs uppercase tracking-widest">[ How_It_Works ]</span>
+                    <h2 class="text-4xl font-bold mb-6 mt-4 tracking-tight">ONE BRAIN.<br/>ALL YOUR AGENTS.</h2>
+                    <p class="text-gray-400 mb-8 leading-relaxed">
+                        CLAWG agents read from a shared <span class="text-white">Obsidian vault</span> — plain markdown files you own and edit.
+                        Every agent starts with your profile, your preferences, your skills, and your encrypted API keys.
+                        The brain syncs between machines via Obsidian Sync, Git, or rsync.
+                    </p>
+                    <ul class="space-y-4 font-mono text-sm text-brand">
+                        <li class="flex gap-4"><span>[01]</span> Install CLAWG</li>
+                        <li class="flex gap-4"><span>[02]</span> Connect your vault</li>
+                        <li class="flex gap-4"><span>[03]</span> Launch any agent — it already knows you</li>
+                    </ul>
+                </div>
+                <div class="terminal-window p-1">
+                    <div class="flex gap-2 p-3 border-b border-white/5">
+                        <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
+                        <div class="w-2 h-2 rounded-full bg-brand/50"></div>
+                        <div class="w-2 h-2 rounded-full bg-green-500/50"></div>
+                    </div>
+                    <div class="p-6 font-mono text-sm space-y-2">
+                        <div class="text-gray-500">$ clawg second-brain link --path "~/Second Brain"</div>
+                        <div class="text-green-400">✓ Vault linked: 12 master files loaded</div>
+                        <div class="text-gray-500">$ clawg --agent-id founder</div>
+                        <div class="text-white">Loading profile: agents/founder/identity.md</div>
+                        <div class="text-white">Loading memory: Large Memory/MEMORY.md</div>
+                        <div class="text-white">Loading skills: 33 skills indexed</div>
+                        <div class="text-green-400">✓ Brain loaded (1,044 tokens / 0.1% context)</div>
+                        <div class="text-brand animate-pulse mt-2">founder → Ready. What are we building?</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ VAULT STRUCTURE ═══ -->
+        <section class="py-24 border-t border-white/5">
+            <div class="text-center mb-16">
+                <span class="text-brand font-mono text-xs uppercase tracking-widest">[ The_Brain ]</span>
+                <h2 class="text-4xl font-bold mt-4 tracking-tight">YOUR VAULT IS THE SOURCE OF TRUTH.</h2>
+                <p class="text-gray-400 mt-4 max-w-xl mx-auto">Every file is markdown. Every file is yours. Edit in Obsidian, sync anywhere.</p>
+            </div>
+
+            <div class="terminal-window max-w-3xl mx-auto p-1">
+                <div class="flex gap-2 p-3 border-b border-white/5">
+                    <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
+                    <div class="w-2 h-2 rounded-full bg-brand/50"></div>
+                    <div class="w-2 h-2 rounded-full bg-green-500/50"></div>
+                    <span class="text-gray-600 text-xs font-mono ml-4">~/Second Brain</span>
+                </div>
+                <div class="p-6 font-mono text-sm leading-relaxed">
+                    <div class="text-brand">Second Brain/</div>
+                    <div><span class="text-gray-600">├──</span> <span class="text-white">user.md</span>              <span class="text-gray-600">← Who you are</span></div>
+                    <div><span class="text-gray-600">├──</span> <span class="text-white">environment.md</span>       <span class="text-gray-600">← Your machine &amp; conventions</span></div>
+                    <div><span class="text-gray-600">├──</span> <span class="text-white">philosophy.md</span>        <span class="text-gray-600">← Your principles</span></div>
+                    <div><span class="text-gray-600">├──</span> <span class="text-white">api.md</span>               <span class="text-gray-600">← Endpoints &amp; encrypted keys</span></div>
+                    <div><span class="text-gray-600">├──</span> <span class="text-brand">agents/</span></div>
+                    <div><span class="text-gray-600">│   └──</span> <span class="text-brand">founder/</span>         <span class="text-gray-600">← Your agent's identity</span></div>
+                    <div><span class="text-gray-600">│       ├──</span> identity.md <span class="text-gray-600">    ← Role &amp; boundaries</span></div>
+                    <div><span class="text-gray-600">│       ├──</span> soul.md <span class="text-gray-600">        ← Personality &amp; style</span></div>
+                    <div><span class="text-gray-600">│       └──</span> AGENTS.md <span class="text-gray-600">      ← Delegation rules</span></div>
+                    <div><span class="text-gray-600">├──</span> <span class="text-green-400">skills/</span>              <span class="text-gray-600">← 5,200+ shared skills</span></div>
+                    <div><span class="text-gray-600">├──</span> <span class="text-green-400">learning/</span>            <span class="text-gray-600">← Durable lessons (grows forever)</span></div>
+                    <div><span class="text-gray-600">├──</span> <span class="text-green-400">Projects/</span>            <span class="text-gray-600">← Project notes</span></div>
+                    <div><span class="text-gray-600">├──</span> <span class="text-yellow-400">secrets/</span>             <span class="text-gray-600">← AES-encrypted API keys</span></div>
+                    <div><span class="text-gray-600">├──</span> <span class="text-cyan-400">dashboard/</span>           <span class="text-gray-600">← 3D Command Center</span></div>
+                    <div><span class="text-gray-600">└──</span> <span class="text-white">Large Memory/</span>        <span class="text-gray-600">← Persistent memory across sessions</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ METRICS ═══ -->
+        <section class="py-24 border-t border-white/5">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="metric-card">
+                    <div class="metric-value">150+</div>
+                    <div class="text-gray-500 text-sm mt-2 font-mono uppercase tracking-wider">Agents</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">5.2K</div>
+                    <div class="text-gray-500 text-sm mt-2 font-mono uppercase tracking-wider">Skills</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">16</div>
+                    <div class="text-gray-500 text-sm mt-2 font-mono uppercase tracking-wider">Platforms</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">$0</div>
+                    <div class="text-gray-500 text-sm mt-2 font-mono uppercase tracking-wider">Forever</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ FEATURES BENTO ═══ -->
+        <section class="py-24 border-t border-white/5" id="features">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Large Card -->
+                <div class="md:col-span-2 sketch-border p-10 bg-white/5">
+                    <span class="text-brand font-mono text-xs uppercase tracking-widest">[ Portable_Brain ]</span>
+                    <h3 class="text-3xl font-bold mt-4 mb-4">Your brain goes wherever you go.</h3>
+                    <p class="text-gray-400 max-w-md mb-6">
+                        The vault is a folder of markdown files. Sync it with Obsidian Sync, Git, iCloud, or rsync.
+                        Your MacBook, your desktop, your server — same brain, same agents, same memory.
+                    </p>
+                    <div class="flex gap-3 flex-wrap">
+                        <div class="px-4 py-2 border border-white/10 rounded-full text-xs uppercase font-bold hover:bg-brand hover:text-dark cursor-default transition-all">Obsidian Sync</div>
+                        <div class="px-4 py-2 border border-white/10 rounded-full text-xs uppercase font-bold hover:bg-brand hover:text-dark cursor-default transition-all">Git</div>
+                        <div class="px-4 py-2 border border-white/10 rounded-full text-xs uppercase font-bold hover:bg-brand hover:text-dark cursor-default transition-all">iCloud</div>
+                        <div class="px-4 py-2 border border-white/10 rounded-full text-xs uppercase font-bold hover:bg-brand hover:text-dark cursor-default transition-all">rsync</div>
+                    </div>
+                </div>
+                <!-- Privacy Card -->
+                <div class="sketch-border p-10 bg-brand text-dark">
+                    <h3 class="text-2xl font-black leading-tight uppercase mb-4">Privacy<br/>by Default</h3>
+                    <p class="font-medium">No cloud. No telemetry. No vendor lock-in. Your brain is your folder. MIT license.</p>
+                </div>
+                <!-- Encryption Card -->
+                <div class="sketch-border p-10 bg-dark">
+                    <span class="text-brand font-mono text-xs uppercase tracking-widest">[ Vault_Keystore ]</span>
+                    <h3 class="text-2xl font-bold mb-4 mt-4">AES Encrypted Secrets</h3>
+                    <p class="text-gray-400 text-sm">API keys encrypted with AES/PBKDF2. Master key stays on your machine. Agents save and retrieve keys automatically. Never displayed in chat.</p>
+                </div>
+                <!-- Platforms Card -->
+                <div class="md:col-span-2 sketch-border p-10 bg-white/5">
+                    <span class="text-brand font-mono text-xs uppercase tracking-widest">[ Multi_Platform ]</span>
+                    <h3 class="text-3xl font-bold mt-4 mb-4">One brain. Sixteen platforms.</h3>
+                    <p class="text-gray-400 mb-6">Telegram, Discord, Slack, WhatsApp, Signal, Matrix, Email, SMS, Home Assistant — your agents respond everywhere with the same context.</p>
+                    <div class="flex gap-3 flex-wrap">
+                        <div class="px-4 py-2 border border-white/10 rounded-full text-xs uppercase font-bold hover:bg-brand hover:text-dark cursor-default transition-all">Telegram</div>
+                        <div class="px-4 py-2 border border-white/10 rounded-full text-xs uppercase font-bold hover:bg-brand hover:text-dark cursor-default transition-all">Discord</div>
+                        <div class="px-4 py-2 border border-white/10 rounded-full text-xs uppercase font-bold hover:bg-brand hover:text-dark cursor-default transition-all">Slack</div>
+                        <div class="px-4 py-2 border border-white/10 rounded-full text-xs uppercase font-bold hover:bg-brand hover:text-dark cursor-default transition-all">WhatsApp</div>
+                        <div class="px-4 py-2 border border-white/10 rounded-full text-xs uppercase font-bold hover:bg-brand hover:text-dark cursor-default transition-all">+12 more</div>
+                    </div>
+                </div>
+                <!-- Skills Card -->
+                <div class="md:col-span-2 sketch-border p-10 bg-white/5">
+                    <span class="text-brand font-mono text-xs uppercase tracking-widest">[ Skill_Marketplace ]</span>
+                    <h3 class="text-3xl font-bold mt-4 mb-4">5,200+ skills. Install in seconds.</h3>
+                    <p class="text-gray-400 mb-6">Web search, code execution, image generation, Apple Reminders, GitHub PRs, SEO audits — community-built skills that live in your vault.</p>
+                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                        <div class="flex -space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-brand/20 border border-brand/50"></div>
+                            <div class="w-8 h-8 rounded-full bg-brand/40 border border-brand/50"></div>
+                            <div class="w-8 h-8 rounded-full bg-brand/60 border border-brand/50"></div>
+                        </div>
+                        <span class="text-xs font-mono text-brand">14 DIVISIONS · 150+ AGENTS · 41 TOOLS</span>
+                    </div>
+                </div>
+                <!-- Dashboard Card -->
+                <div class="sketch-border p-10 bg-dark">
+                    <span class="text-brand font-mono text-xs uppercase tracking-widest">[ Command_Center ]</span>
+                    <h3 class="text-2xl font-bold mb-4 mt-4">3D Dashboard</h3>
+                    <p class="text-gray-400 text-sm">Interactive 3D force-graph of all agents, skills, projects, and cron jobs. View in Obsidian or browser.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ INSTALL CTA ═══ -->
+        <section class="py-32 border-t border-white/5 text-center" id="install">
+            <p class="handwritten text-lg mb-6 opacity-60">// one command, that's it</p>
+            <h2 class="text-5xl font-bold tracking-tighter mb-12">DEPLOY YOUR BRAIN.</h2>
+
+            <div class="terminal-window max-w-3xl mx-auto p-1 text-left">
+                <div class="flex gap-2 p-3 border-b border-white/5">
+                    <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
+                    <div class="w-2 h-2 rounded-full bg-brand/50"></div>
+                    <div class="w-2 h-2 rounded-full bg-green-500/50"></div>
+                    <span class="text-gray-600 text-xs font-mono ml-4">Terminal</span>
+                </div>
+                <div class="p-6 font-mono text-sm space-y-3">
+                    <div class="text-gray-500"># Install CLAWG (macOS, Linux, WSL2)</div>
+                    <div class="text-green-400 cursor-pointer hover:text-white transition-colors" onclick="copyCurl(document.getElementById('curl-cta'))">curl -fsSL https://raw.githubusercontent.com/gquthier/CLAWG/main/scripts/install.sh | bash</div>
+                    <div class="text-gray-600 mt-4"># Configure your API keys</div>
+                    <div class="text-white">clawg setup</div>
+                    <div class="text-gray-600 mt-4"># Launch your first agent</div>
+                    <div class="text-white">clawg --agent-id founder</div>
+                    <div class="text-gray-600 mt-4"># Open the Command Center</div>
+                    <div class="text-white">clawg dashboard</div>
+                </div>
+            </div>
+
+            <div class="mt-12 flex flex-col md:flex-row gap-6 justify-center">
+                <a href="https://github.com/gquthier/CLAWG" target="_blank"
+                    class="bg-white text-dark px-10 py-4 font-bold text-lg sketch-border hover:translate-x-1 hover:translate-y-1 transition-transform no-underline">
+                    VIEW ON GITHUB_
+                </a>
+                <a href="https://github.com/gquthier/CLAWG/blob/main/docs/SECOND_BRAIN_SETUP.md" target="_blank"
+                    class="bg-dark text-white px-10 py-4 font-bold text-lg border border-white/20 hover:bg-white/5 transition-all no-underline">
+                    READ_DOCS
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="py-20 border-t border-white/5">
+        <div class="max-w-5xl mx-auto px-8 md:px-12 lg:px-16 flex flex-col md:flex-row justify-between gap-12">
+            <div>
+                <div class="font-bold text-2xl mb-4">CLAWG</div>
+                <p class="text-gray-500 max-w-xs text-sm leading-relaxed">
+                    Autonomous open-source AI agents with a portable brain.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-16">
+                <div>
+                    <h4 class="font-bold text-xs uppercase text-brand mb-6 tracking-widest">Project</h4>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li><a href="https://github.com/gquthier/CLAWG" class="hover:text-white transition-colors" target="_blank">GitHub</a></li>
+                        <li><a href="https://github.com/gquthier/CLAWG/blob/main/docs/SECOND_BRAIN_SETUP.md" class="hover:text-white transition-colors" target="_blank">Documentation</a></li>
+                        <li><a href="#install" class="hover:text-white transition-colors">Install</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xs uppercase text-brand mb-6 tracking-widest">Author</h4>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li><a href="https://www.gquthier.com" class="hover:text-white transition-colors" target="_blank">www.gquthier.com</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xs uppercase text-brand mb-6 tracking-widest">Legal</h4>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li><a href="https://github.com/gquthier/CLAWG/blob/main/LICENSE" class="hover:text-white transition-colors" target="_blank">MIT License</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-5xl mx-auto px-8 md:px-12 lg:px-16 mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between text-xs text-gray-600 font-mono">
+            <span>&copy; 2025 CLAWG &mdash; OPEN SOURCE AGENT FRAMEWORK</span>
+            <span>DESIGNED BY GQUTHIER.COM</span>
+        </div>
+    </footer>
+
+    <script>
+        function copyCurl(el) {
+            const cmd = 'curl -fsSL https://raw.githubusercontent.com/gquthier/CLAWG/main/scripts/install.sh | bash';
+            navigator.clipboard.writeText(cmd).then(() => {
+                el.classList.add('show-copied');
+                setTimeout(() => el.classList.remove('show-copied'), 2000);
+            });
+        }
+    </script>
+
+</body>
+</html>
