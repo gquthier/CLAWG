@@ -10,7 +10,7 @@ Every session can load shared markdown context from one vault so all agents work
 
 - master files (`user.md`, `environment.md`, `philosophy.md`)
 - shared capabilities (`skills/`, `subagents/`, `tools/`, `api/`, `learning/`)
-- per-agent profile files (`identity.md`, `adjoint.md`, `soul.md`)
+- per-agent profile files (`identity.md`, `AGENTS.md`, `soul.md`)
 
 Access your context from any Claude Code session via Obsidian Sync.
 
@@ -90,7 +90,7 @@ Second Brain/
   agents/
     founder/
       identity.md
-      adjoint.md
+      AGENTS.md
       soul.md
 ```
 

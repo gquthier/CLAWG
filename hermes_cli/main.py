@@ -3034,7 +3034,7 @@ For more help on a command:
     parser.add_argument(
         "--agent-id",
         default=None,
-        help="Second Brain agent profile id (loads agents/<id>/identity, adjoint, soul)"
+        help="Second Brain agent profile id (loads agents/<id>/identity, AGENTS, soul)"
     )
     parser.add_argument(
         "--yolo",
@@ -3080,7 +3080,7 @@ For more help on a command:
     chat_parser.add_argument(
         "--agent-id",
         default=None,
-        help="Second Brain agent profile id (loads agents/<id>/identity, adjoint, soul)"
+        help="Second Brain agent profile id (loads agents/<id>/identity, AGENTS, soul)"
     )
     chat_parser.add_argument(
         "--provider",

@@ -1012,7 +1012,7 @@ class HermesCLI:
             provider: Inference provider ("auto", "openrouter", "nous", "openai-codex", "zai", "kimi-coding", "minimax", "minimax-cn")
             api_key: API key (default: from environment)
             base_url: API base URL (default: OpenRouter)
-            agent_id: Second Brain agent profile id (loads agents/<id>/identity, adjoint, soul)
+            agent_id: Second Brain agent profile id (loads agents/<id>/identity, AGENTS, soul)
             max_turns: Maximum tool-calling iterations shared with subagents (default: 90)
             verbose: Enable verbose logging
             compact: Use compact display mode

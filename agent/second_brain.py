@@ -176,7 +176,7 @@ def build_second_brain_prompt(agent_id: str | None = None, cwd: str | None = Non
     if agent_dir and agent_dir.exists():
         per_agent_candidates = [
             ("Identity", ("identity.md", "IDENTITY.md")),
-            ("Adjoint", ("adjoint.md", "ADJOINT.md")),
+            ("Agents", ("AGENTS.md", "agents.md")),
             ("Soul", ("soul.md", "SOUL.md")),
             ("User Overlay", ("user.md", "USER.md")),
             ("Environment Overlay", ("environment.md", "environnement.md", "ENVIRONMENT.md", "ENVIRONNEMENT.md")),

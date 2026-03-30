@@ -349,7 +349,7 @@ def bootstrap_second_brain(root: Path, agent_id: str = "default", force: bool = 
         root / "Large Memory" / "MEMORY.md": "",
         root / "Large Memory" / "USER.md": "",
         root / "agents" / aid / "identity.md": "# Identity\n\nWho this agent is and what it owns.\n",
-        root / "agents" / aid / "adjoint.md": "# Adjoint\n\nHow this agent coordinates with other agents and subagents.\n",
+        root / "agents" / aid / "AGENTS.md": "# Agents\n\nHow this agent coordinates with other agents and subagents.\n",
         root / "agents" / aid / "soul.md": "# Soul\n\nVoice, style, behavior constraints, and reasoning posture.\n",
         root / "agents" / aid / "user.md": "# User Overlay\n\nAgent-specific user preferences.\n",
         root / "agents" / aid / "environment.md": "# Environment Overlay\n\nAgent-specific workspace assumptions.\n",

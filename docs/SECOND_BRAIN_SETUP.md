@@ -81,7 +81,7 @@ Second Brain/
   agents/
     founder/
       identity.md
-      adjoint.md
+      AGENTS.md
       soul.md
 ```
 
@@ -104,7 +104,7 @@ Second Brain/
 Each agent id has:
 
 - `identity.md`: role, boundaries, communication style
-- `adjoint.md`: understanding of other agents and delegation map
+- `AGENTS.md`: understanding of other agents and delegation map
 - `soul.md`: personality, behavior defaults, long-term alignment
 
 ## 7. Starting a session with a specific agent profile
@@ -129,7 +129,7 @@ On each new CLAWG session:
 
 1. Resolve linked Second Brain root.
 2. Load master files (`user.md`, `environment.md`, `philosophy.md`).
-3. Load agent profile (`identity.md`, `adjoint.md`, `soul.md`).
+3. Load agent profile (`identity.md`, `AGENTS.md`, `soul.md`).
 4. Expose shared skills/subagents/tools from vault folders.
 5. Use this context first before freeform generation.
 
@@ -222,7 +222,7 @@ clawg cron
 
 - Confirm folder exists:
   - `agents/<id>/identity.md`
-  - `agents/<id>/adjoint.md`
+  - `agents/<id>/AGENTS.md`
   - `agents/<id>/soul.md`
 - Re-run init for the missing id:
   ```bash
@@ -262,4 +262,4 @@ Before publishing your CLAWG fork:
 
 ---
 
-If you want, the next step is to add machine-readable templates for `identity.md`, `adjoint.md`, `soul.md`, and a validator command that checks vault compliance before session start.
+If you want, the next step is to add machine-readable templates for `identity.md`, `AGENTS.md`, `soul.md`, and a validator command that checks vault compliance before session start.
