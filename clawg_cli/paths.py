@@ -343,7 +343,7 @@ def bootstrap_second_brain(root: Path, agent_id: str = "default", force: bool = 
             created_dirs.append(d)
 
     file_templates = {
-        root / "SECOND_BRAIN.md": "# CLAWG Second Brain\n\nThis vault is the shared source of truth for all CLAWG agents.\n\n",
+        root / "SECOND_BRAIN.md": "# CLAWG Second Brain\n\nAutonomous open-source AI agents with a portable brain.\n\n",
         root / "user.md": "# User\n\nCore user profile and stable preferences shared across agents.\n",
         root / "environment.md": """# Environment
 

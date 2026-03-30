@@ -1,6 +1,6 @@
 <h1 align="center"><img src="assets/logo.svg" alt="SMART CLAWG" width="700"></h1>
 
-**CLAWG is an open-source personal agent framework with a native shared Obsidian Second Brain.**
+**CLAWG — Autonomous open-source AI agents with a portable brain.**
 
 Every session can load shared markdown context from one vault so all agents work from the same source of truth:
 
