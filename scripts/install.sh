@@ -14,65 +14,90 @@ YELLOW='\033[0;33m'
 CYAN='\033[0;36m'
 RED='\033[0;31m'
 BOLD='\033[1m'
+DIM='\033[2m'
 NC='\033[0m'
 
 REPO_URL="https://github.com/gquthier/CLAWG.git"
 INSTALL_DIR="${CLAWG_INSTALL_DIR:-$HOME/.clawg-src}"
+
+# ── Helpers ──
+
+info()  { echo -e "  ${CYAN}→${NC} $1"; }
+ok()    { echo -e "  ${GREEN}✓${NC} $1"; }
+warn()  { echo -e "  ${YELLOW}⚠${NC} $1"; }
+fail()  { echo -e "  ${RED}✗${NC} $1"; }
+ask()   { echo -en "  ${PURPLE}?${NC} $1"; }
 
 echo ""
 echo -e "${PURPLE}${BOLD}"
 cat << 'LOGO'
   ███████╗███╗   ███╗ █████╗ ██████╗ ████████╗
   ██╔════╝████╗ ████║██╔══██╗██╔══██╗╚══██╔══╝
-  ███████╗██╔████╔██║███████║██████╔╝   ██║   
-  ╚════██║██║╚██╔╝██║██╔══██║██╔══██╗   ██║   
-  ███████║██║ ╚═╝ ██║██║  ██║██║  ██║   ██║   
-  ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   
-   ██████╗██╗      █████╗ ██╗    ██╗ ██████╗ 
-  ██╔════╝██║     ██╔══██╗██║    ██║██╔════╝ 
+  ███████╗██╔████╔██║███████║██████╔╝   ██║
+  ╚════██║██║╚██╔╝██║██╔══██║██╔══██╗   ██║
+  ███████║██║ ╚═╝ ██║██║  ██║██║  ██║   ██║
+  ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+   ██████╗██╗      █████╗ ██╗    ██╗ ██████╗
+  ██╔════╝██║     ██╔══██╗██║    ██║██╔════╝
   ██║     ██║     ███████║██║ █╗ ██║██║  ███╗
   ██║     ██║     ██╔══██║██║███╗██║██║   ██║
   ╚██████╗███████╗██║  ██║╚███╔███╔╝╚██████╔╝
-   ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝  ╚═════╝ 
+   ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝  ╚═════╝
 LOGO
 echo -e "${NC}"
 echo -e "${PURPLE}  Shared Obsidian Second Brain for AI Agents${NC}"
+echo -e "${DIM}  https://github.com/gquthier/CLAWG${NC}"
 echo ""
 
-# ── Preflight ──
-command -v git >/dev/null 2>&1 || { echo -e "${RED}git is required but not installed.${NC}"; exit 1; }
-command -v python3 >/dev/null 2>&1 || { echo -e "${RED}python3 is required but not installed.${NC}"; exit 1; }
+# ============================================================================
+# Step 1 — Preflight checks
+# ============================================================================
+
+echo -e "${BOLD}[1/5] Preflight checks${NC}"
+
+command -v git >/dev/null 2>&1 || { fail "git is required. Install it: https://git-scm.com"; exit 1; }
+ok "git found"
+
+command -v python3 >/dev/null 2>&1 || { fail "python3 is required. Install it: https://python.org"; exit 1; }
 
 PY_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
 PY_MAJOR=$(echo "$PY_VERSION" | cut -d. -f1)
 PY_MINOR=$(echo "$PY_VERSION" | cut -d. -f2)
 
 if [ "$PY_MAJOR" -lt 3 ] || ([ "$PY_MAJOR" -eq 3 ] && [ "$PY_MINOR" -lt 10 ]); then
-  echo -e "${RED}Python 3.10+ required (found $PY_VERSION).${NC}"
+  fail "Python 3.10+ required (found $PY_VERSION)"
   exit 1
 fi
+ok "Python $PY_VERSION"
+echo ""
 
-echo -e "${CYAN}Python $PY_VERSION detected.${NC}"
+# ============================================================================
+# Step 2 — Clone or update CLAWG
+# ============================================================================
 
-# ── Clone or update ──
+echo -e "${BOLD}[2/5] Installing CLAWG${NC}"
+
 if [ -d "$INSTALL_DIR/.git" ]; then
-  echo -e "${YELLOW}Updating existing installation...${NC}"
+  info "Updating existing installation..."
   cd "$INSTALL_DIR"
   git pull --ff-only origin main 2>/dev/null || git pull origin main
+  ok "Updated to latest version"
 else
-  echo -e "${CYAN}Cloning CLAWG...${NC}"
+  info "Cloning CLAWG..."
   git clone "$REPO_URL" "$INSTALL_DIR"
   cd "$INSTALL_DIR"
+  ok "Cloned to $INSTALL_DIR"
 fi
 
 # ── Virtual environment ──
-echo -e "${CYAN}Setting up Python environment...${NC}"
+info "Setting up Python environment..."
 if [ ! -d ".venv" ]; then
   python3 -m venv .venv
 fi
 source .venv/bin/activate
 python -m pip install --upgrade pip --quiet 2>/dev/null
 python -m pip install -e . --quiet 2>/dev/null
+ok "Dependencies installed"
 
 # ── Symlink CLI ──
 BIN_DIR="$HOME/.local/bin"
@@ -80,38 +105,273 @@ mkdir -p "$BIN_DIR"
 
 if [ -f "$INSTALL_DIR/.venv/bin/clawg" ]; then
   ln -sf "$INSTALL_DIR/.venv/bin/clawg" "$BIN_DIR/clawg"
-  echo -e "${GREEN}CLI linked: $BIN_DIR/clawg${NC}"
 elif [ -f "$INSTALL_DIR/clawg_wrapper" ]; then
   ln -sf "$INSTALL_DIR/clawg_wrapper" "$BIN_DIR/clawg"
   chmod +x "$BIN_DIR/clawg"
-  echo -e "${GREEN}CLI linked: $BIN_DIR/clawg${NC}"
 fi
+ok "CLI linked: ~/.local/bin/clawg"
 
 # ── Ensure PATH ──
-if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
-  SHELL_RC=""
-  if [ -f "$HOME/.zshrc" ]; then
-    SHELL_RC="$HOME/.zshrc"
-  elif [ -f "$HOME/.bashrc" ]; then
-    SHELL_RC="$HOME/.bashrc"
+SHELL_RC=""
+if [ -f "$HOME/.zshrc" ]; then
+  SHELL_RC="$HOME/.zshrc"
+elif [ -f "$HOME/.bashrc" ]; then
+  SHELL_RC="$HOME/.bashrc"
+fi
+
+if [ -n "$SHELL_RC" ] && ! grep -q '.local/bin' "$SHELL_RC" 2>/dev/null; then
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_RC"
+  ok "Added ~/.local/bin to PATH in $SHELL_RC"
+fi
+echo ""
+
+# ============================================================================
+# Step 3 — Obsidian & Second Brain setup
+# ============================================================================
+
+echo -e "${BOLD}[3/5] Obsidian Second Brain Setup${NC}"
+echo ""
+echo -e "  CLAWG uses an ${BOLD}Obsidian vault${NC} as its shared memory."
+echo -e "  All your agents read from the same source of truth."
+echo ""
+
+# ── Detect Obsidian ──
+OBSIDIAN_INSTALLED=false
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  [ -d "/Applications/Obsidian.app" ] && OBSIDIAN_INSTALLED=true
+elif [[ "$OSTYPE" == "linux"* ]]; then
+  command -v obsidian >/dev/null 2>&1 && OBSIDIAN_INSTALLED=true
+  [ -f "/usr/bin/obsidian" ] && OBSIDIAN_INSTALLED=true
+  command -v flatpak >/dev/null 2>&1 && flatpak list 2>/dev/null | grep -qi obsidian && OBSIDIAN_INSTALLED=true
+  command -v snap >/dev/null 2>&1 && snap list 2>/dev/null | grep -qi obsidian && OBSIDIAN_INSTALLED=true
+fi
+
+if [ "$OBSIDIAN_INSTALLED" = true ]; then
+  ok "Obsidian detected"
+else
+  warn "Obsidian not detected on this machine"
+  echo ""
+  echo -e "  Obsidian is ${BOLD}free${NC} and works on macOS, Linux, Windows, iOS, and Android."
+  echo -e "  CLAWG uses it as the editor for your Second Brain vault."
+  echo ""
+  echo -e "  ${CYAN}Download Obsidian:${NC}"
+  echo -e "    ${PURPLE}https://obsidian.md/download${NC}"
+  echo ""
+
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo -e "  ${DIM}Quick install on macOS:${NC}"
+    echo -e "    ${CYAN}brew install --cask obsidian${NC}"
+    echo ""
+    ask "Install Obsidian now via Homebrew? [y/N] "
+    read -r INSTALL_OBS
+    if [[ "$INSTALL_OBS" =~ ^[Yy]$ ]]; then
+      if command -v brew >/dev/null 2>&1; then
+        brew install --cask obsidian && OBSIDIAN_INSTALLED=true && ok "Obsidian installed"
+      else
+        warn "Homebrew not found. Install from: https://obsidian.md/download"
+      fi
+    fi
+  elif [[ "$OSTYPE" == "linux"* ]]; then
+    echo -e "  ${DIM}Install options on Linux:${NC}"
+    echo -e "    ${CYAN}flatpak install flathub md.obsidian.Obsidian${NC}"
+    echo -e "    ${CYAN}snap install obsidian --classic${NC}"
+    echo -e "    ${DIM}Or download AppImage from https://obsidian.md/download${NC}"
+    echo ""
   fi
 
-  if [ -n "$SHELL_RC" ] && ! grep -q '.local/bin' "$SHELL_RC" 2>/dev/null; then
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_RC"
-    echo -e "${YELLOW}Added ~/.local/bin to PATH in $SHELL_RC${NC}"
+  echo ""
+  echo -e "  ${DIM}Note: Obsidian is optional for running CLAWG in CLI mode.${NC}"
+  echo -e "  ${DIM}You can always install it later and link your vault.${NC}"
+  echo ""
+fi
+
+# ── Link or create Second Brain vault ──
+VAULT_PATH=""
+
+# Check if already configured
+EXISTING_VAULT=""
+for env_key in CLAWG_SECOND_BRAIN_ROOT SECOND_BRAIN_ROOT; do
+  val="${!env_key}"
+  if [ -n "$val" ] && [ -d "$val" ]; then
+    EXISTING_VAULT="$val"
+    break
+  fi
+done
+
+# Check common locations
+if [ -z "$EXISTING_VAULT" ]; then
+  for candidate in \
+    "$HOME/.clawg/second-brain" \
+    "$HOME/.openclaw/second-brain" \
+    "$HOME/Documents/Second Brain" \
+    "$HOME/Second Brain" \
+    "$HOME/Documents/Second Brain OpenClaw - PROD" \
+    "$HOME/Obsidian" \
+    "$HOME/Documents/Obsidian"; do
+    if [ -d "$candidate" ]; then
+      EXISTING_VAULT="$candidate"
+      break
+    fi
+  done
+fi
+
+if [ -n "$EXISTING_VAULT" ]; then
+  ok "Found existing vault: $EXISTING_VAULT"
+  ask "Use this vault as your Second Brain? [Y/n] "
+  read -r USE_EXISTING
+  if [[ "$USE_EXISTING" =~ ^[Nn]$ ]]; then
+    EXISTING_VAULT=""
+  else
+    VAULT_PATH="$EXISTING_VAULT"
   fi
 fi
 
-# ── Done ──
+if [ -z "$VAULT_PATH" ]; then
+  echo ""
+  echo -e "  ${BOLD}Where is your Obsidian vault?${NC}"
+  echo ""
+  echo -e "  Enter the ${BOLD}full path${NC} to an existing vault, or press Enter"
+  echo -e "  to create a new one at ${CYAN}~/Second Brain${NC}"
+  echo ""
+  ask "Vault path: "
+  read -r USER_VAULT_PATH
+
+  if [ -z "$USER_VAULT_PATH" ]; then
+    VAULT_PATH="$HOME/Second Brain"
+  else
+    # Expand ~ if present
+    VAULT_PATH="${USER_VAULT_PATH/#\~/$HOME}"
+  fi
+fi
+
+# ── Create vault directory if needed ──
+if [ ! -d "$VAULT_PATH" ]; then
+  info "Creating vault at: $VAULT_PATH"
+  mkdir -p "$VAULT_PATH"
+  ok "Vault directory created"
+fi
+
+# ── Choose agent identity ──
 echo ""
-echo -e "${GREEN}${BOLD}SMART-CLAWG installed successfully.${NC}"
+ask "Name your first agent (default: founder): "
+read -r AGENT_ID
+AGENT_ID="${AGENT_ID:-founder}"
+
+# ── Link and bootstrap Second Brain ──
+info "Linking vault and initializing templates..."
+
+# Set the env var for the current process
+export CLAWG_SECOND_BRAIN_ROOT="$VAULT_PATH"
+
+# Run the Python bootstrap
+python3 -c "
+import sys
+sys.path.insert(0, '$INSTALL_DIR')
+from clawg_cli.paths import bootstrap_second_brain
+from pathlib import Path
+result = bootstrap_second_brain(Path('$VAULT_PATH'), '$AGENT_ID')
+print(f'  Created {len(result[\"dirs\"])} directories, {len(result[\"files\"])} files')
+" 2>/dev/null || warn "Bootstrap script failed — you can run 'clawg second-brain init' later"
+
+# Persist the vault path in CLAWG config
+CLAWG_CONFIG_DIR="${CLAWG_HOME:-$HOME/.clawg}"
+mkdir -p "$CLAWG_CONFIG_DIR"
+
+if [ -f "$CLAWG_CONFIG_DIR/config.yaml" ]; then
+  # Update existing config
+  if grep -q "second_brain:" "$CLAWG_CONFIG_DIR/config.yaml" 2>/dev/null; then
+    # Already has second_brain section — update root
+    if command -v sed >/dev/null 2>&1; then
+      sed -i.bak "s|root:.*|root: \"$VAULT_PATH\"|" "$CLAWG_CONFIG_DIR/config.yaml" 2>/dev/null || true
+      rm -f "$CLAWG_CONFIG_DIR/config.yaml.bak"
+    fi
+  else
+    # Add second_brain section
+    echo "" >> "$CLAWG_CONFIG_DIR/config.yaml"
+    echo "second_brain:" >> "$CLAWG_CONFIG_DIR/config.yaml"
+    echo "  root: \"$VAULT_PATH\"" >> "$CLAWG_CONFIG_DIR/config.yaml"
+    echo "  agent_default_id: \"$AGENT_ID\"" >> "$CLAWG_CONFIG_DIR/config.yaml"
+  fi
+else
+  # Create minimal config
+  cat > "$CLAWG_CONFIG_DIR/config.yaml" << YAML
+# CLAWG Configuration
+# Generated by install script
+
+second_brain:
+  root: "$VAULT_PATH"
+  agent_default_id: "$AGENT_ID"
+YAML
+fi
+
+ok "Second Brain linked: $VAULT_PATH"
+ok "Agent profile: agents/$AGENT_ID/"
 echo ""
-echo -e "  ${CYAN}Next steps:${NC}"
-echo -e "  1. ${PURPLE}clawg setup${NC}                    — First-time configuration"
-echo -e "  2. ${PURPLE}clawg second-brain link --path \"~/My Second Brain\"${NC}"
-echo -e "  3. ${PURPLE}clawg second-brain init --agent-id founder${NC}"
-echo -e "  4. ${PURPLE}clawg --agent-id founder${NC}        — Launch with context"
+
+# ============================================================================
+# Step 4 — Dashboard setup
+# ============================================================================
+
+echo -e "${BOLD}[4/5] Command Center Dashboard${NC}"
+
+DASHBOARD_SRC="$INSTALL_DIR/dashboard/command-center.html"
+DASHBOARD_DST="$VAULT_PATH/dashboard/command-center.html"
+
+if [ -f "$DASHBOARD_SRC" ]; then
+  mkdir -p "$VAULT_PATH/dashboard"
+  cp "$DASHBOARD_SRC" "$DASHBOARD_DST"
+  ok "Dashboard installed in vault"
+  echo -e "  ${DIM}Open in Obsidian or run: clawg dashboard${NC}"
+else
+  warn "Dashboard file not found (optional)"
+fi
 echo ""
-echo -e "  ${YELLOW}If 'clawg' is not found, restart your shell or run:${NC}"
-echo -e "  ${CYAN}export PATH=\"\$HOME/.local/bin:\$PATH\"${NC}"
+
+# ============================================================================
+# Step 5 — Summary
+# ============================================================================
+
+echo -e "${BOLD}[5/5] Installation Complete${NC}"
 echo ""
+echo -e "  ${GREEN}${BOLD}SMART-CLAWG is ready.${NC}"
+echo ""
+echo -e "  ${BOLD}Your Second Brain:${NC}"
+echo -e "    ${CYAN}$VAULT_PATH${NC}"
+echo ""
+echo -e "  ${BOLD}Vault structure:${NC}"
+echo -e "    ${DIM}$VAULT_PATH/${NC}"
+echo -e "    ${DIM}├── agents/$AGENT_ID/   ${NC}${PURPLE}← your agent's identity${NC}"
+echo -e "    ${DIM}├── skills/            ${NC}${PURPLE}← shared skills${NC}"
+echo -e "    ${DIM}├── subagent/          ${NC}${PURPLE}← specialist agents${NC}"
+echo -e "    ${DIM}├── learning/          ${NC}${PURPLE}← lessons & postmortems${NC}"
+echo -e "    ${DIM}├── Projects/          ${NC}${PURPLE}← project notes${NC}"
+echo -e "    ${DIM}├── dashboard/         ${NC}${PURPLE}← Command Center${NC}"
+echo -e "    ${DIM}├── user.md            ${NC}${PURPLE}← your profile${NC}"
+echo -e "    ${DIM}├── environment.md     ${NC}${PURPLE}← machine context${NC}"
+echo -e "    ${DIM}└── philosophy.md      ${NC}${PURPLE}← principles${NC}"
+echo ""
+
+if [ "$OBSIDIAN_INSTALLED" = true ]; then
+  echo -e "  ${BOLD}Open in Obsidian:${NC}"
+  echo -e "    Open Obsidian → Open folder as vault → select ${CYAN}$VAULT_PATH${NC}"
+  echo ""
+fi
+
+echo -e "  ${BOLD}Quick start:${NC}"
+echo -e "    ${PURPLE}clawg setup${NC}                 — Configure API keys"
+echo -e "    ${PURPLE}clawg --agent-id $AGENT_ID${NC}  — Launch with your agent"
+echo -e "    ${PURPLE}clawg dashboard${NC}             — Open Command Center"
+echo ""
+echo -e "  ${BOLD}Useful commands:${NC}"
+echo -e "    ${PURPLE}clawg second-brain status${NC}   — Check vault connection"
+echo -e "    ${PURPLE}clawg cron list${NC}             — View scheduled jobs"
+echo -e "    ${PURPLE}clawg skills list${NC}           — Browse available skills"
+echo -e "    ${PURPLE}clawg doctor${NC}                — Diagnose issues"
+echo ""
+
+if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
+  echo -e "  ${YELLOW}Restart your shell or run:${NC}"
+  echo -e "    ${CYAN}source $SHELL_RC${NC}"
+  echo ""
+fi

@@ -288,35 +288,180 @@ else
 fi
 
 # ============================================================================
+# Obsidian & Second Brain setup
+# ============================================================================
+
+BOLD='\033[1m'
+DIM='\033[2m'
+
+echo ""
+echo -e "${BOLD}Obsidian Second Brain Setup${NC}"
+echo ""
+echo -e "  CLAWG uses an ${BOLD}Obsidian vault${NC} as its shared memory."
+echo -e "  All your agents read from the same source of truth."
+echo ""
+
+# ── Detect Obsidian ──
+OBSIDIAN_INSTALLED=false
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    [ -d "/Applications/Obsidian.app" ] && OBSIDIAN_INSTALLED=true
+elif [[ "$OSTYPE" == "linux"* ]]; then
+    command -v obsidian >/dev/null 2>&1 && OBSIDIAN_INSTALLED=true
+    [ -f "/usr/bin/obsidian" ] && OBSIDIAN_INSTALLED=true
+    command -v flatpak >/dev/null 2>&1 && flatpak list 2>/dev/null | grep -qi obsidian && OBSIDIAN_INSTALLED=true
+fi
+
+if [ "$OBSIDIAN_INSTALLED" = true ]; then
+    echo -e "  ${GREEN}✓${NC} Obsidian detected"
+else
+    echo -e "  ${YELLOW}⚠${NC} Obsidian not detected"
+    echo ""
+    echo -e "  Obsidian is ${BOLD}free${NC} — download at: ${CYAN}https://obsidian.md/download${NC}"
+
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo -e "  Quick install: ${CYAN}brew install --cask obsidian${NC}"
+        echo ""
+        read -p "  Install Obsidian via Homebrew? [y/N] " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            if command -v brew >/dev/null 2>&1; then
+                brew install --cask obsidian && OBSIDIAN_INSTALLED=true && echo -e "  ${GREEN}✓${NC} Obsidian installed"
+            else
+                echo -e "  ${YELLOW}⚠${NC} Homebrew not found"
+            fi
+        fi
+    elif [[ "$OSTYPE" == "linux"* ]]; then
+        echo -e "  Install: ${CYAN}flatpak install flathub md.obsidian.Obsidian${NC}"
+        echo -e "       or: ${CYAN}snap install obsidian --classic${NC}"
+    fi
+    echo ""
+    echo -e "  ${DIM}Obsidian is optional for CLI mode. Install anytime.${NC}"
+    echo ""
+fi
+
+# ── Find or create vault ──
+VAULT_PATH=""
+
+# Check common locations
+for candidate in \
+    "$HOME/.clawg/second-brain" \
+    "$HOME/.openclaw/second-brain" \
+    "$HOME/Documents/Second Brain" \
+    "$HOME/Second Brain" \
+    "$HOME/Documents/Second Brain OpenClaw - PROD" \
+    "$HOME/Obsidian" \
+    "$HOME/Documents/Obsidian"; do
+    if [ -d "$candidate" ]; then
+        VAULT_PATH="$candidate"
+        break
+    fi
+done
+
+if [ -n "$VAULT_PATH" ]; then
+    echo -e "  Found vault: ${CYAN}$VAULT_PATH${NC}"
+    read -p "  Use this as your Second Brain? [Y/n] " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Nn]$ ]]; then
+        VAULT_PATH=""
+    fi
+fi
+
+if [ -z "$VAULT_PATH" ]; then
+    echo ""
+    echo -e "  Enter the path to your Obsidian vault (or press Enter for ${CYAN}~/Second Brain${NC}):"
+    read -p "  Vault path: " USER_VAULT_PATH
+    VAULT_PATH="${USER_VAULT_PATH:-$HOME/Second Brain}"
+    VAULT_PATH="${VAULT_PATH/#\~/$HOME}"
+fi
+
+if [ ! -d "$VAULT_PATH" ]; then
+    mkdir -p "$VAULT_PATH"
+    echo -e "  ${GREEN}✓${NC} Created vault directory"
+fi
+
+# ── Agent identity ──
+read -p "  Name your first agent (default: founder): " AGENT_ID
+AGENT_ID="${AGENT_ID:-founder}"
+
+# ── Bootstrap Second Brain ──
+echo -e "  ${CYAN}→${NC} Initializing Second Brain templates..."
+
+export CLAWG_SECOND_BRAIN_ROOT="$VAULT_PATH"
+
+"$SCRIPT_DIR/venv/bin/python" -c "
+import sys
+sys.path.insert(0, '$SCRIPT_DIR')
+from clawg_cli.paths import bootstrap_second_brain
+from pathlib import Path
+result = bootstrap_second_brain(Path('''$VAULT_PATH'''), '$AGENT_ID')
+print(f'  Created {len(result[\"dirs\"])} dirs, {len(result[\"files\"])} files')
+" 2>/dev/null || echo -e "  ${YELLOW}⚠${NC} Bootstrap failed — run 'clawg second-brain init' later"
+
+# ── Copy dashboard ──
+DASHBOARD_SRC="$SCRIPT_DIR/dashboard/command-center.html"
+if [ -f "$DASHBOARD_SRC" ]; then
+    mkdir -p "$VAULT_PATH/dashboard"
+    cp "$DASHBOARD_SRC" "$VAULT_PATH/dashboard/command-center.html"
+    echo -e "  ${GREEN}✓${NC} Dashboard installed in vault"
+fi
+
+# ── Persist config ──
+CLAWG_CONFIG_DIR="${CLAWG_HOME:-$HOME/.clawg}"
+mkdir -p "$CLAWG_CONFIG_DIR"
+
+if [ -f "$CLAWG_CONFIG_DIR/config.yaml" ]; then
+    if ! grep -q "second_brain:" "$CLAWG_CONFIG_DIR/config.yaml" 2>/dev/null; then
+        echo "" >> "$CLAWG_CONFIG_DIR/config.yaml"
+        echo "second_brain:" >> "$CLAWG_CONFIG_DIR/config.yaml"
+        echo "  root: \"$VAULT_PATH\"" >> "$CLAWG_CONFIG_DIR/config.yaml"
+        echo "  agent_default_id: \"$AGENT_ID\"" >> "$CLAWG_CONFIG_DIR/config.yaml"
+    fi
+else
+    cat > "$CLAWG_CONFIG_DIR/config.yaml" << YAML
+second_brain:
+  root: "$VAULT_PATH"
+  agent_default_id: "$AGENT_ID"
+YAML
+fi
+
+echo -e "  ${GREEN}✓${NC} Second Brain linked: ${CYAN}$VAULT_PATH${NC}"
+echo -e "  ${GREEN}✓${NC} Agent profile: agents/$AGENT_ID/"
+
+# ============================================================================
 # Done
 # ============================================================================
 
 echo ""
-echo -e "${GREEN}✓ Setup complete!${NC}"
+echo -e "${GREEN}${BOLD}✓ Setup complete!${NC}"
 echo ""
-echo "Next steps:"
+echo -e "  ${BOLD}Your Second Brain:${NC} ${CYAN}$VAULT_PATH${NC}"
 echo ""
-echo "  1. Reload your shell:"
-echo "     source $SHELL_CONFIG"
+
+if [ "$OBSIDIAN_INSTALLED" = true ]; then
+    echo -e "  ${BOLD}Open in Obsidian:${NC}"
+    echo -e "    Open Obsidian → Open folder as vault → ${CYAN}$VAULT_PATH${NC}"
+    echo ""
+fi
+
+echo -e "  ${BOLD}Quick start:${NC}"
 echo ""
-echo "  2. Run the setup wizard to configure API keys:"
-echo "     clawg setup"
+echo -e "    1. Reload shell:     ${CYAN}source $SHELL_CONFIG${NC}"
+echo -e "    2. Configure keys:   ${CYAN}clawg setup${NC}"
+echo -e "    3. Launch agent:     ${CYAN}clawg --agent-id $AGENT_ID${NC}"
+echo -e "    4. Open dashboard:   ${CYAN}clawg dashboard${NC}"
 echo ""
-echo "  3. Start chatting:"
-echo "     clawg"
-echo ""
-echo "Other commands:"
-echo "  clawg status        # Check configuration"
-echo "  clawg gateway install # Install gateway service (messaging + cron)"
-echo "  clawg cron list     # View scheduled jobs"
-echo "  clawg doctor        # Diagnose issues"
+echo -e "  ${BOLD}Other commands:${NC}"
+echo -e "    ${CYAN}clawg second-brain status${NC}   — Check vault connection"
+echo -e "    ${CYAN}clawg gateway install${NC}       — Install messaging service"
+echo -e "    ${CYAN}clawg cron list${NC}             — View scheduled jobs"
+echo -e "    ${CYAN}clawg doctor${NC}                — Diagnose issues"
 echo ""
 
 # Ask if they want to run setup wizard now
-read -p "Would you like to run the setup wizard now? [Y/n] " -n 1 -r
+read -p "Run the API key setup wizard now? [Y/n] " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
     echo ""
-    # Run directly with venv Python (no activation needed)
     "$SCRIPT_DIR/venv/bin/python" -m clawg_cli.main setup
 fi
