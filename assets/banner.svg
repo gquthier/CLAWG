@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1145" height="196" viewBox="0 0 1145 196">
+  <defs>
+    <linearGradient id="purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c084fc"/>
+      <stop offset="50%" style="stop-color:#9b5de5"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9b5de5;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#9b5de5;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#9b5de5;stop-opacity:0"/>
+    </linearGradient>
+    <filter id="text-glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="soft-glow">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1145" height="196" fill="#0b0a12"/>
+
+  <!-- Subtle radial glow behind text -->
+  <ellipse cx="572" cy="98" rx="400" ry="80" fill="url(#glow)"/>
+
+  <!-- Decorative line top -->
+  <line x1="80" y1="28" x2="1065" y2="28" stroke="#9b5de5" stroke-opacity="0.15" stroke-width="1"/>
+  <!-- Decorative line bottom -->
+  <line x1="80" y1="168" x2="1065" y2="168" stroke="#9b5de5" stroke-opacity="0.15" stroke-width="1"/>
+
+  <!-- Small decorative dots -->
+  <circle cx="80" cy="28" r="2" fill="#9b5de5" opacity="0.4"/>
+  <circle cx="1065" cy="28" r="2" fill="#9b5de5" opacity="0.4"/>
+  <circle cx="80" cy="168" r="2" fill="#9b5de5" opacity="0.4"/>
+  <circle cx="1065" cy="168" r="2" fill="#9b5de5" opacity="0.4"/>
+
+  <!-- Glow layer -->
+  <text x="572" y="118" text-anchor="middle" font-family="'Space Grotesk','SF Pro Display',system-ui,sans-serif" font-weight="700" font-size="82" fill="#9b5de5" filter="url(#soft-glow)" opacity="0.6">SMART-CLAWG</text>
+
+  <!-- Main text -->
+  <text x="572" y="118" text-anchor="middle" font-family="'Space Grotesk','SF Pro Display',system-ui,sans-serif" font-weight="700" font-size="82" fill="url(#purple-grad)" filter="url(#text-glow)">SMART-CLAWG</text>
+
+  <!-- Star icon left -->
+  <text x="108" y="108" text-anchor="middle" font-size="28" fill="#9b5de5" opacity="0.7">&#x2726;</text>
+
+  <!-- Tagline -->
+  <text x="572" y="152" text-anchor="middle" font-family="'JetBrains Mono','SF Mono',monospace" font-weight="400" font-size="13" fill="#9b5de5" opacity="0.55" letter-spacing="3">SHARED OBSIDIAN SECOND BRAIN FOR AI AGENTS</text>
+</svg>
