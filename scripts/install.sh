@@ -111,6 +111,19 @@ elif [ -f "$INSTALL_DIR/clawg_wrapper" ]; then
 fi
 ok "CLI linked: ~/.local/bin/clawg"
 
+# ── Clean up stale hermes/openclaw binaries that shadow the new install ──
+for STALE_BIN in /opt/homebrew/bin/clawg /usr/local/bin/clawg; do
+  if [ -f "$STALE_BIN" ] && grep -q "hermes_cli\|hermes_agent\|openclaw" "$STALE_BIN" 2>/dev/null; then
+    warn "Found outdated binary at $STALE_BIN (references old hermes/openclaw)"
+    if [ -w "$STALE_BIN" ]; then
+      rm -f "$STALE_BIN"
+      ok "Removed stale $STALE_BIN"
+    else
+      warn "Cannot remove $STALE_BIN — run: sudo rm $STALE_BIN"
+    fi
+  fi
+done
+
 # ── Ensure PATH ──
 SHELL_RC=""
 if [ -f "$HOME/.zshrc" ]; then
@@ -164,7 +177,7 @@ else
     echo -e "    ${CYAN}brew install --cask obsidian${NC}"
     echo ""
     ask "Install Obsidian now via Homebrew? [y/N] "
-    read -r INSTALL_OBS
+    read -r INSTALL_OBS </dev/tty 2>/dev/null || INSTALL_OBS=""
     if [[ "$INSTALL_OBS" =~ ^[Yy]$ ]]; then
       if command -v brew >/dev/null 2>&1; then
         brew install --cask obsidian && OBSIDIAN_INSTALLED=true && ok "Obsidian installed"
@@ -217,7 +230,7 @@ fi
 if [ -n "$EXISTING_VAULT" ]; then
   ok "Found existing vault: $EXISTING_VAULT"
   ask "Use this vault as your Second Brain? [Y/n] "
-  read -r USE_EXISTING
+  read -r USE_EXISTING </dev/tty 2>/dev/null || USE_EXISTING=""
   if [[ "$USE_EXISTING" =~ ^[Nn]$ ]]; then
     EXISTING_VAULT=""
   else
@@ -234,7 +247,7 @@ if [ -z "$VAULT_PATH" ]; then
   echo -e "  to create a new one at ${CYAN}$DEFAULT_VAULT${NC}"
   echo ""
   ask "Vault path: "
-  read -r USER_VAULT_PATH
+  read -r USER_VAULT_PATH </dev/tty 2>/dev/null || USER_VAULT_PATH=""
 
   if [ -z "$USER_VAULT_PATH" ]; then
     VAULT_PATH="$DEFAULT_VAULT"
@@ -254,7 +267,7 @@ fi
 # ── Choose agent identity ──
 echo ""
 ask "Name your first agent (default: founder): "
-read -r AGENT_ID
+read -r AGENT_ID </dev/tty 2>/dev/null || AGENT_ID=""
 AGENT_ID="${AGENT_ID:-founder}"
 
 # ── Link and bootstrap Second Brain ──
