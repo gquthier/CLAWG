@@ -1,6 +1,6 @@
 # Skills Registry
 
-33 pre-installed skills. Agents should consult this index before executing tasks.
+32 pre-installed skills. Agents should consult this index before executing tasks.
 
 ## Development
 
@@ -68,4 +68,4 @@
 |-------|-------------|
 | `mcp/native-mcp` | Connect to any MCP server |
 | `mcp/mcporter` | List, configure, call MCP tools |
-| `note-taking/obsidian` | Read, search, create vault notes |
+| `note-taking/obsidian-dashboard` | Vault dashboards and visualization |
