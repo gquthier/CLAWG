@@ -47,6 +47,7 @@ LOGO
 echo -e "${NC}"
 echo -e "${PURPLE}  Shared Obsidian Second Brain for AI Agents${NC}"
 echo -e "${DIM}  https://github.com/gquthier/CLAWG${NC}"
+echo -e "${DIM}  www.gquthier.com${NC}"
 echo ""
 
 # ============================================================================
