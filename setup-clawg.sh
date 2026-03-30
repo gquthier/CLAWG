@@ -346,10 +346,8 @@ VAULT_PATH=""
 # Check common locations
 for candidate in \
     "$HOME/.clawg/second-brain" \
-    "$HOME/.openclaw/second-brain" \
-    "$HOME/Documents/Second Brain" \
     "$HOME/Second Brain" \
-    "$HOME/Documents/Second Brain OpenClaw - PROD" \
+    "$HOME/Documents/Second Brain" \
     "$HOME/Obsidian" \
     "$HOME/Documents/Obsidian"; do
     if [ -d "$candidate" ]; then
@@ -369,9 +367,10 @@ fi
 
 if [ -z "$VAULT_PATH" ]; then
     echo ""
-    echo -e "  Enter the path to your Obsidian vault (or press Enter for ${CYAN}~/Second Brain${NC}):"
+    DEFAULT_VAULT="$HOME/.clawg/second-brain"
+    echo -e "  Enter the path to your Obsidian vault (or press Enter for ${CYAN}$DEFAULT_VAULT${NC}):"
     read -p "  Vault path: " USER_VAULT_PATH
-    VAULT_PATH="${USER_VAULT_PATH:-$HOME/Second Brain}"
+    VAULT_PATH="${USER_VAULT_PATH:-$DEFAULT_VAULT}"
     VAULT_PATH="${VAULT_PATH/#\~/$HOME}"
 fi
 

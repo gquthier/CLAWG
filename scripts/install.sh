@@ -203,10 +203,8 @@ done
 if [ -z "$EXISTING_VAULT" ]; then
   for candidate in \
     "$HOME/.clawg/second-brain" \
-    "$HOME/.openclaw/second-brain" \
-    "$HOME/Documents/Second Brain" \
     "$HOME/Second Brain" \
-    "$HOME/Documents/Second Brain OpenClaw - PROD" \
+    "$HOME/Documents/Second Brain" \
     "$HOME/Obsidian" \
     "$HOME/Documents/Obsidian"; do
     if [ -d "$candidate" ]; then
@@ -231,14 +229,15 @@ if [ -z "$VAULT_PATH" ]; then
   echo ""
   echo -e "  ${BOLD}Where is your Obsidian vault?${NC}"
   echo ""
+  DEFAULT_VAULT="$HOME/.clawg/second-brain"
   echo -e "  Enter the ${BOLD}full path${NC} to an existing vault, or press Enter"
-  echo -e "  to create a new one at ${CYAN}~/Second Brain${NC}"
+  echo -e "  to create a new one at ${CYAN}$DEFAULT_VAULT${NC}"
   echo ""
   ask "Vault path: "
   read -r USER_VAULT_PATH
 
   if [ -z "$USER_VAULT_PATH" ]; then
-    VAULT_PATH="$HOME/Second Brain"
+    VAULT_PATH="$DEFAULT_VAULT"
   else
     # Expand ~ if present
     VAULT_PATH="${USER_VAULT_PATH/#\~/$HOME}"
