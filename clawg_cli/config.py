@@ -63,11 +63,6 @@ def get_clawg_home() -> Path:
     """Get the active CLAWG home directory (with legacy CLAWG_HOME support)."""
     return sync_home_env_vars(get_runtime_home())
 
-
-def get_clawg_home() -> Path:
-    """Preferred CLAWG alias for get_clawg_home()."""
-    return get_clawg_home()
-
 def get_config_path() -> Path:
     """Get the main config file path."""
     return get_clawg_home() / "config.yaml"
