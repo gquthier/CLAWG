@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Dashboard — Template</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #12121a;
+  --card: #1a1a2e;
+  --border: #2a2a4a;
+  --accent: #6c5ce7;
+  --accent2: #a29bfe;
+  --green: #00e676;
+  --red: #ff5252;
+  --orange: #ffab40;
+  --cyan: #18ffff;
+  --text: #e8e8f0;
+  --text2: #8888aa;
+  --muted: #555577;
+  --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --radius: 8px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--sans); background:var(--bg); color:var(--text); padding:24px; min-height:100vh; }
+
+/* Header */
+.header { margin-bottom:28px; }
+h1 { font-size:26px; font-weight:800; margin-bottom:4px;
+     background:linear-gradient(135deg,var(--accent),var(--accent2));
+     -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.subtitle { font-size:13px; color:var(--text2); }
+
+/* Metric Cards */
+.metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:28px; }
+.metric { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; }
+.metric-label { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:4px; }
+.metric-value { font-size:30px; font-weight:700; font-family:var(--mono); }
+.green { color:var(--green); } .purple { color:var(--accent); }
+.orange { color:var(--orange); } .cyan { color:var(--cyan); } .red { color:var(--red); }
+
+/* Progress Bar */
+.progress-section { margin-bottom:28px; }
+.progress-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+.progress-header h2 { font-size:14px; font-weight:700; }
+.progress-pct { font-size:20px; font-weight:700; font-family:var(--mono); color:var(--green); }
+.progress-bar { background:var(--border); border-radius:4px; height:10px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--accent),var(--green)); transition:width 0.6s ease; }
+
+/* Section Headers */
+h2 { font-size:15px; font-weight:700; margin:24px 0 10px; display:flex; align-items:center; gap:8px; }
+h2 .count { font-size:12px; color:var(--muted); font-weight:400; font-family:var(--mono); }
+
+/* Tables */
+table { width:100%; border-collapse:collapse; margin-bottom:8px; }
+th { text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--muted);
+     padding:8px 12px; border-bottom:1px solid var(--border); background:var(--bg2); position:sticky; top:0; }
+td { padding:9px 12px; font-size:13px; border-bottom:1px solid rgba(42,42,74,0.3); }
+tr:hover td { background:rgba(26,26,46,0.5); }
+.mono { font-family:var(--mono); font-size:12px; }
+
+/* Badges */
+.badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; font-family:var(--mono); }
+.badge-done { background:rgba(0,230,118,0.15); color:var(--green); }
+.badge-active { background:rgba(108,92,231,0.15); color:var(--accent2); }
+.badge-pending { background:rgba(255,171,64,0.15); color:var(--orange); }
+.badge-blocked { background:rgba(255,82,82,0.15); color:var(--red); }
+.badge-low { background:rgba(85,85,119,0.15); color:var(--text2); }
+
+/* Timeline */
+.timeline { border-left:2px solid var(--border); margin-left:12px; padding-left:20px; margin-bottom:28px; }
+.tl-item { margin-bottom:14px; position:relative; }
+.tl-item::before { content:''; position:absolute; left:-25px; top:5px; width:10px; height:10px;
+  border-radius:50%; background:var(--accent); border:2px solid var(--bg); }
+.tl-item.done::before { background:var(--green); }
+.tl-item.error::before { background:var(--red); }
+.tl-date { font-size:11px; color:var(--muted); font-family:var(--mono); }
+.tl-text { font-size:13px; margin-top:2px; }
+.tl-text strong { color:var(--accent2); }
+
+/* Notes Section */
+.notes { background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+         padding:16px; margin-top:24px; font-size:13px; line-height:1.6; color:var(--text2); }
+.notes h3 { font-size:13px; font-weight:700; color:var(--text); margin-bottom:8px; }
+
+/* Footer */
+.footer { margin-top:32px; padding-top:16px; border-top:1px solid var(--border);
+          font-size:11px; color:var(--muted); text-align:center; font-family:var(--mono);
+          display:flex; justify-content:space-between; }
+
+/* Empty state */
+.empty { text-align:center; padding:24px; color:var(--muted); font-size:13px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1 id="title"></h1>
+  <div class="subtitle" id="subtitle"></div>
+</div>
+
+<div class="metrics" id="metrics"></div>
+
+<div class="progress-section">
+  <div class="progress-header">
+    <h2>Overall Progress</h2>
+    <div class="progress-pct" id="progress-pct"></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+</div>
+
+<h2>Milestones <span class="count" id="milestone-count"></span></h2>
+<table id="milestones-table">
+  <thead><tr><th>Status</th><th>Milestone</th><th>Target Date</th><th>Notes</th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<h2>Tasks <span class="count" id="task-count"></span></h2>
+<table id="tasks-table">
+  <thead><tr><th>Status</th><th>Task</th><th>Assigned To</th><th>Priority</th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<h2>Timeline</h2>
+<div class="timeline" id="timeline"></div>
+
+<div class="notes" id="notes-section" style="display:none">
+  <h3>Notes</h3>
+  <div id="notes-content"></div>
+</div>
+
+<div class="footer">
+  <span>CLAWG Project Dashboard</span>
+  <span>Updated: <span id="updated"></span></span>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// PROJECT CONFIGURATION — Edit this section for your project
+// ═══════════════════════════════════════════════════════════════
+
+const PROJECT = {
+  name: "My Project",
+  description: "Short description of what this project is about",
+  startDate: "2026-03-30",
+  targetDate: "",           // Leave empty if no deadline
+};
+
+// Metric cards — add, remove, or change as needed
+const METRICS = [
+  { label: "Progress",   value: "0%",   color: "green"  },
+  { label: "Tasks",      value: "0/0",  color: "purple" },
+  { label: "Days Active", value: "1",   color: "orange" },
+  { label: "Agents",     value: "1",    color: "cyan"   },
+];
+
+// Milestones — status: "done" | "active" | "pending" | "blocked"
+const MILESTONES = [
+  { status: "done",    name: "Project created",      target: "2026-03-30", notes: "Initial setup" },
+  { status: "active",  name: "Phase 1 — Foundation", target: "",           notes: "In progress" },
+  { status: "pending", name: "Phase 2 — Build",      target: "",           notes: "" },
+  { status: "pending", name: "Phase 3 — Ship",       target: "",           notes: "" },
+];
+
+// Tasks — status: "done" | "active" | "pending" | "blocked"
+//         priority: "critical" | "high" | "medium" | "low"
+const TASKS = [
+  // { status: "active", name: "Implement feature X", agent: "engineering/frontend-dev", priority: "high" },
+];
+
+// Timeline — chronological events
+const TIMELINE = [
+  { date: "2026-03-30", text: "Project created", type: "done" },
+  // { date: "2026-04-01", text: "<strong>Milestone:</strong> Phase 1 complete", type: "done" },
+  // { date: "2026-04-05", text: "Bug found in auth module", type: "error" },
+];
+
+// Optional notes (set to "" to hide)
+const NOTES = "";
+
+// ═══════════════════════════════════════════════════════════════
+// RENDERING ENGINE — No need to edit below
+// ═══════════════════════════════════════════════════════════════
+
+function render() {
+  // Header
+  document.getElementById('title').textContent = PROJECT.name;
+  const parts = [PROJECT.description];
+  if (PROJECT.startDate) parts.push(`Started ${PROJECT.startDate}`);
+  if (PROJECT.targetDate) parts.push(`Target ${PROJECT.targetDate}`);
+  document.getElementById('subtitle').textContent = parts.join(' — ');
+
+  // Metrics
+  const metricsEl = document.getElementById('metrics');
+  metricsEl.innerHTML = METRICS.map(m =>
+    `<div class="metric"><div class="metric-label">${m.label}</div><div class="metric-value ${m.color}">${m.value}</div></div>`
+  ).join('');
+
+  // Progress
+  const done = MILESTONES.filter(m => m.status === 'done').length;
+  const total = MILESTONES.length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  // Milestones
+  document.getElementById('milestone-count').textContent = `(${done}/${total})`;
+  const mTbody = document.querySelector('#milestones-table tbody');
+  mTbody.innerHTML = MILESTONES.map(m =>
+    `<tr><td><span class="badge badge-${m.status}">${m.status}</span></td>
+     <td style="font-weight:600">${m.name}</td>
+     <td class="mono">${m.target || '—'}</td>
+     <td style="color:var(--text2)">${m.notes}</td></tr>`
+  ).join('');
+
+  // Tasks
+  const tasksDone = TASKS.filter(t => t.status === 'done').length;
+  document.getElementById('task-count').textContent = `(${tasksDone}/${TASKS.length})`;
+  const tTbody = document.querySelector('#tasks-table tbody');
+  if (TASKS.length === 0) {
+    tTbody.innerHTML = '<tr><td colspan="4" class="empty">No tasks yet — they will appear as the project progresses</td></tr>';
+  } else {
+    const prioClass = { critical:'badge-blocked', high:'badge-pending', medium:'badge-active', low:'badge-low' };
+    tTbody.innerHTML = TASKS.map(t =>
+      `<tr><td><span class="badge badge-${t.status}">${t.status}</span></td>
+       <td style="font-weight:600">${t.name}</td>
+       <td class="mono">${t.agent || '—'}</td>
+       <td><span class="badge ${prioClass[t.priority] || 'badge-low'}">${t.priority}</span></td></tr>`
+    ).join('');
+  }
+
+  // Timeline
+  const tl = document.getElementById('timeline');
+  if (TIMELINE.length === 0) {
+    tl.innerHTML = '<div class="empty">No events yet</div>';
+  } else {
+    tl.innerHTML = TIMELINE.map(e =>
+      `<div class="tl-item ${e.type || ''}"><div class="tl-date">${e.date}</div><div class="tl-text">${e.text}</div></div>`
+    ).join('');
+  }
+
+  // Notes
+  if (NOTES) {
+    document.getElementById('notes-section').style.display = 'block';
+    document.getElementById('notes-content').innerHTML = NOTES;
+  }
+
+  // Updated
+  document.getElementById('updated').textContent = new Date().toLocaleString();
+}
+
+render();
+</script>
+</body>
+</html>

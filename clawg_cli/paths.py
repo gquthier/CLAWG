@@ -344,16 +344,141 @@ def bootstrap_second_brain(root: Path, agent_id: str = "default", force: bool = 
     file_templates = {
         root / "SECOND_BRAIN.md": "# CLAWG Second Brain\n\nThis vault is the shared source of truth for all CLAWG agents.\n\n",
         root / "user.md": "# User\n\nCore user profile and stable preferences shared across agents.\n",
-        root / "environment.md": "# Environment\n\nMachine, repo, paths, and runtime conventions.\n",
+        root / "environment.md": """# Environment
+
+Machine, repo, paths, and runtime conventions.
+
+## Obsidian Second Brain
+
+This vault is the shared source of truth for all CLAWG agents. It is an Obsidian vault.
+
+### Vault Structure
+
+```
+vault/
+├── user.md              — User profile, preferences, constraints
+├── environment.md       — This file. Machine topology, paths, conventions
+├── philosophy.md        — Principles, non-negotiables, decision framework
+├── api.md               — API schemas and auth expectations
+├── agents/<id>/         — Per-agent profiles (identity, soul, AGENTS, overlays)
+├── skills/              — Reusable execution playbooks (shared across agents)
+├── subagent/            — Specialist agent definitions
+├── tools/               — Global tool docs and contracts
+├── learning/            — Durable lessons and postmortems
+├── Projects/            — Ephemeral project notes
+├── Large Memory/        — Large documents, reference material
+└── dashboard/           — HTML dashboards (Command Center + per-project)
+```
+
+### How to Use This Vault
+
+- **Read** any file for context: skills, agent profiles, project notes, learnings
+- **Write** new learnings, project notes, and updates to keep the vault current
+- **Create dashboards** in `dashboard/` for long-term projects (see skill: obsidian-dashboard)
+- All agents share this vault — changes are immediately visible to every agent
+
+### Dashboard System
+
+The `dashboard/` folder contains interactive HTML dashboards viewable in Obsidian.
+
+- **Command Center** (`dashboard/command-center.html`): Global overview of all agents, skills, crons, tasks, and projects with 3D visualization
+- **Project Dashboards** (`dashboard/<project-name>.html`): Per-project tracking dashboards
+
+**Obsidian Plugin Required**: Install **Custom Frames** or **HTML Reader** in Obsidian to view dashboards.
+Recommended: `obsidian-custom-frames` by Ellpeck — turns HTML files into panes.
+
+To embed a dashboard in a note:
+```markdown
+```embedhtml
+path: dashboard/my-project.html
+height: 800
+`` `
+```
+
+Or use an iframe:
+```html
+<iframe src="dashboard/my-project.html" width="100%" height="800" style="border:none;"></iframe>
+```
+
+### When to Propose a Dashboard
+
+Agents should propose creating a project dashboard when:
+- A project spans more than 2 weeks of active work
+- There are multiple agents collaborating on the same project
+- The user needs visibility into progress, milestones, or metrics
+- The project has recurring tasks, cron jobs, or scheduled deliverables
+
+Use the `obsidian-dashboard` skill (in `skills/note-taking/obsidian-dashboard/`) to create dashboards.
+""",
         root / "philosophy.md": "# Philosophy\n\nProject principles, coding standards, and decision rules.\n",
         root / "api.md": "# API\n\nGlobal endpoints, credentials mapping, and integration notes.\n",
+        root / "dashboard" / "README.md": """# Dashboards
+
+Interactive HTML dashboards for CLAWG projects.
+
+## Files
+
+- **command-center.html** — Global Command Center with 3D agent visualization
+- **project-template.html** — Template for creating new project dashboards
+- **<project-name>.html** — Per-project dashboards (created by agents)
+
+## How to View
+
+### Option 1: CLAWG Server (recommended)
+```bash
+clawg dashboard
+```
+Opens all dashboards in your browser with live data.
+
+### Option 2: Obsidian Plugin
+Install one of these Community Plugins in Obsidian:
+- **HTML Reader** (`obsidian-html-plugin`) — click any `.html` file to view as a tab
+- **Custom Frames** (`obsidian-custom-frames`) — embed as panes
+
+### Option 3: Embed in a Note
+```html
+<iframe src="dashboard/command-center.html" width="100%" height="900" style="border:none;"></iframe>
+```
+
+## Creating a New Dashboard
+
+Agents can create project dashboards using the `obsidian-dashboard` skill.
+Or duplicate `project-template.html`, rename it, and edit the configuration section at the top.
+""",
         root / "Large Memory" / "MEMORY.md": "",
         root / "Large Memory" / "USER.md": "",
         root / "agents" / aid / "identity.md": "# Identity\n\nWho this agent is and what it owns.\n",
         root / "agents" / aid / "AGENTS.md": "# Agents\n\nHow this agent coordinates with other agents and subagents.\n",
         root / "agents" / aid / "soul.md": "# Soul\n\nVoice, style, behavior constraints, and reasoning posture.\n",
         root / "agents" / aid / "user.md": "# User Overlay\n\nAgent-specific user preferences.\n",
-        root / "agents" / aid / "environment.md": "# Environment Overlay\n\nAgent-specific workspace assumptions.\n",
+        root / "agents" / aid / "environment.md": """# Environment Overlay
+
+Agent-specific workspace assumptions.
+
+## Second Brain Access
+
+You have full read/write access to this Obsidian vault. Key capabilities:
+
+1. **Read context**: Load any file from the vault for background knowledge
+2. **Write learnings**: Save durable lessons to `learning/` after notable sessions
+3. **Update project notes**: Keep `Projects/` current with latest status
+4. **Create dashboards**: Use the `obsidian-dashboard` skill to build HTML dashboards in `dashboard/`
+
+## Dashboard Capability
+
+You can create interactive HTML dashboards for long-term projects. These are saved to `dashboard/<project>.html` and viewable in Obsidian.
+
+**When to propose a dashboard:**
+- Project has been active for 2+ weeks
+- Multiple milestones or phases to track
+- User would benefit from visual progress tracking
+- Project has metrics, KPIs, or recurring deliverables
+
+**How to create one:**
+Use the `obsidian-dashboard` skill, or generate an HTML file in `dashboard/` following the project dashboard template.
+
+A dashboard should include: project overview, milestone tracker, task status, metrics/KPIs, and a timeline of key events.
+""",
     }
 
     for path, content in file_templates.items():
@@ -362,13 +487,15 @@ def bootstrap_second_brain(root: Path, agent_id: str = "default", force: bool = 
             path.write_text(content, encoding="utf-8")
             created_files.append(path)
 
-    # Copy Command Center dashboard if available
-    dashboard_src = Path(__file__).resolve().parent.parent / "dashboard" / "command-center.html"
-    dashboard_dst = root / "dashboard" / "command-center.html"
-    if dashboard_src.exists() and (force or not dashboard_dst.exists()):
-        import shutil
-        dashboard_dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(dashboard_src, dashboard_dst)
-        created_files.append(dashboard_dst)
+    # Copy dashboard files if available
+    import shutil
+    dashboard_dir = Path(__file__).resolve().parent.parent / "dashboard"
+    for html_name in ("command-center.html", "project-template.html"):
+        src = dashboard_dir / html_name
+        dst = root / "dashboard" / html_name
+        if src.exists() and (force or not dst.exists()):
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+            created_files.append(dst)
 
     return {"dirs": created_dirs, "files": created_files}
