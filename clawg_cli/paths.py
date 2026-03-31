@@ -440,6 +440,32 @@ Install one of these Community Plugins in Obsidian:
 Agents can create project dashboards using the `obsidian-dashboard` skill.
 Or duplicate `project-template.html`, rename it, and edit the configuration section at the top.
 """,
+        root / "Dashboard.md": """# Dashboard
+
+Open the CLAWG Command Center directly in Obsidian.
+
+## Quick Setup (one time)
+
+1. Open Obsidian Settings → Community Plugins → Browse
+2. Search for **"HTML Reader"** (by nuthrash)
+3. Install and enable it
+4. Click on `dashboard/command-center.html` in the file explorer → it opens as a tab
+
+That's it. The dashboard shows all your agents, skills, crons, and projects.
+
+## Alternative: Browser
+
+```bash
+clawg dashboard
+```
+
+Opens the Command Center in your browser at http://localhost:9777 with live data from your vault.
+
+## Files
+
+- `dashboard/command-center.html` → 3D visualization of agents, skills, projects, crons
+- `dashboard/project-template.html` → Template for per-project dashboards
+""",
         root / "Large Memory" / "MEMORY.md": "",
         root / "Large Memory" / "USER.md": "",
         root / "agents" / aid / "identity.md": f"""# Identity
