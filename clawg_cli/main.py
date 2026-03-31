@@ -4031,9 +4031,17 @@ For more help on a command:
     sb_init.add_argument("--agent-id", default="default", help="Agent profile ID to initialize")
     sb_init.add_argument("--force", action="store_true", help="Overwrite existing template files")
 
-    def cmd_second_brain(args):
-        from clawg_cli.second_brain import second_brain_command
+    sb_autoscan = second_brain_subparsers.add_parser(
+        "autoscan",
+        help="Auto-configure Second Brain by scanning your machine via LLM"
+    )
+    sb_autoscan.add_argument("--agent-id", default=None, help="Agent profile ID")
 
+    def cmd_second_brain(args):
+        if getattr(args, "sb_action", None) == "autoscan":
+            from clawg_cli.autoscan import autoscan_command
+            return autoscan_command(args)
+        from clawg_cli.second_brain import second_brain_command
         return second_brain_command(args)
 
     second_brain_parser.set_defaults(func=cmd_second_brain, sb_action="status")
