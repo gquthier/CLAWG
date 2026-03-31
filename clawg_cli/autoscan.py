@@ -216,20 +216,30 @@ def _call_llm(machine_data: dict, api_key: str, model: str, base_url: str) -> Op
 
 # ─── Resolve API credentials ──────────────────────────────────────
 
+def _resolve_model_string(raw_model) -> str:
+    """Extract a clean model string from config value (may be str or dict)."""
+    if isinstance(raw_model, str) and raw_model:
+        return raw_model
+    if isinstance(raw_model, dict):
+        # Config can store model as {"default": "model/name", "provider": "..."}
+        return raw_model.get("default", "") or raw_model.get("model", "")
+    return ""
+
+
 def _resolve_api_config() -> tuple[str, str, str]:
     """Find API key, model, and base URL from config or env."""
     # Try loading CLAWG config
     try:
         from clawg_cli.config import load_config
         cfg = load_config()
-        model = cfg.get("model", "")
+        model = _resolve_model_string(cfg.get("model", ""))
     except Exception:
         cfg = {}
         model = ""
 
     # Provider detection order
     providers = [
-        ("OPENROUTER_API_KEY", "anthropic/claude-sonnet-4", "https://openrouter.ai/api/v1"),
+        ("OPENROUTER_API_KEY", "google/gemini-2.5-flash", "https://openrouter.ai/api/v1"),
         ("ANTHROPIC_API_KEY", "claude-sonnet-4-20250514", "https://api.anthropic.com/v1"),
         ("OPENAI_API_KEY", "gpt-4o", "https://api.openai.com/v1"),
         ("DEEPSEEK_API_KEY", "deepseek-chat", "https://api.deepseek.com/v1"),
@@ -248,7 +258,9 @@ def _resolve_api_config() -> tuple[str, str, str]:
     for env_var, default_model, base_url in providers:
         key = os.environ.get(env_var) or env_vars.get(env_var)
         if key:
-            return key, model or default_model, base_url
+            # Use config model if it's a valid string, otherwise fallback
+            final_model = model if model else default_model
+            return key, final_model, base_url
 
     return "", "", ""
 
