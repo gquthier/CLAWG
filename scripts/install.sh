@@ -97,7 +97,7 @@ if [ ! -d ".venv" ]; then
 fi
 source .venv/bin/activate
 python -m pip install --upgrade pip --quiet 2>/dev/null
-python -m pip install -e . --quiet 2>/dev/null
+python -m pip install -e ".[all]" --quiet 2>/dev/null || python -m pip install -e . --quiet 2>/dev/null
 ok "Dependencies installed"
 
 # ── Symlink CLI ──
