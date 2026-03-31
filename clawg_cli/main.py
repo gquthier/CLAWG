@@ -56,7 +56,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # Load .env from CLAWG_HOME first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
-from clawg_cli.config import get_clawg_home, get_clawg_home
+from clawg_cli.config import get_clawg_home
 from clawg_cli.env_loader import load_clawg_dotenv
 load_clawg_dotenv(project_env=PROJECT_ROOT / '.env')
 
