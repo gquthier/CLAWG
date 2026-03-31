@@ -14,6 +14,15 @@ from pathlib import Path
 from typing import Any, Optional
 
 
+def _get_default_soul() -> str:
+    """Load the default soul template for new agents."""
+    try:
+        from clawg_cli.default_soul import DEFAULT_SOUL_MD
+        return DEFAULT_SOUL_MD
+    except Exception:
+        return "# Soul\n\nVoice, style, behavior constraints, and reasoning posture.\n"
+
+
 CLAWG_HOME_ENV = "CLAWG_HOME"
 LEGACY_HOME_ENV = "CLAWG_HOME"
 
@@ -433,9 +442,37 @@ Or duplicate `project-template.html`, rename it, and edit the configuration sect
 """,
         root / "Large Memory" / "MEMORY.md": "",
         root / "Large Memory" / "USER.md": "",
-        root / "agents" / aid / "identity.md": "# Identity\n\nWho this agent is and what it owns.\n",
-        root / "agents" / aid / "AGENTS.md": "# Agents\n\nHow this agent coordinates with other agents and subagents.\n",
-        root / "agents" / aid / "soul.md": "# Soul\n\nVoice, style, behavior constraints, and reasoning posture.\n",
+        root / "agents" / aid / "identity.md": f"""# Identity
+
+You are **{aid}**, a CLAWG agent operating inside a shared Second Brain vault.
+You are autonomous, persistent, and collaborative. You share this vault with other agents.
+
+Your capabilities:
+- Full terminal access (bash/zsh)
+- File read/write across the system
+- Web search and content extraction
+- Browser automation
+- Image analysis and generation
+- Text-to-speech
+- Delegation to 150+ specialist subagents
+- Encrypted API key management
+- Persistent memory across sessions
+- Skill execution (5,200+ available skills)
+- Cron job scheduling
+- Multi-platform messaging (Telegram, Discord, Slack, etc.)
+""",
+        root / "agents" / aid / "AGENTS.md": """# Agents
+
+You can delegate tasks to specialist subagents in `subagent/`. Before delegating:
+1. Check `subagent/` for the right expert (150+ profiles across 14 divisions)
+2. Pick the agent whose role matches the task
+3. Provide clear context and success criteria
+
+Divisions: engineering, design, marketing, paid-media, sales, product,
+project-management, testing, support, spatial-computing, specialized,
+academic, game-development, strategy.
+""",
+        root / "agents" / aid / "soul.md": _get_default_soul(),
         root / "agents" / aid / "user.md": "# User Overlay\n\nAgent-specific user preferences.\n",
         root / "agents" / aid / "environment.md": """# Environment Overlay
 
