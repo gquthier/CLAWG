@@ -442,9 +442,11 @@ Dashboard skill: `obsidian-dashboard` — propose for projects active 2+ weeks.
             path.write_text(content, encoding="utf-8")
             created_files.append(path)
 
-    # Copy dashboard files if available
     import shutil
-    dashboard_dir = Path(__file__).resolve().parent.parent / "dashboard"
+    repo_root = Path(__file__).resolve().parent.parent
+
+    # Copy dashboard files if available
+    dashboard_dir = repo_root / "dashboard"
     for html_name in ("command-center.html", "project-template.html"):
         src = dashboard_dir / html_name
         dst = root / "dashboard" / html_name
@@ -452,5 +454,37 @@ Dashboard skill: `obsidian-dashboard` — propose for projects active 2+ weeks.
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)
             created_files.append(dst)
+
+    # Copy bundled skills into vault
+    repo_skills = repo_root / "skills"
+    vault_skills = root / "skills"
+    if repo_skills.is_dir():
+        for skill_src in repo_skills.rglob("SKILL.md"):
+            rel = skill_src.relative_to(repo_skills)
+            skill_dst = vault_skills / rel
+            if force or not skill_dst.exists():
+                skill_dst.parent.mkdir(parents=True, exist_ok=True)
+                # Copy the entire skill directory (SKILL.md + any templates/scripts)
+                skill_dir_src = skill_src.parent
+                skill_dir_dst = skill_dst.parent
+                for f in skill_dir_src.rglob("*"):
+                    if f.is_file():
+                        dst = skill_dir_dst / f.relative_to(skill_dir_src)
+                        if force or not dst.exists():
+                            dst.parent.mkdir(parents=True, exist_ok=True)
+                            shutil.copy2(f, dst)
+                            created_files.append(dst)
+
+    # Copy bundled subagents into vault
+    repo_subagents = repo_root / "subagents"
+    vault_subagents = root / "subagent"
+    if repo_subagents.is_dir():
+        for md_src in repo_subagents.rglob("*.md"):
+            rel = md_src.relative_to(repo_subagents)
+            md_dst = vault_subagents / rel
+            if force or not md_dst.exists():
+                md_dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(md_src, md_dst)
+                created_files.append(md_dst)
 
     return {"dirs": created_dirs, "files": created_files}
