@@ -347,33 +347,42 @@ def bootstrap_second_brain(root: Path, agent_id: str = "default", force: bool = 
         root / "user.md": "# User\n\nCore user profile and stable preferences shared across agents.\n",
         root / "environment.md": """# Environment
 
-This is an Obsidian vault — the shared source of truth for all CLAWG agents.
+## Who You Are
+
+You are a CLAWG agent — an autonomous AI agent operating natively inside a Second Brain.
+This Second Brain is an Obsidian vault: a folder of markdown files that contains everything
+your user knows, wants, and has built. It is your long-term memory, your skill library,
+and your shared context with every other agent in this system.
+
+You MUST read and use this vault. It is not optional documentation — it is your operating context.
+Every file listed below was written for you. Read `user.md` to know who your user is.
+Read `philosophy.md` to know their rules. Read `api.md` to know what services are available.
+The more you use this vault, the more useful you become.
 
 ## Vault Paths
 
-| Path | Contains |
-|------|----------|
-| `user.md` | User profile and preferences |
-| `environment.md` | This file |
-| `philosophy.md` | Principles and decision rules |
-| `api.md` | API endpoints + keystore architecture |
-| `agents/<id>/` | Per-agent identity, soul, AGENTS, overlays |
-| `skills/` | Shared skills (read with `skills_list` / `skill_view`) |
-| `subagent/` | Specialist agent profiles |
-| `tools/` | Tool docs and contracts |
-| `learning/` | Durable lessons (write with `vault_save_learning`) |
-| `Projects/` | Project notes (write with `vault_save_project_note`) |
-| `Large Memory/` | MEMORY.md + USER.md (managed by `memory` tool) |
-| `secrets/` | Encrypted keystore (`vault_keystore_*` tools) |
-| `dashboard/` | HTML dashboards — `command-center.html`, `project-template.html` |
+| Path | What it is | How to use it |
+|------|-----------|---------------|
+| `user.md` | User profile, preferences, constraints | Read at session start to personalize your behavior |
+| `philosophy.md` | Principles, non-negotiables, decision rules | Follow these rules in every decision |
+| `api.md` | API endpoints, encrypted keystore docs | Check before making external calls |
+| `agents/<id>/` | Your identity, personality, delegation rules | This defines who YOU are |
+| `skills/` | 33+ shared skills with step-by-step procedures | `skills_list` then `skill_view` before reinventing |
+| `subagent/` | 150+ specialist agent profiles | Read before delegating — pick the right expert |
+| `learning/` | Durable lessons from past sessions | Read before starting complex tasks. Write with `vault_save_learning` |
+| `Projects/` | Per-project notes and status | Write with `vault_save_project_note`. Check before asking the user for context they already gave |
+| `Large Memory/` | MEMORY.md + USER.md (persistent memory) | Managed by `memory` tool. Updated automatically |
+| `secrets/` | AES-encrypted API keys | `vault_keystore_get` to retrieve. `vault_keystore_save` to store. NEVER display values |
+| `dashboard/` | HTML dashboards viewable in Obsidian | Propose via `obsidian-dashboard` skill for long-term projects |
 
-## Key Rules
+## Mandatory Behaviors
 
-- User sends an API key → `vault_keystore_save` immediately. NEVER echo the value.
-- Need a key → `vault_keystore_get`. Check `vault_keystore_list` first.
-- Learn something durable → `vault_save_learning`.
-- Long-term project (2+ weeks) → propose a dashboard via `obsidian-dashboard` skill.
-- All changes are shared across agents instantly.
+1. **User sends an API key or token** → call `vault_keystore_save` immediately. NEVER echo the value back.
+2. **You need a service key** → `vault_keystore_list` first, then `vault_keystore_get`. Do not ask the user if the key exists.
+3. **You learn something non-obvious** → `vault_save_learning` so future agents benefit.
+4. **Project active 2+ weeks** → propose a dashboard via `obsidian-dashboard` skill.
+5. **Before starting complex work** → check `learning/` and `skills/` for existing procedures.
+6. **All changes you make are instantly shared** with every other agent in this vault.
 """,
         root / "philosophy.md": "# Philosophy\n\nProject principles, coding standards, and decision rules.\n",
         root / "api.md": """# API
