@@ -380,9 +380,11 @@ echo -e "    ${PURPLE}clawg --agent-id $AGENT_ID${NC}  — Launch with your agen
 echo -e "    ${PURPLE}clawg dashboard${NC}             — Open Command Center"
 echo ""
 echo -e "  ${BOLD}Useful commands:${NC}"
+echo -e "    ${PURPLE}clawg second-brain autoscan${NC} — ${BOLD}Auto-configure vault via LLM scan${NC}"
 echo -e "    ${PURPLE}clawg second-brain status${NC}   — Check vault connection"
-echo -e "    ${PURPLE}clawg cron list${NC}             — View scheduled jobs"
+echo -e "    ${PURPLE}clawg config show${NC}           — View/edit configuration"
 echo -e "    ${PURPLE}clawg skills list${NC}           — Browse available skills"
+echo -e "    ${PURPLE}clawg cron list${NC}             — View scheduled jobs"
 echo -e "    ${PURPLE}clawg doctor${NC}                — Diagnose issues"
 echo ""
 
