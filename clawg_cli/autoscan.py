@@ -163,6 +163,14 @@ def _call_llm(machine_data: dict, api_key: str, model: str, base_url: str) -> Op
     import urllib.request
     import urllib.error
 
+    # Final safety: model MUST be a non-empty string
+    if not isinstance(model, str) or not model.strip():
+        if isinstance(model, dict):
+            model = model.get("default", "") or model.get("model", "") or "google/gemini-2.5-flash"
+        else:
+            model = "google/gemini-2.5-flash"
+    model = str(model).strip()
+
     payload = {
         "model": model,
         "messages": [
