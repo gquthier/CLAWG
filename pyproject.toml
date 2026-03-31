@@ -77,7 +77,6 @@ all = [
   "clawg[dev]",
   "clawg[tts-premium]",
   "clawg[slack]",
-  "clawg[matrix]",
   "clawg[pty]",
   "clawg[honcho]",
   "clawg[mcp]",
