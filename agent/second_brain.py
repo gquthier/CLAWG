@@ -52,7 +52,7 @@ def _load_config_safe() -> dict:
         cfg = load_config()
         return cfg if isinstance(cfg, dict) else {}
     except Exception as e:
-        logger.debug("Could not load config for Second Brain: %s", e)
+        logger.warning("Could not load config for Second Brain: %s", e)
         return {}
 
 

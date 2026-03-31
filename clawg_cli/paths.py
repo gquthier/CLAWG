@@ -24,8 +24,9 @@ DEFAULT_CLAWG_HOME = Path.home() / ".clawg"
 DEFAULT_LEGACY_HOME = Path.home() / ".clawg"
 
 DEFAULT_SECOND_BRAIN_CANDIDATES = (
-    Path.home() / ".openclaw" / "second-brain",
-    Path.home() / "Documents" / "Second Brain OpenClaw - PROD",
+    Path.home() / ".clawg" / "second-brain",
+    Path.home() / "Second Brain",
+    Path.home() / "Documents" / "Second Brain",
 )
 
 
