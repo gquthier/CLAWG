@@ -1,8 +1,14 @@
 <div align="center">
 
-<img src="assets/logo.svg" alt="SMART CLAWG" width="620">
+<img src="https://img.shields.io/badge/AGENTIC-INFRASTRUCTURE-12A594?style=flat-square&labelColor=12A594&color=1A1A1A" alt="AGENTIC · INFRASTRUCTURE">
 
-### Autonomous open-source AI agents with a portable brain.
+<img src="assets/logo.svg" alt="SMART CLAWG" width="560">
+
+# Autonomous Agent Framework
+
+### Every agent you run, working from the same brain.
+
+Stop re-explaining your context to each new session.<br>One shared vault holds who you are, how you work and what you know —<br>and every agent loads it from anywhere.
 
 <br>
 
@@ -17,7 +23,7 @@
 
 <br>
 
-<sub>One context, every agent · native shared Obsidian Second Brain</sub>
+<sub>Open-source framework · native shared Obsidian Second Brain · master context files · shared skills, subagents, tools and APIs · per-agent identity profiles · Obsidian Sync across sessions</sub>
 
 </div>
 
