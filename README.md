@@ -1,6 +1,27 @@
-<h1 align="center"><img src="assets/logo.svg" alt="SMART CLAWG" width="700"></h1>
+<div align="center">
 
-**CLAWG — Autonomous open-source AI agents with a portable brain.**
+<img src="assets/logo.svg" alt="SMART CLAWG" width="620">
+
+### Autonomous open-source AI agents with a portable brain.
+
+<br>
+
+<a href="https://bizos.cc">
+<img src="https://img.shields.io/badge/BizOS-build%20autonomous%20companies-0A0A0A?style=for-the-badge&labelColor=0A0A0A" alt="BizOS — build autonomous companies">
+</a>
+
+<br><br>
+
+<a href="https://x.com/gauthierthiry"><img src="https://img.shields.io/badge/@gauthierthiry-0A0A0A?style=flat-square&logo=x&logoColor=white" alt="X"></a>
+<a href="https://youtube.com/@gquthier"><img src="https://img.shields.io/badge/@gquthier-FF0000?style=flat-square&logo=youtube&logoColor=white" alt="YouTube"></a>
+
+<br>
+
+<sub>One context, every agent · native shared Obsidian Second Brain</sub>
+
+</div>
+
+---
 
 Every session can load shared markdown context from one vault so all agents work from the same source of truth:
 
@@ -122,3 +143,24 @@ python -m pytest tests/ -q
 ## License
 
 MIT - see [`LICENSE`](LICENSE).
+
+---
+
+<div align="center">
+
+<br>
+
+### Building something that runs itself?
+
+**[bizos.cc](https://bizos.cc)** — build autonomous companies.
+
+<br>
+
+<a href="https://x.com/gauthierthiry"><img src="https://img.shields.io/badge/@gauthierthiry-0A0A0A?style=flat-square&logo=x&logoColor=white" alt="X"></a>
+<a href="https://youtube.com/@gquthier"><img src="https://img.shields.io/badge/@gquthier-FF0000?style=flat-square&logo=youtube&logoColor=white" alt="YouTube"></a>
+
+<br><br>
+
+<sub>Built by <a href="https://x.com/gauthierthiry">Gauthier Thiry</a></sub>
+
+</div>
