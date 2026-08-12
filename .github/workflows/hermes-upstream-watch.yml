@@ -1,0 +1,45 @@
+name: Hermes Upstream Watch
+
+on:
+  schedule:
+    - cron: '17 6 */3 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upstream-watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout CLAWG
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Configure upstream remote + merge helpers
+        run: bash scripts/setup_hermes_upstream.sh
+
+      - name: Generate upstream sync report
+        run: |
+          python scripts/hermes_sync_report.py \
+            --repo . \
+            --json-out hermes-sync-report.json \
+            --md-out hermes-sync-report.md
+
+      - name: Add report to job summary
+        run: cat hermes-sync-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hermes-sync-report
+          path: |
+            hermes-sync-report.json
+            hermes-sync-report.md

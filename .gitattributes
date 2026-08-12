@@ -1,0 +1,9 @@
+# CLAWG-local zones that should keep the CLAWG version during upstream syncs.
+# Requires: scripts/setup_hermes_upstream.sh (configures merge.clawg-ours.driver=true)
+AGENTS.md merge=clawg-ours
+README.md merge=clawg-ours
+landingpage/** merge=clawg-ours
+website/** merge=clawg-ours
+subagents/** merge=clawg-ours
+optional-skills/** merge=clawg-ours
+dashboard/** merge=clawg-ours
